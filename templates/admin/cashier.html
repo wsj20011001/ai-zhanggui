@@ -6,7 +6,7 @@
   {% for t in tables %}
   <div class="col-6 col-md-4 col-lg-3">
     {% if counts.get(t['id']) %}
-    <a class="card shadow-sm text-decoration-none h-100" style="border:none;background:{% if t['status'] == 'ordering' %}#fff7e8{% else %}#fdf0ef{% endif %}"
+    <a class="card desk-card h-100 text-decoration-none {% if t['status'] == 'ordering' %}is-order{% else %}is-busy{% endif %}"
        href="{{ url_for('cashier.cashier_settle', table_id=t['id']) }}">
       <div class="card-body">
         <h6 class="mb-1">{{ t['name'] }}</h6>
@@ -21,7 +21,7 @@
       </div>
     </a>
     {% else %}
-    <div class="card h-100" style="border:none;background:#f2f7f3">
+    <div class="card desk-card is-idle h-100">
       <div class="card-body text-muted">
         <h6 class="mb-1">{{ t['name'] }}</h6>
         <div class="small">{{ t['type'] }} · {{ t['capacity'] }}人</div>

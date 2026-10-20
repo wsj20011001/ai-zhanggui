@@ -6,12 +6,14 @@
 <title>登录 · AI 掌柜</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/bootstrap.min.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tech.css') }}">
 </head>
 <body class="login-body">
 <div class="login-card card shadow">
   <div class="card-body p-4">
-    <h4 class="text-center mb-1">🧠 AI 掌柜</h4>
-    <p class="text-center text-muted small mb-4">餐饮管理系统 · 管理端</p>
+    <div class="brand-mark">AI</div>
+    <h4 class="text-center mb-1">AI 掌柜</h4>
+    <p class="text-center text-muted small mb-4">中小餐饮经营 Agent</p>
     {% if error %}<div class="alert alert-danger py-2">{{ error }}</div>{% endif %}
     <form method="post">
       <div class="mb-3">

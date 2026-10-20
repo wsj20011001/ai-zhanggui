@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/bootstrap.min.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/ai.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tech.css') }}">
 </head>
 <body class="admin-body">
 <div class="d-flex">
@@ -52,7 +53,10 @@
   </nav>
   <div class="main-area flex-grow-1">
     <div class="topbar d-flex justify-content-between align-items-center">
-      <div>📶 点餐端地址：<code>http://{{ lan_ip }}:5100</code> <span class="text-muted small">（手机连同一 WiFi 打开）</span></div>
+      <div class="d-flex align-items-center gap-3">
+        <span class="sys-chip"><i></i>系统运行中</span>
+        <span class="d-none d-lg-inline">📶 点餐端地址：<code>http://{{ lan_ip }}:5100</code> <span class="text-muted small">（手机连同一 WiFi 打开）</span></span>
+      </div>
       <div><span class="me-3">{{ shop.shop_name if shop is defined else '' }}</span><a class="btn btn-sm btn-outline-secondary" href="{{ url_for('logout') }}">退出登录</a></div>
     </div>
     <div class="content p-3">
