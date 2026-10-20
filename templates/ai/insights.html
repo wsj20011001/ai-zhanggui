@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}洞察中心 · {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="ai-head">
+  <div>
+    <h4>洞察中心</h4>
+    <div class="sub">规则检测器每天扫一遍经营数据，异常才出现。每条都附证据 SQL，可追溯到明细。</div>
+  </div>
+  <form method="post" action="{{ url_for('ai.refresh') }}"><button class="btn-ai">重新检测</button></form>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    {% for it in items %}
+    <div class="insight {{ it.severity }}">
+      <div class="t"><span class="sev-tag {{ it.severity }}">{{ {'critical':'紧急','warning':'注意','info':'机会'}[it.severity] }}</span>{{ it.title }}</div>
+      <div class="m">{{ it.detail }}</div>
+      <div class="ev">
+        {% for k, v in it.evidence.items() if k not in ('sql','dishes') %}<span>{{ k }}={{ v }}</span>{% if not loop.last %} · {% endif %}{% endfor %}
+      </div>
+      {% if it.evidence.sql %}<details class="sqlbox"><summary>证据 SQL</summary><pre>{{ it.evidence.sql }}</pre></details>{% endif %}
+      <div class="sg"><b>建议：</b>{{ it.suggestion }}</div>
+      <div class="mt-2 d-flex gap-2">
+        <button class="btn-ai" onclick="execInsight({{ it.id }}, this)">立即执行</button>
+        <button class="btn-ai-ghost" onclick="ignoreInsight({{ it.id }}, this)">忽略</button>
+        <a class="btn-ai-ghost" href="{{ url_for('ai.chat_page') }}?q={{ it.title|urlencode }}">追问</a>
+      </div>
+    </div>
+    {% else %}
+    <div class="panel empty">今天没有异常。经营很稳，或者数据还没跑。</div>
+    {% endfor %}
+  </div>
+
+  <div class="col-lg-4">
+    <div class="panel">
+      <h6>历史记录 <span>最近 100 条</span></h6>
+      <table class="table table-sm ai-table mb-0">
+        <thead><tr><th>日期</th><th>类型</th><th>状态</th></tr></thead>
+        <tbody>
+        {% for r in rows %}
+        <tr>
+          <td>{{ r['d'][5:] }}</td>
+          <td style="max-width:150px">{{ r['title'][:18] }}</td>
+          <td>
+            {% if r['status'] == 'done' %}<span class="text-success">已执行</span>
+            {% elif r['status'] == 'ignored' %}<span class="text-muted">已忽略</span>
+            {% else %}<span class="text-warning">待处理</span>{% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" class="text-center text-muted py-3">暂无记录</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/ai.js') }}"></script>
+<script>
+async function execInsight(id, btn) {
+  btn.disabled = true; btn.textContent = '执行中…';
+  const r = await AI.post('/api/ai/insight/' + id + '/execute', {});
+  AI.toast(r.msg || (r.ok ? '已执行' : '失败'), r.ok ? 'ok' : 'bad');
+  if (r.ok) setTimeout(() => location.reload(), 900);
+  else { btn.disabled = false; btn.textContent = '立即执行'; }
+}
+async function ignoreInsight(id, btn) {
+  const r = await AI.post('/api/ai/insight/' + id + '/ignore', {});
+  AI.toast('已忽略', 'ok');
+  if (r.ok) btn.closest('.insight').style.opacity = .4;
+}
+</script>
+{% endblock %}

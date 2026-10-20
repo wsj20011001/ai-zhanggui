@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}会员资产 · {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="ai-head">
+  <div>
+    <h4>会员资产</h4>
+    <div class="sub">会员不是「越多越好」，是「越常来越好」 · 近 30 天口径</div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3"><div class="kpi">
+    <div class="lb">会员总数</div><div class="v">{{ s.total }}<small>人</small></div>
+    <div class="d flat">储值余额 {{ '{:,.0f}'.format(s.balance_total) }} 元</div></div></div>
+  <div class="col-6 col-lg-3"><div class="kpi">
+    <div class="lb">近 30 天活跃</div><div class="v">{{ s.active }}<small>人</small></div>
+    <div class="d flat">活跃率 {{ '%.0f'|format(s.active_rate*100) }}%</div></div></div>
+  <div class="col-6 col-lg-3"><div class="kpi">
+    <div class="lb">复购会员</div><div class="v">{{ s.repeat }}<small>人</small></div>
+    <div class="d flat">复购率 {{ '%.0f'|format(s.repeat_rate*100) }}%</div></div></div>
+  <div class="col-6 col-lg-3"><div class="kpi">
+    <div class="lb">60 天未到店</div><div class="v">{{ lost }}<small>人</small></div>
+    <div class="d down">优先召回高价值客群</div></div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="panel">
+      <h6>等级结构 <span>按累计消费</span></h6>
+      <div id="lv" class="chart-sm"></div>
+      <table class="table table-sm ai-table mb-0 mt-2">
+        {% for l in levels %}
+        <tr><td>{{ l['level'] }}</td><td class="text-end">{{ l['c'] }} 人</td>
+            <td class="text-end text-muted">{{ '{:,.0f}'.format(l['amount'] or 0) }}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="panel">
+      <h6>消费 Top 20 <span>这批人贡献了大部分储值与复购</span></h6>
+      <div class="table-responsive">
+        <table class="table table-sm ai-table mb-0">
+          <thead><tr><th>会员</th><th>等级</th><th class="text-end">累计消费</th>
+            <th class="text-end">消费次数</th><th class="text-end">余额</th><th>最近到店</th></tr></thead>
+          <tbody>
+          {% for m in top %}
+          <tr>
+            <td>{{ m['name'] }}</td>
+            <td class="text-muted">{{ m['level'] }}</td>
+            <td class="text-end fw-semibold">{{ '{:,.0f}'.format(m['total_spend'] or 0) }}</td>
+            <td class="text-end">{{ m['visit_count'] }}</td>
+            <td class="text-end">{{ '{:,.0f}'.format(m['balance'] or 0) }}</td>
+            <td class="text-muted">{{ (m['last_visit_at'] or '')[:10] }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ai.js') }}"></script>
+<script>
+const levels = {{ levels|tojson }};
+AI.pie(document.getElementById('lv'), levels.map(l => ({ name: l.level, value: l.c })));
+</script>
+{% endblock %}

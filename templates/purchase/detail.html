@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}采购单 PO#{{ po['id'] }} · {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="ai-head">
+  <div>
+    <h4>采购单 PO#{{ po['id'] }}
+      {% if po['status'] == 'received' %}<span class="ai-badge ok"><span class="dot"></span>已入库</span>
+      {% elif po['status'] == 'cancelled' %}<span class="ai-badge warn"><span class="dot"></span>已作废</span>
+      {% else %}<span class="ai-badge warn"><span class="dot"></span>待确认</span>{% endif %}
+    </h4>
+    <div class="sub">{{ po['note'] }} · 创建于 {{ po['created_at'] }} · 合计 {{ '{:,.2f}'.format(po['total_cost']) }} 元</div>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn-ai-ghost" href="{{ url_for('purchase.purchase_list') }}">返回列表</a>
+    {% if po['status'] == 'draft' %}
+    <form method="post" action="{{ url_for('purchase.receive', po_id=po['id']) }}"
+          onsubmit="return confirm('确认入库？将同时更新食材库存与出入库流水。')">
+      <button class="btn-ai">确认入库</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="panel">
+  <table class="table table-sm ai-table mb-0">
+    <thead><tr><th>食材</th><th class="text-end">数量</th><th class="text-end">单价</th>
+      <th class="text-end">金额</th></tr></thead>
+    <tbody>
+    {% for i in items %}
+    <tr><td>{{ i['name'] }}</td>
+        <td class="text-end">{{ i['qty'] }} {{ i['unit'] }}</td>
+        <td class="text-end">{{ '{:,.2f}'.format(i['unit_cost']) }}</td>
+        <td class="text-end">{{ '{:,.2f}'.format(i['amount']) }}</td></tr>
+    {% endfor %}
+    </tbody>
+    <tfoot><tr class="fw-bold"><td colspan="3" class="text-end">合计</td>
+      <td class="text-end">{{ '{:,.2f}'.format(po['total_cost']) }}</td></tr></tfoot>
+  </table>
+</div>
+
+<div class="panel mt-3">
+  <h6>这张单是怎么来的</h6>
+  <div class="small text-muted" style="line-height:1.9">
+    1. 用近 60 天历史销量预测未来 {{ horizon if horizon is defined else 7 }} 天每道菜的销量；<br/>
+    2. 按菜品配方（BOM）展开成食材用量并求和；<br/>
+    3. 减去现有库存，得到净需求；<br/>
+    4. 由人确认后入库，写 stock_movements 流水，可追溯到这张单。
+  </div>
+</div>
+{% endblock %}

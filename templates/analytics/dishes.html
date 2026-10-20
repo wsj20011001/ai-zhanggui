@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}菜品工程 · {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="ai-head">
+  <div>
+    <h4>菜品工程</h4>
+    <div class="sub">销量中位数 × 毛利率中位数切成四象限：明星要保供，金牛要提价，瘦狗要处理</div>
+  </div>
+  <form method="get" class="d-flex gap-2">
+    <select name="days" class="form-select form-select-sm" onchange="this.form.submit()">
+      {% for d in [14, 30, 60, 90] %}<option value="{{ d }}" {{ 'selected' if days == d }}>近 {{ d }} 天</option>{% endfor %}
+    </select>
+  </form>
+</div>
+
+<div class="row g-3 mb-3">
+  {% set q_summary = q['summary'] %}
+  {% set colors = {'明星':'#1d9e75','金牛':'#4c4ddc','潜力':'#ef9f27','瘦狗':'#d64545'} %}
+  {% set descs = {'明星':'高销量 高毛利','金牛':'高销量 低毛利','潜力':'低销量 高毛利','瘦狗':'低销量 低毛利'} %}
+  {% for q in ['明星','金牛','潜力','瘦狗'] %}
+  <div class="col-6 col-lg-3"><div class="kpi">
+    <div class="lb" style="color:{{ colors[q] }}">● {{ q }} <span class="text-muted">{{ descs[q] }}</span></div>
+    <div class="v">{{ q_summary[q]['count'] if q_summary else 0 }}<small>道</small></div>
+    <div class="d flat">销售额 {{ '{:,.0f}'.format(q_summary[q]['amount']) if q_summary else 0 }} 元</div>
+  </div></div>
+  {% endfor %}
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="panel">
+      <h6>四象限分布 <span>点越大代表销售额越高 · 虚线是中位数分界</span></h6>
+      <div id="quad" style="height:420px"></div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="panel mb-3">
+      <h6>ABC 结构 <span>累计销量 70/20/10</span></h6>
+      <table class="table table-sm ai-table mb-0">
+        <tr><td><b>A 类</b>（主力）</td><td class="text-end">{{ abc.get('A', 0) }} 道</td></tr>
+        <tr><td><b>B 类</b>（辅助）</td><td class="text-end">{{ abc.get('B', 0) }} 道</td></tr>
+        <tr><td><b>C 类</b>（长尾）</td><td class="text-end">{{ abc.get('C', 0) }} 道</td></tr>
+      </table>
+      <div class="small text-muted mt-2">A 类断货 = 直接损失营收；C 类过多 = 后厨效率低、备料浪费。</div>
+    </div>
+    <div class="panel mb-3">
+      <h6>连续 3 天 0 销量 <span>{{ slow|length }} 道</span></h6>
+      {% for s in slow[:6] %}
+      <div class="d-flex justify-content-between small py-1 border-bottom">
+        <span>{{ s.name }}</span><span class="text-muted">此前 {{ s.prev_qty }} 份</span>
+      </div>
+      {% else %}<div class="small text-muted">没有滞销菜</div>{% endfor %}
+      <div class="mt-2"><a class="small" href="{{ url_for('ai.insight_list') }}">去处理 →</a></div>
+    </div>
+    <div class="panel">
+      <h6>成本口径提示</h6>
+      <div class="small text-muted">
+        还有 <b>{{ no_recipe }}</b> 道在售菜没有配方，无法计算成本与毛利，未参与四象限分析。
+        <a href="{{ url_for('dishes.recipes_import') }}">去录配方 →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel mt-3">
+  <h6>销售额 Top 15 <span>按销售额排序，毛利率低于 35% 标红</span></h6>
+  <div class="table-responsive">
+  <table class="table table-sm ai-table mb-0">
+    <thead><tr><th>菜品</th><th>分类</th><th class="text-end">销量</th><th class="text-end">销售额</th>
+      <th class="text-end">毛利</th><th class="text-end">毛利率</th><th>象限</th><th>ABC</th></tr></thead>
+    <tbody>
+    {% for i in top %}
+    <tr>
+      <td>{{ i.name }}</td>
+      <td class="text-muted">{{ i.category }}</td>
+      <td class="text-end">{{ i.qty }}</td>
+      <td class="text-end">{{ '{:,.0f}'.format(i.amount) }}</td>
+      <td class="text-end">{{ '{:,.0f}'.format(i.profit) }}</td>
+      <td class="text-end {% if i.margin_rate < 0.35 %}text-danger fw-bold{% endif %}">{{ '%.0f'|format(i.margin_rate*100) }}%</td>
+      <td><span class="sev-tag {{ {'明星':'info','金牛':'info','潜力':'warning','瘦狗':'critical'}[i.quadrant] }}">{{ i.quadrant }}</span></td>
+      <td class="text-muted">{{ i.abc }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ai.js') }}"></script>
+<script>
+const items = {{ q['items']|tojson }};
+AI.scatterQuadrant(document.getElementById('quad'), items, {{ q['median_qty'] }}, {{ q['median_margin'] }});
+</script>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}模型设置 · {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="ai-head">
+  <div>
+    <h4>模型设置</h4>
+    <div class="sub">双通道：本地 Ollama 优先（数据不出店），云端 API 作为增强。断网或无 Key 时自动降级为规则模式。</div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="panel">
+      <h6>通道配置</h6>
+      <form method="post">
+        <div class="mb-3">
+          <label class="form-label small">AI 通道</label>
+          <select class="form-select form-select-sm" name="ai_provider">
+            <option value="local" {{ 'selected' if ai.provider == 'local' }}>本地模型（Ollama，数据不出店）</option>
+            <option value="cloud" {{ 'selected' if ai.provider == 'cloud' }}>云端 API（OpenAI 兼容）</option>
+            <option value="off" {{ 'selected' if ai.provider == 'off' }}>关闭（仅规则模式）</option>
+          </select>
+          <div class="form-text">选择「本地」时，云端 Key 仅在本机模型失败时兜底。</div>
+        </div>
+
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label small">Ollama 地址</label>
+            <input class="form-control form-control-sm" name="ai_ollama_base"
+                   value="{{ shop.get('ai_ollama_base', 'http://127.0.0.1:11434') }}">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small">本地模型名</label>
+            <input class="form-control form-control-sm" name="ai_local_model"
+                   value="{{ shop.get('ai_local_model', 'qwen2.5:7b-instruct-q4_K_M') }}">
+          </div>
+          <div class="col-md-6 mt-2">
+            <label class="form-label small">云端 Base URL</label>
+            <input class="form-control form-control-sm" name="ai_cloud_base"
+                   value="{{ shop.get('ai_cloud_base', 'https://api.deepseek.com/v1') }}">
+          </div>
+          <div class="col-md-6 mt-2">
+            <label class="form-label small">云端模型名</label>
+            <input class="form-control form-control-sm" name="ai_cloud_model"
+                   value="{{ shop.get('ai_cloud_model', 'deepseek-chat') }}">
+          </div>
+          <div class="col-12 mt-2">
+            <label class="form-label small">云端 API Key
+              {% if has_key %}<span class="text-success">（已配置，留空则不修改）</span>{% else %}<span class="text-muted">（未配置）</span>{% endif %}
+            </label>
+            <input class="form-control form-control-sm" name="ai_api_key" type="password"
+                   placeholder="sk-...">
+            <div class="form-text">Key 保存在 data/ai_key.txt，不入数据库、不进日志、不会随备份库外流。</div>
+          </div>
+          <div class="col-12 mt-2">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="ai_privacy_mask" id="pm"
+                     {{ 'checked' if shop.get('ai_privacy_mask', '1') == '1' }}>
+              <label class="form-check-label small" for="pm">出网前脱敏（手机号 138****1234、姓名只留姓）</label>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 d-flex gap-2">
+          <button class="btn-ai">保存</button>
+          {% if has_key %}
+          <button class="btn-ai-ghost" name="clear_key" value="1"
+                  onclick="return confirm('确定清除已保存的 Key？')">清除 Key</button>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="panel mb-3">
+      <h6>连通性自检</h6>
+      <table class="table table-sm ai-table mb-0">
+        <tr>
+          <td>本地 Ollama</td>
+          <td class="text-end">
+            {% if probe.local.ok %}<span class="text-success">● 已连接</span>
+            {% else %}<span class="text-danger">● 未连接</span>{% endif %}
+          </td>
+        </tr>
+        <tr><td colspan="2" class="text-muted small">{{ probe.local.msg }}
+          {% if probe.local.models %}<br/>已装模型：{{ probe.local.models|join('、') }}{% endif %}</td></tr>
+        <tr>
+          <td>云端 Key</td>
+          <td class="text-end">
+            {% if probe.cloud.ok %}<span class="text-success">● 可用</span>
+            {% else %}<span class="text-danger">● 不可用</span>{% endif %}
+          </td>
+        </tr>
+        <tr><td colspan="2" class="text-muted small">{{ probe.cloud.msg }}</td></tr>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h6>本地模型怎么装</h6>
+      <ol class="small text-muted ps-3 mb-2" style="line-height:1.9">
+        <li>安装 Ollama：<code>ollama.com/download</code></li>
+        <li>拉模型：<code>ollama pull qwen2.5:7b-instruct-q4_K_M</code>（约 4.7GB）</li>
+        <li>设常驻，避免首次调用冷启动：<br/><code>setx OLLAMA_KEEP_ALIVE -1</code></li>
+        <li>回到本页刷新，看到「已连接」即可</li>
+      </ol>
+      <div class="small text-muted">本机 RTX 5070 / 12GB 显存可稳定跑 7B；无独显时建议改用云端通道。</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

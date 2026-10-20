@@ -4,8 +4,12 @@ import secrets
 import sys
 from pathlib import Path
 
-PORT = 5000          # 局域网访问端口
-FALLBACK_PORT = 5001  # 端口被占用时的备用端口
+PORT = 5100          # 局域网访问端口（与原系统 5000 并存，互不干扰）
+FALLBACK_PORT = 5101  # 端口被占用时的备用端口
+
+APP_NAME = "AI 掌柜"
+APP_SUB = "中小餐饮经营决策 Agent"
+APP_VERSION = "1.0.0-hackathon"
 
 # 路径：打包后（frozen）BASE_DIR = exe 所在目录（可写：data/、uploads/、备份）
 #       RESOURCE_DIR = _MEIPASS（只读：templates/、static/）
@@ -101,4 +105,32 @@ LOW_PRICE_RATIO = 0.6
 
 # 允许的图片扩展名（同时校验文件头）
 ALLOWED_IMG_EXT = {"jpg", "jpeg", "png", "gif", "webp"}
+
+# ---- AI 网关 -----------------------------------------------------------
+# 三级降级：本地 Ollama → 云端 OpenAI 兼容 → 规则/缓存
+# 设计原则：关键路径不依赖模型能力，模型只做"意图判断"和"措辞生成"
+AI_PROVIDERS = ["local", "cloud", "off"]
+AI_PROVIDER_LABEL = {"local": "本地模型", "cloud": "云端 API", "off": "规则模式"}
+DEFAULT_AI_PROVIDER = "local"
+
+OLLAMA_BASE = "http://127.0.0.1:11434"
+DEFAULT_LOCAL_MODEL = "qwen2.5:7b-instruct-q4_K_M"
+DEFAULT_CLOUD_BASE = "https://api.deepseek.com/v1"
+DEFAULT_CLOUD_MODEL = "deepseek-chat"
+
+AI_TIMEOUT = 45          # 单次请求超时（秒）
+AI_CONNECT_TIMEOUT = 8   # 本地探测超时，失败立刻降级，不卡演示
+AI_MAX_TOKENS = 900
+AI_TEMPERATURE = 0.2
+AI_CACHE_TTL = 600       # 相同问题缓存 10 分钟
+AI_DAILY_TOKEN_BUDGET = 300000   # 每日 token 上限，超出降级为规则模式
+AI_KEY_FILE = DATA_DIR / "ai_key.txt"   # API Key 单独存放，不入库、不进日志
+
+# ---- 分析口径 ----------------------------------------------------------
+ANALYSIS_WINDOW = 30        # 默认分析窗口（天）
+FORECAST_HORIZON = 7        # 预测天数
+FORECAST_MIN_DAYS = 21      # 少于该天数改用均值×星期因子
+LOW_STOCK_DAYS = 2.0        # 可支撑天数低于该值判定为缺货风险
+INSIGHT_TOP_N = 5           # 驾驶舱展示的洞察条数
+RULE_ONLY_HINT = "当前为规则模式（未连接模型），结论由确定性规则生成"
 

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}客流时段 · {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="ai-head">
+  <div>
+    <h4>客流时段</h4>
+    <div class="sub">用来排班、备料和决定「什么时候推哪道菜」 · 桌位 {{ seats }} 个</div>
+  </div>
+  <form method="get">
+    <select name="days" class="form-select form-select-sm" onchange="this.form.submit()">
+      {% for d in [14, 30, 60] %}<option value="{{ d }}" {{ 'selected' if days == d }}>近 {{ d }} 天</option>{% endfor %}
+    </select>
+  </form>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="panel">
+      <h6>一天中哪个时段最忙</h6>
+      <div id="hour" class="chart"></div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="panel">
+      <h6>一周中哪天最忙 <span>均值</span></h6>
+      <div id="dow" class="chart"></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel mt-3">
+  <h6>逐日翻台率 <span>= 结算单数 ÷ 桌位数</span></h6>
+  <div class="table-responsive" style="max-height:360px;overflow:auto">
+    <table class="table table-sm ai-table mb-0">
+      <thead><tr><th>日期</th><th class="text-end">单数</th><th class="text-end">客流</th>
+        <th class="text-end">营收</th><th class="text-end">翻台率</th></tr></thead>
+      <tbody>
+      {% for r in daily|reverse %}
+      <tr><td>{{ r['d'] }}</td><td class="text-end">{{ r['orders'] }}</td>
+          <td class="text-end">{{ r['persons'] }}</td>
+          <td class="text-end">{{ '{:,.0f}'.format(r['revenue']) }}</td>
+          <td class="text-end {% if r['turnover'] and r['turnover'] >= 2.5 %}text-danger fw-bold{% endif %}">{{ r['turnover'] }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ai.js') }}"></script>
+<script>
+const hours = {{ hours|tojson }};
+const dow = {{ dow|tojson }};
+AI.bar(document.getElementById('hour'), hours.map(h => h.hour + '时'), hours.map(h => h.orders),
+       { color: '#4c4ddc' });
+AI.bar(document.getElementById('dow'), dow.map(d => d.weekday), dow.map(d => d.avg_orders),
+       { color: '#7f77dd' });
+</script>
+{% endblock %}

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""春归燕茶餐厅餐饮管理系统 — 唯一入口
+"""AI 掌柜 · 中小餐饮经营 Agent — 唯一入口
 启动：python app.py（或 start.bat）
 自动：初始化数据目录/数据库、应用待恢复备份、打印局域网 IP、打开浏览器
 """
@@ -45,7 +45,8 @@ def create_app():
     # 所有模板可直接使用 shop（店铺设置）与 lan_ip（局域网地址）
     @app.context_processor
     def inject_globals():
-        return {"shop": utils.get_settings(), "lan_ip": utils.lan_ip()}
+        return {"shop": utils.get_settings(), "lan_ip": utils.lan_ip(),
+                "app_name": config.APP_NAME, "app_sub": config.APP_SUB}
 
     # ---- 登录 ----
     @app.route("/admin/login", methods=["GET", "POST"])
@@ -89,15 +90,26 @@ def create_app():
     from blueprints.reservations_bp import bp as reservations_bp
     from blueprints.reports_bp import bp as reports_bp
     from blueprints.employees_bp import bp as employees_bp
+    from blueprints.ai_bp import bp as ai_bp, api as ai_api_bp
+    from blueprints.analytics_bp import bp as analytics_bp
+    from blueprints.purchase_bp import bp as purchase_bp
     app.register_blueprint(mobile_bp)
+    app.register_blueprint(ai_api_bp, url_prefix="/api/ai")
     for bp in (settings_bp, dishes_bp, orders_bp, cashier_bp,
-               members_bp, reservations_bp, reports_bp, employees_bp):
+               members_bp, reservations_bp, reports_bp, employees_bp,
+               ai_bp, analytics_bp, purchase_bp):
         app.register_blueprint(bp, url_prefix="/admin")
 
-    # ---- Dashboard（登录后首页） ----
+    # ---- 登录后首页：AI 驾驶舱 ----
     @app.route("/admin")
     @admin_required
     def dashboard():
+        return redirect(url_for("ai.dashboard"))
+
+    # ---- 原有的运营首页（保留，作为「执行层」入口） ----
+    @app.route("/admin/ops")
+    @admin_required
+    def ops_dashboard():
         conn = db.get_db()
         s = utils.get_settings()
         today = utils.today_str()
@@ -198,7 +210,7 @@ def main():
         auto_open = utils.get_setting("auto_open_browser", "1") == "1"
 
     print("=" * 56)
-    print("  春归燕茶餐厅餐饮管理系统")
+    print("  AI 掌柜 · 中小餐饮经营 Agent")
     print("=" * 56)
     if _is_elevated():
         # 以管理员身份运行会把浏览器也拉成高权限实例，之后普通启动就会

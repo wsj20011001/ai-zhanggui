@@ -3,34 +3,45 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}春归燕茶餐厅{% endblock %}</title>
+<title>{% block title %}AI 掌柜{% endblock %}</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/bootstrap.min.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ai.css') }}">
 </head>
 <body class="admin-body">
 <div class="d-flex">
   <nav class="sidebar d-flex flex-column flex-shrink-0">
-    <div class="sidebar-brand">{{ shop.shop_name if shop is defined else '春归燕茶餐厅' }}</div>
+    <div class="sidebar-brand">{{ app_name if app_name is defined else 'AI 掌柜' }}
+      <div class="brand-sub">{{ shop.shop_name if shop is defined else '' }}</div>
+    </div>
     <ul class="nav nav-pills flex-column mb-auto">
-      <li><a class="nav-link {% if active_nav == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">🏠 首页</a></li>
+      <li class="nav-label">智能运营</li>
+      <li><a class="nav-link {% if active_nav == 'ai' %}active{% endif %}" href="{{ url_for('ai.dashboard') }}">🧠 AI 驾驶舱</a></li>
+      <li><a class="nav-link {% if active_nav == 'ai_chat' %}active{% endif %}" href="{{ url_for('ai.chat_page') }}">💬 经营问答</a></li>
+      <li><a class="nav-link {% if active_nav == 'ai_insights' %}active{% endif %}" href="{{ url_for('ai.insight_list') }}">🔍 洞察中心</a></li>
+      <li><a class="nav-link {% if active_nav == 'purchase' %}active{% endif %}" href="{{ url_for('purchase.purchase_list') }}">🧾 采购单</a></li>
+      <li class="nav-label">数据分析</li>
+      <li><a class="nav-link {% if active_nav == 'ana_overview' %}active{% endif %}" href="{{ url_for('analytics.overview') }}">📈 经营总览</a></li>
+      <li><a class="nav-link {% if active_nav == 'ana_dishes' %}active{% endif %}" href="{{ url_for('analytics.dishes') }}">🍽️ 菜品工程</a></li>
+      <li><a class="nav-link {% if active_nav == 'ana_traffic' %}active{% endif %}" href="{{ url_for('analytics.traffic') }}">⏰ 客流时段</a></li>
+      <li><a class="nav-link {% if active_nav == 'ana_forecast' %}active{% endif %}" href="{{ url_for('analytics.forecast') }}">📦 预测备货</a></li>
+      <li><a class="nav-link {% if active_nav == 'ana_members' %}active{% endif %}" href="{{ url_for('analytics.members') }}">💳 会员资产</a></li>
+      <li class="nav-label">门店执行</li>
+      <li><a class="nav-link {% if active_nav == 'dashboard' %}active{% endif %}" href="{{ url_for('ops_dashboard') }}">🏠 运营首页</a></li>
       <li><a class="nav-link {% if active_nav == 'cashier' %}active{% endif %}" href="{{ url_for('cashier.cashier') }}">💰 收银结算</a></li>
       <li><a class="nav-link {% if active_nav == 'orders' %}active{% endif %}" href="{{ url_for('orders.orders') }}">📋 订单管理</a></li>
       <li><a class="nav-link" href="{{ url_for('orders.orders_history') }}">🕘 历史订单</a></li>
       <li><a class="nav-link {% if active_nav == 'tables' %}active{% endif %}" href="{{ url_for('settings.tables') }}">🪑 桌台管理</a></li>
-      <li><a class="nav-link {% if active_nav == 'dishes' %}active{% endif %}" href="{{ url_for('dishes.dishes') }}">🍽️ 菜品管理</a></li>
-      <li><a class="nav-link {% if active_nav == 'categories' %}active{% endif %}" href="{{ url_for('dishes.categories') }}">🍱 分类管理</a></li>
-      <li><a class="nav-link {% if active_nav == 'members' %}active{% endif %}" href="{{ url_for('members.members') }}">💳 会员管理</a></li>
-      <li><a class="nav-link {% if active_nav == 'reservations' %}active{% endif %}" href="{{ url_for('reservations.reservations') }}">📅 预订管理</a></li>
+      <li><a class="nav-link {% if active_nav == 'dishes' %}active{% endif %}" href="{{ url_for('dishes.dishes') }}">🍜 菜品管理</a></li>
+      <li><a class="nav-link {% if active_nav == 'members' %}active{% endif %}" href="{{ url_for('members.members') }}">👥 会员管理</a></li>
       <li><a class="nav-link" href="{{ url_for('dishes.recipes_import') }}">🧾 配方管理</a></li>
       <li><a class="nav-link {% if active_nav == 'stock' %}active{% endif %}" href="{{ url_for('reports.stock') }}">📦 库存管理</a></li>
-      <li class="nav-label">经营报表</li>
+      <li class="nav-label">报表与设置</li>
       <li><a class="nav-link {% if active_nav == 'report_daily' %}active{% endif %}" href="{{ url_for('reports.reports_daily') }}">📊 营收报表</a></li>
-      <li><a class="nav-link" href="{{ url_for('reports.reports_dishes') }}">🍗 菜品销量</a></li>
-      <li><a class="nav-link" href="{{ url_for('reports.reports_tables') }}">🪑 桌台客流</a></li>
       <li><a class="nav-link" href="{{ url_for('reports.reports_profit') }}">💹 成本毛利</a></li>
       <li><a class="nav-link" href="{{ url_for('reports.banquet') }}">🍽️ 宴席排菜</a></li>
-      <li class="nav-label">系统设置</li>
-      <li><a class="nav-link {% if active_nav == 'settings' %}active{% endif %}" href="{{ url_for('settings.settings') }}">⚙️ 店铺设置</a></li>
+      <li><a class="nav-link {% if active_nav == 'ai_settings' %}active{% endif %}" href="{{ url_for('ai.ai_settings') }}">⚙️ 模型设置</a></li>
+      <li><a class="nav-link {% if active_nav == 'settings' %}active{% endif %}" href="{{ url_for('settings.settings') }}">🏪 店铺设置</a></li>
       <li><a class="nav-link {% if active_nav == 'employees' %}active{% endif %}" href="{{ url_for('employees.employees') }}">👥 员工管理</a></li>
       <li><a class="nav-link" href="{{ url_for('employees.logs') }}">🕵️ 操作日志</a></li>
       <li><a class="nav-link" href="{{ url_for('settings.backup') }}">💾 数据备份</a></li>
@@ -39,7 +50,7 @@
   </nav>
   <div class="main-area flex-grow-1">
     <div class="topbar d-flex justify-content-between align-items-center">
-      <div>📶 点餐端地址：<code>http://{{ lan_ip }}:5000</code> <span class="text-muted small">（手机连同一 WiFi 打开）</span></div>
+      <div>📶 点餐端地址：<code>http://{{ lan_ip }}:5100</code> <span class="text-muted small">（手机连同一 WiFi 打开）</span></div>
       <div><span class="me-3">{{ shop.shop_name if shop is defined else '' }}</span><a class="btn btn-sm btn-outline-secondary" href="{{ url_for('logout') }}">退出登录</a></div>
     </div>
     <div class="content p-3">

@@ -18,7 +18,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="春归燕茶餐厅",
+    name="AI掌柜",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -37,5 +37,5 @@ coll = COLLECT(
     strip=False,
     upx=False,
     upx_exclude=[],
-    name="春归燕茶餐厅",
+    name="AI掌柜",
 )

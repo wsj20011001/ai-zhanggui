@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}经营总览 · {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="ai-head">
+  <div>
+    <h4>经营总览</h4>
+    <div class="sub">近 {{ days }} 天对比上一个 {{ days }} 天 · 所有数字与收银、AI 问答同源</div>
+  </div>
+  <form method="get" class="d-flex gap-2">
+    <select name="days" class="form-select form-select-sm" onchange="this.form.submit()">
+      {% for d in [7, 14, 30, 60, 90] %}
+      <option value="{{ d }}" {{ 'selected' if days == d }}>近 {{ d }} 天</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3"><div class="kpi">
+    <div class="lb">营收</div>
+    <div class="v">{{ '{:,.0f}'.format(k.revenue) }}<small>元</small></div>
+    <div class="d {% if d_revenue < 0 %}down{% else %}up{% endif %}">环比 {{ '%+.1f'|format(d_revenue*100) }}%</div>
+  </div></div>
+  <div class="col-6 col-lg-3"><div class="kpi">
+    <div class="lb">结算单数</div>
+    <div class="v">{{ k.orders }}<small>单</small></div>
+    <div class="d {% if d_orders < 0 %}down{% else %}up{% endif %}">环比 {{ '%+.1f'|format(d_orders*100) }}%</div>
+  </div></div>
+  <div class="col-6 col-lg-3"><div class="kpi">
+    <div class="lb">客单价</div>
+    <div class="v">{{ '%.0f'|format(k.avg_price) }}<small>元</small></div>
+    <div class="d {% if d_avg < 0 %}down{% else %}up{% endif %}">环比 {{ '%+.1f'|format(d_avg*100) }}%</div>
+  </div></div>
+  <div class="col-6 col-lg-3"><div class="kpi">
+    <div class="lb">毛利率</div>
+    <div class="v">{{ '%.1f'|format(k.margin_rate*100) }}<small>%</small></div>
+    <div class="d {% if d_margin < 0 %}down{% else %}up{% endif %}">环比 {{ '%+.1f'|format(d_margin*100) }}pt</div>
+  </div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="panel">
+      <h6>营收与毛利 <span>日均 {{ '{:,.0f}'.format(k.revenue/days) }} 元 · 翻台 {{ turnover }} 次/日（{{ seats }} 座）</span></h6>
+      <div id="trend" class="chart"></div>
+    </div>
+    <div class="row g-3 mt-0">
+      <div class="col-md-6">
+        <div class="panel mt-3">
+          <h6>分类贡献</h6>
+          <div id="cat" class="chart"></div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="panel mt-3">
+          <h6>时段客流</h6>
+          <div id="hour" class="chart"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="panel">
+      <h6>支付结构</h6>
+      <div id="pay" class="chart-sm"></div>
+      <table class="table table-sm ai-table mb-0 mt-2">
+        {% for p in pays %}
+        <tr><td>{{ pay_label.get(p['pay_method'], p['pay_method']) }}</td>
+            <td class="text-end">{{ '{:,.0f}'.format(p['amount']) }}</td>
+            <td class="text-end text-muted">{{ '%.0f'|format(p['amount']/k.revenue*100) if k.revenue else 0 }}%</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="panel mt-3">
+      <h6>与上期对比</h6>
+      <table class="table table-sm ai-table mb-0">
+        <tbody>
+        <tr><td>营收</td><td class="text-end">{{ '{:,.0f}'.format(prev.revenue) }}</td><td class="text-end">{{ '{:,.0f}'.format(k.revenue) }}</td></tr>
+        <tr><td>单数</td><td class="text-end">{{ prev.orders }}</td><td class="text-end">{{ k.orders }}</td></tr>
+        <tr><td>客单价</td><td class="text-end">{{ '%.0f'|format(prev.avg_price) }}</td><td class="text-end">{{ '%.0f'|format(k.avg_price) }}</td></tr>
+        <tr><td>毛利率</td><td class="text-end">{{ '%.1f'|format(prev.margin_rate*100) }}%</td><td class="text-end">{{ '%.1f'|format(k.margin_rate*100) }}%</td></tr>
+        <tr><td>折扣率</td><td class="text-end">{{ '%.1f'|format(prev.discount_rate*100) }}%</td><td class="text-end">{{ '%.1f'|format(k.discount_rate*100) }}%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ai.js') }}"></script>
+<script>
+const trend = {{ trend|tojson }};
+const cats = {{ cats|tojson }};
+const pays = {{ pays|tojson }};
+const hours = {{ hours|tojson }};
+
+AI.line(document.getElementById('trend'), trend.map(x => x.d.slice(5)), trend.map(x => x.revenue));
+AI.bar(document.getElementById('cat'), cats.map(c => c.category), cats.map(c => Math.round(c.amount)),
+       { horizontal: false, rotate: 20 });
+AI.bar(document.getElementById('hour'), hours.map(h => h.hour + '时'), hours.map(h => h.orders),
+       { color: '#7f77dd' });
+AI.pie(document.getElementById('pay'), pays.map(p => ({ name: p.pay_method, value: Math.round(p.amount) })));
+</script>
+{% endblock %}

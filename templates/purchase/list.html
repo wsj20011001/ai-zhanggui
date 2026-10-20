@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}采购单 · {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="ai-head">
+  <div>
+    <h4>采购单</h4>
+    <div class="sub">AI 建议生成的单子是草稿，人工确认后才入库 —— 关键动作永远留人在环</div>
+  </div>
+  <a class="btn-ai" href="{{ url_for('analytics.forecast') }}">从预测生成</a>
+</div>
+
+<div class="panel">
+  <table class="table table-sm ai-table mb-0">
+    <thead><tr><th>单号</th><th>来源</th><th class="text-end">项数</th><th class="text-end">金额</th>
+      <th>状态</th><th>创建时间</th><th></th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>PO#{{ r['id'] }}</td>
+      <td class="text-muted">{{ 'AI 建议' if r['source'] == 'ai' else '手工' }}</td>
+      <td class="text-end">{{ r['n'] }}</td>
+      <td class="text-end">{{ '{:,.2f}'.format(r['total_cost']) }}</td>
+      <td>
+        {% if r['status'] == 'received' %}<span class="text-success">已入库</span>
+        {% elif r['status'] == 'cancelled' %}<span class="text-muted">已作废</span>
+        {% else %}<span class="text-warning">待确认</span>{% endif %}
+      </td>
+      <td class="text-muted">{{ r['created_at'][:16] }}</td>
+      <td class="text-end"><a class="small" href="{{ url_for('purchase.purchase_detail', po_id=r['id']) }}">查看</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="text-center text-muted py-4">还没有采购单，去「预测备货」生成一张</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

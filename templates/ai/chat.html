@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}经营问答 · {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="ai-head">
+  <div>
+    <h4>经营问答</h4>
+    <div class="sub">问老板会问的问题。数字由 SQL 算出，模型只负责理解问题与解释结论。</div>
+  </div>
+  <span class="ai-badge {% if ai.provider == 'off' %}warn{% endif %}">
+    <span class="dot"></span>{{ ai.label }}{% if ai.provider == 'local' %} · 数据不出店{% endif %}</span>
+</div>
+
+<div class="chat-wrap">
+  <div class="chat-box">
+    <div class="chat-input">
+      <input id="q" class="form-control" placeholder="例如：上月哪 5 道菜毛利最高？"
+             autocomplete="off">
+      <button class="btn btn-ai" id="askBtn">问</button>
+    </div>
+    <div class="chat-chips">
+      <span>近 30 天营收趋势</span>
+      <span>上个月哪 5 道菜毛利最高</span>
+      <span>最近哪天客流最高</span>
+      <span>现在哪些食材快没了</span>
+      <span>会员里谁消费最多</span>
+      <span>最近折扣是不是变多了</span>
+    </div>
+  </div>
+
+  <div id="loading" class="mt-3 d-none"><div class="loading-bar"></div>
+    <div class="small text-muted mt-2">正在取数…（模型理解问题 → 生成 SQL → 沙箱校验 → 执行）</div></div>
+
+  <div id="answer" class="answer"></div>
+
+  {% if hist %}
+  <div class="panel mt-4">
+    <h6>最近问过 <span>可点开重看 SQL</span></h6>
+    <table class="table table-sm ai-table mb-0">
+      <thead><tr><th>问题</th><th>结论</th><th class="text-end">行数</th><th class="text-end">时间</th></tr></thead>
+      <tbody>
+      {% for h in hist %}
+        <tr>
+          <td style="max-width:260px">{{ h.question }}</td>
+          <td class="text-muted" style="max-width:340px">{{ (h.answer or '')[:48] }}</td>
+          <td class="text-end">{{ h.rows_count }}</td>
+          <td class="text-end text-muted">{{ h.created_at[5:16] }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ai.js') }}"></script>
+<script>
+const input = document.getElementById('q');
+const btn = document.getElementById('askBtn');
+let chartObj = null;
+
+document.querySelectorAll('.chat-chips span').forEach(s => {
+  s.onclick = () => { input.value = s.textContent.trim(); ask(); };
+});
+btn.onclick = ask;
+input.addEventListener('keydown', e => { if (e.key === 'Enter') ask(); });
+
+const init = new URLSearchParams(location.search).get('q');
+if (init) { input.value = init; ask(); }
+
+async function ask() {
+  const q = input.value.trim();
+  if (!q) return;
+  document.getElementById('loading').classList.remove('d-none');
+  document.getElementById('answer').innerHTML = '';
+  btn.disabled = true;
+  try {
+    const r = await AI.post('/api/ai/ask', { q });
+    document.getElementById('loading').classList.add('d-none');
+    if (!r.ok) { AI.toast(r.msg || '查询失败', 'bad'); return; }
+    render(r.data);
+  } catch (e) {
+    document.getElementById('loading').classList.add('d-none');
+    AI.toast('网络异常：' + e, 'bad');
+  } finally { btn.disabled = false; }
+}
+
+function fmt(v) {
+  if (typeof v === 'number') {
+    return Number.isInteger(v) ? v.toLocaleString() : v.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  }
+  return v === null || v === undefined ? '' : v;
+}
+
+function render(d) {
+  const numeric = d.columns.filter((c, i) => i > 0 && typeof (d.rows[0] || {})[c] === 'number');
+  const head = `<div class="panel">
+    <div class="q">${d.title}</div>
+    ${d.insight ? `<div class="insight-line">${d.insight}</div>` : ''}
+    <div id="chart" class="chart"></div>
+    <table class="table table-sm ai-table mt-2"><thead><tr>
+      ${d.columns.map(c => `<th>${c}</th>`).join('')}
+    </tr></thead><tbody>
+      ${d.rows.slice(0, 50).map(row => `<tr>${d.columns.map(c => `<td>${fmt(row[c])}</td>`).join('')}</tr>`).join('')}
+    </tbody></table>
+    <details class="sqlbox"><summary>查看这条结论用到的 SQL 与执行信息</summary>
+      <pre>${d.sql}</pre>
+      <div class="meta mt-2">通道：${d.provider}${d.model ? ' / ' + d.model : ''} · 返回 ${d.rows.length} 行 ·
+        耗时 ${d.latency_ms} ms · 视图 ${d.view || '-'} ${d.rule ? '· 规则路径' : ''}
+        ${d.fallback_reason ? '<br/>降级原因：' + d.fallback_reason : ''}</div>
+    </details>
+  </div>`;
+  document.getElementById('answer').innerHTML = head;
+
+  const el = document.getElementById('chart');
+  if (!d.rows.length) { el.innerHTML = '<div class="empty">没有符合条件的数据</div>'; return; }
+  if (chartObj) { chartObj.dispose(); chartObj = null; }
+  const x = d.rows.map(r => String(r[d.columns[0]]).slice(0, 12));
+  if (d.chart === 'line' && numeric.length) {
+    chartObj = echarts.init(el);
+    chartObj.setOption({
+      color: ['#4c4ddc', '#1d9e75', '#ef9f27'],
+      grid: { left: 8, right: 16, top: 16, bottom: 6, containLabel: true },
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#e3e5f2', textStyle: { color: '#2b2f4a', fontSize: 12 } },
+      legend: { top: 0, right: 0, icon: 'circle', itemWidth: 8, itemHeight: 8, textStyle: { fontSize: 11 } },
+      xAxis: { type: 'category', data: x, boundaryGap: false,
+               axisLine: { lineStyle: { color: '#e3e5f2' } }, axisTick: { show: false },
+               axisLabel: { color: '#8a92a2', fontSize: 11 } },
+      yAxis: { type: 'value', axisLine: { show: false }, axisTick: { show: false },
+               axisLabel: { color: '#8a92a2', fontSize: 11 }, splitLine: { lineStyle: { color: '#f2f3f9' } } },
+      series: numeric.slice(0, 3).map(c => ({
+        name: c, type: 'line', smooth: true, symbol: 'none', showSymbol: false,
+        lineStyle: { width: 2.2 }, areaStyle: { opacity: .12 }, data: d.rows.map(r => r[c]) })),
+    });
+  } else if (d.chart === 'bar' && numeric.length) {
+    chartObj = echarts.init(el);
+    const vals = d.rows.map(r => r[numeric[0]]);
+    chartObj.setOption({
+      grid: { left: 8, right: 16, top: 16, bottom: 6, containLabel: true },
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#e3e5f2', textStyle: { color: '#2b2f4a', fontSize: 12 } },
+      xAxis: { type: 'category', data: x, axisLine: { lineStyle: { color: '#e3e5f2' } }, axisTick: { show: false },
+               axisLabel: { color: '#8a92a2', fontSize: 11, interval: 0,
+                            formatter: v => v.length > 5 ? v.slice(0, 5) + '…' : v } },
+      yAxis: { type: 'value', axisLine: { show: false }, axisTick: { show: false },
+               axisLabel: { color: '#8a92a2', fontSize: 11 }, splitLine: { lineStyle: { color: '#f2f3f9' } } },
+      series: [{ type: 'bar', data: vals, barMaxWidth: 24,
+                 itemStyle: { color: '#4c4ddc', borderRadius: [5, 5, 0, 0] } }],
+    });
+  } else if (d.chart === 'pie' && numeric.length) {
+    chartObj = echarts.init(el);
+    chartObj.setOption({
+      color: ['#4c4ddc', '#7f77dd', '#1d9e75', '#ef9f27', '#d4537e'],
+      tooltip: { trigger: 'item' },
+      legend: { bottom: 0, icon: 'circle', itemWidth: 8, itemHeight: 8, textStyle: { fontSize: 11 } },
+      series: [{ type: 'pie', radius: ['42%', '66%'], center: ['50%', '44%'], label: { show: false },
+                 itemStyle: { borderColor: '#fff', borderWidth: 2 },
+                 data: d.rows.map(r => ({ name: String(r[d.columns[0]]), value: r[numeric[0]] })) }],
+    });
+  } else {
+    el.style.height = '0';
+  }
+}
+</script>
+{% endblock %}

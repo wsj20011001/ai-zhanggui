@@ -7,7 +7,7 @@ from flask import g
 from config import DB_PATH
 from utils import make_pwd_hash, now_str
 
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 7
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS settings (
@@ -233,6 +233,198 @@ CREATE TABLE IF NOT EXISTS stock_movements (
     created_at    TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_movements_ing ON stock_movements(ingredient_id);
+
+-- ===================== 分析层：预聚合事实表 =====================
+CREATE TABLE IF NOT EXISTS daily_facts (
+    d             TEXT PRIMARY KEY,          -- YYYY-MM-DD
+    revenue       REAL NOT NULL DEFAULT 0,
+    orders        INTEGER NOT NULL DEFAULT 0,
+    persons       INTEGER NOT NULL DEFAULT 0,
+    discount      REAL NOT NULL DEFAULT 0,
+    cost          REAL NOT NULL DEFAULT 0,
+    profit        REAL NOT NULL DEFAULT 0,
+    member_orders INTEGER NOT NULL DEFAULT 0,
+    lunch_revenue REAL NOT NULL DEFAULT 0,   -- 11:00-15:59
+    dinner_revenue REAL NOT NULL DEFAULT 0,  -- 16:00-23:59
+    built_at      TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS dish_daily_facts (
+    d        TEXT NOT NULL,
+    dish_id  INTEGER NOT NULL,
+    name     TEXT NOT NULL,
+    category TEXT NOT NULL DEFAULT '',
+    qty      INTEGER NOT NULL DEFAULT 0,
+    amount   REAL NOT NULL DEFAULT 0,
+    cost     REAL NOT NULL DEFAULT 0,
+    profit   REAL NOT NULL DEFAULT 0,
+    PRIMARY KEY (d, dish_id)
+);
+CREATE INDEX IF NOT EXISTS idx_ddf_dish ON dish_daily_facts(dish_id);
+CREATE TABLE IF NOT EXISTS hour_facts (
+    d       TEXT NOT NULL,
+    hour    INTEGER NOT NULL,
+    orders  INTEGER NOT NULL DEFAULT 0,
+    persons INTEGER NOT NULL DEFAULT 0,
+    revenue REAL NOT NULL DEFAULT 0,
+    PRIMARY KEY (d, hour)
+);
+
+-- ===================== AI 层：留痕与决策闭环 =====================
+CREATE TABLE IF NOT EXISTS ai_conversations (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    question   TEXT NOT NULL,
+    answer     TEXT DEFAULT '',
+    sql        TEXT DEFAULT '',
+    view_name  TEXT DEFAULT '',
+    rows_count INTEGER NOT NULL DEFAULT 0,
+    provider   TEXT DEFAULT '',
+    model      TEXT DEFAULT '',
+    prompt_tokens  INTEGER NOT NULL DEFAULT 0,
+    output_tokens  INTEGER NOT NULL DEFAULT 0,
+    latency_ms INTEGER NOT NULL DEFAULT 0,
+    ok         INTEGER NOT NULL DEFAULT 1,
+    error      TEXT DEFAULT '',
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_ai_conv_time ON ai_conversations(created_at);
+
+CREATE TABLE IF NOT EXISTS ai_insights (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    d              TEXT NOT NULL,
+    type           TEXT NOT NULL,          -- revenue_drop / slow_dish / margin / stock / discount
+    severity       TEXT NOT NULL DEFAULT 'info',  -- critical / warning / info
+    title          TEXT NOT NULL,
+    detail         TEXT DEFAULT '',
+    evidence       TEXT DEFAULT '{}',      -- JSON：指标、当前值、基线、阈值、SQL
+    suggestion     TEXT DEFAULT '',
+    action_type    TEXT DEFAULT '',        -- purchase / price / promote / none
+    action_payload TEXT DEFAULT '{}',
+    status         TEXT NOT NULL DEFAULT 'open',  -- open / done / ignored
+    ai_written     INTEGER NOT NULL DEFAULT 0,    -- 1=文案由模型润色
+    created_at     TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_insight_d ON ai_insights(d);
+CREATE INDEX IF NOT EXISTS idx_insight_status ON ai_insights(status);
+
+CREATE TABLE IF NOT EXISTS ai_actions (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    insight_id    INTEGER DEFAULT NULL,
+    action_type   TEXT NOT NULL,
+    payload       TEXT DEFAULT '{}',
+    before_json   TEXT DEFAULT '{}',       -- 执行前快照，用于一键撤销
+    executed_at   TEXT NOT NULL,
+    undone_at     TEXT DEFAULT NULL,
+    check_after_days INTEGER NOT NULL DEFAULT 7,
+    baseline_value REAL DEFAULT 0,
+    result_value   REAL DEFAULT NULL,
+    verdict        TEXT DEFAULT ''          -- effective / ineffective / pending
+);
+CREATE INDEX IF NOT EXISTS idx_actions_time ON ai_actions(executed_at);
+
+CREATE TABLE IF NOT EXISTS purchase_orders (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    status     TEXT NOT NULL DEFAULT 'draft',   -- draft / confirmed / received
+    source     TEXT NOT NULL DEFAULT 'ai',      -- ai / manual
+    note       TEXT DEFAULT '',
+    total_cost REAL NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL,
+    received_at TEXT DEFAULT NULL
+);
+CREATE TABLE IF NOT EXISTS purchase_items (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    po_id         INTEGER NOT NULL REFERENCES purchase_orders(id),
+    ingredient_id INTEGER NOT NULL REFERENCES ingredients(id),
+    name          TEXT NOT NULL,
+    unit          TEXT DEFAULT '',
+    qty           REAL NOT NULL DEFAULT 0,
+    unit_cost     REAL NOT NULL DEFAULT 0,
+    amount        REAL NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS idx_po_items ON purchase_items(po_id);
+
+CREATE TABLE IF NOT EXISTS ai_cache (
+    k          TEXT PRIMARY KEY,     -- sha256(model + messages)
+    v          TEXT NOT NULL,
+    hit        INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL
+);
+
+-- ===================== 只读语义视图（AI 唯一可见范围）=====================
+CREATE VIEW IF NOT EXISTS v_sales_daily AS
+SELECT d,
+       CASE CAST(strftime('%w', d) AS INTEGER)
+            WHEN 0 THEN '周日' WHEN 1 THEN '周一' WHEN 2 THEN '周二'
+            WHEN 3 THEN '周三' WHEN 4 THEN '周四' WHEN 5 THEN '周五'
+            ELSE '周六' END AS weekday,
+       revenue, orders, persons,
+       CASE WHEN orders > 0 THEN ROUND(revenue / orders, 2) ELSE 0 END AS avg_price,
+       discount,
+       CASE WHEN revenue + discount > 0
+            THEN ROUND(discount / (revenue + discount), 4) ELSE 0 END AS discount_rate,
+       cost, profit,
+       CASE WHEN revenue > 0 THEN ROUND(profit / revenue, 4) ELSE 0 END AS margin_rate,
+       member_orders,
+       CASE WHEN orders > 0 THEN ROUND(1.0 * member_orders / orders, 4) ELSE 0 END AS member_rate
+FROM daily_facts;
+
+CREATE VIEW IF NOT EXISTS v_dish_sales AS
+SELECT f.d,
+       f.dish_id,
+       f.name,
+       f.category,
+       f.qty,
+       f.amount,
+       f.cost,
+       f.profit,
+       CASE WHEN f.amount > 0 THEN ROUND(f.profit / f.amount, 4) ELSE 0 END AS margin_rate
+FROM dish_daily_facts f;
+
+CREATE VIEW IF NOT EXISTS v_category_sales AS
+SELECT d, category,
+       SUM(qty) AS qty, ROUND(SUM(amount), 2) AS amount,
+       ROUND(SUM(cost), 2) AS cost, ROUND(SUM(profit), 2) AS profit
+FROM dish_daily_facts GROUP BY d, category;
+
+CREATE VIEW IF NOT EXISTS v_hour_traffic AS
+SELECT d, hour, orders, persons, revenue FROM hour_facts;
+
+CREATE VIEW IF NOT EXISTS v_pay_daily AS
+SELECT substr(COALESCE(settled_at, created_at), 1, 10) AS d,
+       pay_method,
+       COUNT(*) AS orders,
+       ROUND(SUM(final_amount), 2) AS amount
+FROM orders
+WHERE status = 'settled'
+GROUP BY substr(COALESCE(settled_at, created_at), 1, 10), pay_method;
+
+CREATE VIEW IF NOT EXISTS v_dish_menu AS
+SELECT d.id AS dish_id, d.name, c.name AS category, d.price,
+       d.on_sale, d.price_mode, d.is_seasonal, d.season,
+       ROUND(COALESCE(rc.cost, 0), 2) AS cost,
+       CASE WHEN d.price > 0 AND rc.cost IS NOT NULL
+            THEN ROUND((d.price - rc.cost) / d.price, 4) ELSE NULL END AS margin_rate,
+       CASE WHEN rc.cost IS NULL THEN 0 ELSE 1 END AS has_recipe
+FROM dishes d
+JOIN categories c ON c.id = d.category_id
+LEFT JOIN (
+    SELECT r.dish_id, SUM(r.qty * i.cost) AS cost
+    FROM dish_recipes r JOIN ingredients i ON i.id = r.ingredient_id
+    GROUP BY r.dish_id
+) rc ON rc.dish_id = d.id;
+
+CREATE VIEW IF NOT EXISTS v_stock_status AS
+SELECT i.id AS ingredient_id, i.name, i.unit, i.stock, i.warn_threshold,
+       i.cost, ROUND(i.stock * i.cost, 2) AS stock_value, i.expire_at,
+       CASE WHEN i.stock < i.warn_threshold THEN 1 ELSE 0 END AS below_warn
+FROM ingredients i;
+
+CREATE VIEW IF NOT EXISTS v_member_rank AS
+SELECT m.id AS member_id, m.name, m.level, m.balance, m.points,
+       ROUND(m.total_spend, 2) AS total_spend,
+       m.last_visit_at,
+       (SELECT COUNT(*) FROM orders o
+         WHERE o.member_id = m.id AND o.status = 'settled') AS visit_count
+FROM members m;
 """
 
 DEFAULT_SETTINGS = {
@@ -250,6 +442,16 @@ DEFAULT_SETTINGS = {
     "auto_open_browser": "1",      # 启动时自动打开浏览器
     "rec_mode": "balanced",        # 点餐端「今日主推」策略
     "stock_block_order": "0",      # 1=原料不足时直接拦截下单
+    # ---- AI 掌柜 ----
+    "ai_provider": "local",        # local=本地Ollama / cloud=云端API / off=仅规则
+    "ai_local_model": "qwen2.5:7b-instruct-q4_K_M",
+    "ai_cloud_base": "https://api.deepseek.com/v1",
+    "ai_cloud_model": "deepseek-chat",
+    "ai_privacy_mask": "1",        # 1=手机号/姓名脱敏后才允许出网
+    "ai_daily_budget": "300000",   # 每日 token 上限
+    "shop_seats": "42",            # 桌位数（翻台率分母）
+    "target_margin": "0.60",       # 目标毛利率（毛利预警阈值）
+    "demo_mode": "0",              # 1=演示数据（界面上会标注）
 }
 
 SEED_TABLES = [
@@ -400,6 +602,16 @@ def _migrate_price_mode(conn):
                  " WHERE price <= 0 AND description LIKE '%【时价】%'")
 
 
+def _migrate_ai_layer(conn):
+    """v7：分析层与 AI 层。
+
+    表与视图由 SCHEMA 幂等创建（每次启动 executescript 都会补上），
+    这里只负责把新配置项写进老库，避免老库因为缺 key 而读不到默认值。
+    """
+    for k, v in DEFAULT_SETTINGS.items():
+        conn.execute("INSERT OR IGNORE INTO settings(key, value) VALUES(?, ?)", (k, v))
+
+
 MIGRATIONS = [
     (1, _migrate_ledger_balance_change),
     (2, _migrate_counters),
@@ -407,6 +619,7 @@ MIGRATIONS = [
     (4, _migrate_bom),
     (5, _migrate_season_spec),
     (6, _migrate_reservation),
+    (7, _migrate_ai_layer),
 ]
 
 

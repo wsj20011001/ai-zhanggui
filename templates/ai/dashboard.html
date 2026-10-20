@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}AI 驾驶舱 · {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="ai-head">
+  <div>
+    <h4>AI 掌柜 <span class="ai-badge {% if ai.provider == 'off' %}warn{% endif %}">
+      <span class="dot"></span>{{ ai.label }}{% if ai.provider == 'local' %} · 数据不出店{% endif %}</span></h4>
+    <div class="sub">{{ y }} 经营复盘 · 数据截至 {{ last_fact or y }} · 今日实时 {{ '%.2f'|format(k_today.revenue) }} 元 / {{ open_orders }} 单在办</div>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn-ai-ghost" href="{{ url_for('ai.chat_page') }}">💬 问一句</a>
+    <form method="post" action="{{ url_for('ai.refresh') }}" class="d-inline">
+      <button class="btn-ai">重算数据与洞察</button>
+    </form>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3">
+    <div class="kpi">
+      <div class="lb">昨日营收</div>
+      <div class="v">{{ '{:,.0f}'.format(k_y.revenue) }}<small>元</small></div>
+      <div class="d {% if change < 0 %}down{% elif change > 0 %}up{% else %}flat{% endif %}">
+        {% if base %}较同星期基线 {{ '%+.0f'|format(change*100) }}%{% else %}基线数据不足{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="kpi">
+      <div class="lb">客单价 / 单数</div>
+      <div class="v">{{ '%.0f'|format(k_y.avg_price) }}<small>元</small></div>
+      <div class="d flat">{{ k_y.orders }} 单 · 人均 {{ '%.0f'|format(k_y.per_person) }} 元</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="kpi">
+      <div class="lb">毛利率 / 折扣率</div>
+      <div class="v">{{ '%.1f'|format(k_y.margin_rate*100) }}<small>%</small></div>
+      <div class="d flat">让利 {{ '%.1f'|format(k_y.discount_rate*100) }}% · 成本 {{ '{:,.0f}'.format(k_y.cost) }} 元</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="kpi">
+      <div class="lb">翻台率（{{ shop_seats }} 座）</div>
+      <div class="v">{{ turnover }}<small>次/日</small></div>
+      <div class="d flat">客流 {{ k_y.persons }} 人 · 会员单占比 {{ '%.0f'|format(k_y.member_rate*100) }}%</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h6 class="mb-0" style="font-weight:700">今天先做这 3 件事
+        <span class="text-muted small fw-normal">按影响金额与紧急度排序，每条都能一键执行</span></h6>
+      <a class="small" href="{{ url_for('ai.insight_list') }}">全部洞察 →</a>
+    </div>
+
+    {% for it in insights[:3] %}
+    <div class="insight {{ it.severity }}">
+      <div class="rank">0{{ loop.index }}</div>
+      <div class="t"><span class="sev-tag {{ it.severity }}">{{ {'critical':'紧急','warning':'注意','info':'机会'}[it.severity] }}</span>{{ it.title }}</div>
+      <div class="m">{{ it.detail }}</div>
+      {% if it.evidence %}
+      <div class="ev">
+        {% for k, v in it.evidence.items() if k not in ('sql','dishes') %}
+          <span>{{ k }}={{ v }}</span>{% if not loop.last %} · {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div class="sg"><b>建议：</b>{{ it.suggestion }}</div>
+      <div class="mt-2 d-flex gap-2">
+        <button class="btn-ai" onclick="execInsight({{ it.id }}, this)">
+          {% if it.action_type == 'purchase' %}生成采购单
+          {% elif it.action_type == 'price_review' %}执行调价
+          {% elif it.action_type == 'promote_dishes' %}设为主推
+          {% elif it.action_type == 'diagnose_revenue' %}定位原因
+          {% else %}处理{% endif %}
+        </button>
+        <button class="btn-ai-ghost" onclick="ignoreInsight({{ it.id }}, this)">忽略</button>
+        <a class="btn-ai-ghost" href="{{ url_for('ai.chat_page') }}?q={{ it.title|urlencode }}">追问</a>
+      </div>
+    </div>
+    {% else %}
+    <div class="panel empty">今日无异常。要么经营很稳，要么数据还没跑 —— 点右上角「重算数据与洞察」。</div>
+    {% endfor %}
+
+    <div class="panel mt-1">
+      <h6>近 30 天营收 <span>昨日 {{ '%.0f'|format(k_y.revenue) }} 元</span></h6>
+      <div id="trend" class="chart"></div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="panel mb-3">
+      <h6>AI 状态</h6>
+      <table class="table table-sm ai-table mb-0">
+        <tr><td>当前通道</td><td class="text-end fw-semibold">{{ ai.label }}</td></tr>
+        <tr><td>云端 Key</td><td class="text-end">{{ '已配置' if ai.has_key else '未配置（仅本地）' }}</td></tr>
+        <tr><td>今日问答</td><td class="text-end">{{ ai.asks_today }} 次</td></tr>
+        <tr><td>今日 token</td><td class="text-end">{{ '{:,}'.format(ai.tokens_today) }} / {{ '{:,}'.format(ai.budget) }}</td></tr>
+      </table>
+      <div class="mt-2"><a class="small" href="{{ url_for('ai.ai_settings') }}">模型设置 →</a></div>
+    </div>
+
+    <div class="panel mb-3">
+      <h6>未来 7 天预测 <span>{{ fc.method }}{% if fc.mape %} · 回测误差 {{ '%.0f'|format(fc.mape*100) }}%{% endif %}</span></h6>
+      <div class="d-flex align-items-baseline gap-2 mb-2">
+        <div style="font-size:1.5rem;font-weight:700">{{ '{:,.0f}'.format(fc.sum) }}</div>
+        <div class="text-muted small">元（合计）</div>
+      </div>
+      <div id="fc" class="chart-sm"></div>
+      <a class="small" href="{{ url_for('analytics.forecast') }}">看备货建议 →</a>
+    </div>
+
+    <div class="panel">
+      <h6>待处理</h6>
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="small text-muted">采购单草稿</span>
+        <span class="fw-bold">{{ drafts }}</span>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="small text-muted">已执行 AI 动作</span>
+        <span class="fw-bold">{{ actions|length }}</span>
+      </div>
+      {% for a in actions[:3] %}
+      <div class="small text-muted mb-1">
+        {{ a.executed_at[5:16] }} · {{ {'price':'调价','promote':'主推','purchase':'采购'}.get(a.action_type, a.action_type) }}
+        {% if not a.undone_at %}<a class="ms-1" href="javascript:undoAction({{ a.id }})">撤销</a>{% else %}<span class="text-secondary">已撤销</span>{% endif %}
+      </div>
+      {% endfor %}
+      <a class="small" href="{{ url_for('purchase.purchase_list') }}">采购单 →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ai.js') }}"></script>
+<script>
+const trend = {{ trend|tojson }};
+const fc = {{ fc.forecast|tojson }};
+AI.line(document.getElementById('trend'), trend.map(x => x.d.slice(5)), trend.map(x => x.revenue));
+AI.bar(document.getElementById('fc'), fc.map(x => x.d.slice(5)), fc.map(x => Math.round(x.value)),
+       { color: '#7f77dd' });
+
+async function execInsight(id, btn) {
+  btn.disabled = true; btn.textContent = '执行中…';
+  const r = await AI.post('/api/ai/insight/' + id + '/execute', {});
+  AI.toast(r.msg || (r.ok ? '已执行' : '执行失败'), r.ok ? 'ok' : 'bad');
+  if (r.ok) setTimeout(() => location.reload(), 900);
+  else { btn.disabled = false; btn.textContent = '重试'; }
+}
+async function ignoreInsight(id, btn) {
+  btn.disabled = true;
+  const r = await AI.post('/api/ai/insight/' + id + '/ignore', {});
+  if (r.ok) { btn.closest('.insight').style.opacity = .4; }
+  AI.toast(r.msg || '已忽略', 'ok');
+}
+async function undoAction(id) {
+  const r = await AI.post('/api/ai/action/' + id + '/undo', {});
+  AI.toast(r.msg || (r.ok ? '已撤销' : '撤销失败'), r.ok ? 'ok' : 'bad');
+  if (r.ok) setTimeout(() => location.reload(), 800);
+}
+</script>
+{% endblock %}

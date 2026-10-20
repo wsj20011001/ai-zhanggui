@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}预测备货 · {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="ai-head">
+  <div>
+    <h4>预测与备货</h4>
+    <div class="sub">先预测菜品销量，按配方展开成食材用量，再减库存 —— 得出「明天该买多少」</div>
+  </div>
+  <form method="post" action="{{ url_for('purchase.from_forecast') }}">
+    <button class="btn-ai">按未来 {{ horizon }} 天生成采购单</button>
+  </form>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="panel">
+      <h6>营收预测 <span>{{ fc.method }} · 历史 {{ fc.history_days }} 天
+        {% if fc.mape %}· 近 28 天滚动回测误差 {{ '%.1f'|format(fc.mape*100) }}%{% endif %}</span></h6>
+      <div class="d-flex align-items-baseline gap-3 mb-2">
+        <div style="font-size:1.7rem;font-weight:700">{{ '{:,.0f}'.format(fc.sum) }}<span class="small text-muted">元 / {{ horizon }} 天</span></div>
+        <div class="small text-muted">预测区间 {{ fc.forecast[0].d }} ~ {{ fc.forecast[-1].d }}</div>
+      </div>
+      <div id="fc" style="height:300px"></div>
+      <div class="small text-muted mt-2">
+        方法：水平 × 星期因子 × 趋势（纯 Python 实现，无 numpy）。误差按滚动一步回测计算，
+        包含了一次刻意植入的营收下滑周，所以数字偏保守 —— 我们宁可低估准确率，也不美化。
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="panel">
+      <h6>未来 {{ horizon }} 天预测明细</h6>
+      <table class="table table-sm ai-table mb-0">
+        <thead><tr><th>日期</th><th class="text-end">预测营收</th></tr></thead>
+        <tbody>
+        {% for p in fc.forecast %}
+        <tr><td>{{ p.d }} <span class="text-muted small">{{ ['周一','周二','周三','周四','周五','周六','周日'][p.dow] }}</span></td>
+            <td class="text-end">{{ '{:,.0f}'.format(p.value) }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="panel mt-3">
+  <h6>补货建议 <span>预测用量 − 现有库存，按紧急度排序</span></h6>
+  <div class="table-responsive">
+    <table class="table table-sm ai-table mb-0">
+      <thead><tr><th>食材</th><th class="text-end">现有库存</th><th class="text-end">日耗</th>
+        <th class="text-end">可支撑</th><th class="text-end">建议采购</th><th class="text-end">预计金额</th></tr></thead>
+      <tbody>
+      {% for p in plan[:30] %}
+      <tr>
+        <td>{{ p.name }}</td>
+        <td class="text-end">{{ p.stock }} {{ p.unit }}</td>
+        <td class="text-end text-muted">{{ '%.1f'|format(p.need/horizon) }}</td>
+        <td class="text-end {% if p.days_left is not none and p.days_left < 2 %}text-danger fw-bold{% elif p.days_left is not none and p.days_left < 4 %}text-warning{% endif %}">
+          {{ p.days_left if p.days_left is not none else '—' }} 天</td>
+        <td class="text-end fw-semibold">{{ p.qty }} {{ p.unit }}</td>
+        <td class="text-end">{{ '{:,.0f}'.format(p.amount) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center text-muted py-4">按当前库存，未来 {{ horizon }} 天无需补货</td></tr>
+      {% endfor %}
+      </tbody>
+      {% if plan %}
+      <tfoot><tr class="fw-bold"><td colspan="5" class="text-end">合计</td>
+        <td class="text-end">{{ '{:,.0f}'.format(total) }}</td></tr></tfoot>
+      {% endif %}
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ai.js') }}"></script>
+<script>
+const hist = {{ hist|tojson }};
+const fc = {{ fc.forecast|tojson }};
+const labels = hist.map(x => x.d.slice(5)).concat(fc.map(x => x.d.slice(5)));
+const actual = hist.map(x => x.revenue).concat(fc.map(() => null));
+const pred = hist.map((x, i) => i === hist.length - 1 ? x.revenue : null).concat(fc.map(x => Math.round(x.value)));
+const c = echarts.init(document.getElementById('fc'));
+c.setOption({
+  color: ['#4c4ddc', '#ef9f27'],
+  grid: { left: 8, right: 16, top: 30, bottom: 6, containLabel: true },
+  tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#e3e5f2', textStyle: { color: '#2b2f4a', fontSize: 12 } },
+  legend: { top: 0, right: 0, icon: 'circle', itemWidth: 8, itemHeight: 8, textStyle: { fontSize: 11 } },
+  xAxis: { type: 'category', data: labels, boundaryGap: false,
+           axisLine: { lineStyle: { color: '#e3e5f2' } }, axisTick: { show: false },
+           axisLabel: { color: '#8a92a2', fontSize: 11 } },
+  yAxis: { type: 'value', axisLine: { show: false }, axisTick: { show: false },
+           axisLabel: { color: '#8a92a2', fontSize: 11 }, splitLine: { lineStyle: { color: '#f2f3f9' } } },
+  series: [
+    { name: '实际', type: 'line', data: actual, smooth: true, symbol: 'none', lineStyle: { width: 2.2 } },
+    { name: '预测', type: 'line', data: pred, smooth: true, symbol: 'circle', symbolSize: 5,
+      lineStyle: { width: 2.2, type: 'dashed' } },
+  ],
+});
+window.addEventListener('resize', () => c.resize());
+</script>
+{% endblock %}
