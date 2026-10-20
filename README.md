@@ -131,10 +131,11 @@ Key 存在 `data/ai_key.txt`，不入库、不进日志、不随备份库外流�
 ## 6. 测试
 
 ```bash
-venv\Scripts\python tests\smoke.py      # 20 个页面全量渲染（模板/路由/变量）
-venv\Scripts\python tests\test_ai.py    # 沙箱 8 条拦截 + 7 类问答 + 执行 + 撤销
-venv\Scripts\python tests\mock_llm.py   # Mock 云端：越界 SQL → 拦截 → 自修复 → 真实结果
-venv\Scripts\python test_units.py       # 原有单元测试（金额/订单号/口令/BOM）
+venv\Scripts\python tests\smoke.py        # 20 个页面全量渲染（模板/路由/变量）
+venv\Scripts\python tests\test_ai.py      # 沙箱 8 条拦截 + 7 类问答 + 执行 + 撤销
+venv\Scripts\python tests\test_metrics.py # 口径一致：原始表/视图/驾驶舱/报表/AI 五处同值
+venv\Scripts\python tests\mock_llm.py     # Mock 云端：越界 SQL → 拦截 → 自修复 → 真实结果
+venv\Scripts\python test_units.py         # 原有单元测试（金额/订单号/口令/BOM）
 ```
 
 `mock_llm.py` 不需要真 Key：它起一个假 OpenAI 服务，第一次故意返回 `SELECT * FROM members`，
@@ -148,7 +149,7 @@ venv\Scripts\python test_units.py       # 原有单元测试（金额/订单号/
 
 - 180 天 / 6800 单 / 220 位会员 / 107 道有配方的菜
 - 星期效应（周五 1.28×、周六 1.42×）、节假日高峰、雨天 −20% 客流
-- 食材成本按**目标成本率 38%** 校准，使毛利率落在 58%~60% 的真实区间
+- 食材成本按**目标成本率 38%** 校准，使毛利率落在 57%~60% 的真实区间
 - 刻意植入 4 个故事：近 7 天营收下滑约 20%、3 道菜连续滞销、基围虾只够 1.5 天、折扣率从 8.5% 抬到 11%
 
 真实门店接入时，直接用自己的 `data/restaurant.db` 即可，代码不需要改。

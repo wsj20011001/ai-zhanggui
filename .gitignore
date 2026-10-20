@@ -26,3 +26,8 @@ demo_snapshot.db
 .vscode/
 .idea/
 .DS_Store
+
+# PPT 工程临时文件与渲染图
+docs/**/.slidep/
+docs/**/shot_*.png
+docs/**/*_files/
