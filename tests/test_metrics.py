@@ -49,6 +49,12 @@ def main():
     chk("daily_facts 事实表 = metrics.q_kpi", fact["revenue"], kpi["revenue"])
 
     # ---- 2. 页面渲染值 ----
+    import sqlite3 as _sq
+    from config import DB_PATH as _DB
+    _c = _sq.connect(str(_DB)); _c.row_factory = _sq.Row
+    _PIN_OFF = _c.execute("SELECT value FROM settings WHERE key='ai_provider'").fetchone()[0]
+    _c.execute("UPDATE settings SET value='off' WHERE key='ai_provider'"); _c.commit(); _c.close()
+
     app = create_app()
     app.config["TESTING"] = True
     with app.test_client() as c:
@@ -90,6 +96,10 @@ def main():
         chk("视图 margin_rate = q_kpi.margin_rate", kpi["margin_rate"], view["margin_rate"])
 
     conn.close()
+    _c = _sq.connect(str(_DB))
+    _c.execute("UPDATE settings SET value=? WHERE key='ai_provider'", (_PIN_OFF,))
+    _c.commit(); _c.close()
+
     print()
     if fails:
         print("失败 %d 项：" % len(fails))

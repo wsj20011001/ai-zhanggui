@@ -49,6 +49,12 @@ def main():
     assert "LIMIT" in ok_sql.upper(), ok_sql
     print("✓ 沙箱：%d 条越界语句全部拦截，合法查询自动补 LIMIT" % len(BLOCKED))
 
+    import sqlite3 as _sq
+    from config import DB_PATH as _DB
+    _c = _sq.connect(str(_DB)); _c.row_factory = _sq.Row
+    _PIN_OFF = _c.execute("SELECT value FROM settings WHERE key='ai_provider'").fetchone()[0]
+    _c.execute("UPDATE settings SET value='off' WHERE key='ai_provider'"); _c.commit(); _c.close()
+
     app = create_app()
     app.config["TESTING"] = True
     with app.test_client() as c:
@@ -106,6 +112,10 @@ def main():
             rr = c.get(url)
             if rr.status_code != 200:
                 fails.append("%s 返回 %d" % (url, rr.status_code))
+
+    _c = _sq.connect(str(_DB))
+    _c.execute("UPDATE settings SET value=? WHERE key='ai_provider'", (_PIN_OFF,))
+    _c.commit(); _c.close()
 
     print()
     if fails:

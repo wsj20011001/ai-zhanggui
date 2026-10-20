@@ -46,6 +46,11 @@ SYSTEM_PROMPT = """你是「AI 掌柜」的数据分析引擎，服务一家中�
 6. 「最近N天」用 d >= date('{today}', '-N day')；「本月」用 d >= '{month_start}'；
 7. 时间跨度大时按天/按周聚合，不要返回上千行。
 
+数字纪律（很重要）：
+8. 结论里出现的数字必须**原样来自查询结果**，不要换算单位（斤就是斤，不要写成 kg），不要四舍五入到结果里没有的值；
+9. 说"几种/几道/几条"时，数量必须等于查询返回的行数；数不清就别写数量，只讲方向；
+10. 宁可少说一个数字，也不要编一个。
+
 只输出 JSON，不要任何解释文字：
 {{"sql": "SELECT ...", "view": "使用的视图名", "chart": "line|bar|pie|table",
   "title": "不超过14个字的标题",
@@ -65,6 +70,103 @@ FEWSHOT = [
 
 class AskFailed(Exception):
     pass
+
+
+_COUNT_RE = re.compile(r"(\d+)\s*(种|道|条|个|家|项)")
+_NUM_RE = re.compile(r"-?\d+(?:\.\d+)?")
+
+
+LABELS = {
+    "name": "", "unit": "", "d": "日期", "weekday": "星期", "category": "分类",
+    "stock": "库存", "warn_threshold": "预警值", "stock_value": "库存金额",
+    "revenue": "营收", "orders": "单数", "persons": "客流", "profit": "毛利",
+    "margin_rate": "毛利率", "discount": "让利", "discount_rate": "折扣率",
+    "qty": "份数", "amount": "销售额", "avg_price": "客单价", "hour": "时段",
+    "pay_method": "支付方式", "level": "等级", "total_spend": "累计消费",
+    "visit_count": "次数", "price": "单价", "cost": "成本",
+}
+
+
+def _fmt(c, v, unit=""):
+    lab = LABELS.get(c, c)
+    if isinstance(v, float):
+        v = round(v, 2)
+    suffix = unit if isinstance(v, (int, float)) and unit else ""
+    return ("%s %s %s" % (lab, v, suffix)).replace("  ", " ").strip()
+
+
+def _facts(columns, rows):
+    """把结果集压成一句确定性摘要 —— 模型说错数字时的兜底"""
+    if not rows:
+        return "查询没有返回数据，可能是时间范围内没有营业记录。"
+    head = rows[0]
+    nums = [c for c in columns if isinstance(head.get(c), (int, float))]
+    texts = [c for c in columns if c not in nums and c not in ("unit", "d")]
+    unit = head.get("unit") or ""
+    title = head.get(texts[0]) if texts else ""
+    bits = [_fmt(c, head.get(c), unit) for c in nums[:3]]
+    body = "，".join(b for b in bits if b)
+    if len(rows) == 1:
+        return ("%s：%s。" % (title, body)) if title else (body + "。")
+    lead = "查询返回 %d 行" % len(rows)
+    if title:
+        return "%s，最靠前的是 %s：%s。" % (lead, title, body)
+    return "%s：%s。" % (lead, body)
+
+
+def _allowed_numbers(columns, rows):
+    """结果集里"合法"的数字：每个单元格、列合计、行数，以及比率的百分数形式"""
+    allowed = set()
+    for r in rows:
+        for c in columns:
+            v = r.get(c)
+            if isinstance(v, (int, float)):
+                f = float(v)
+                allowed.update({round(f, 2), round(f), round(f * 100, 2)})
+    for c in columns:
+        vals = [float(r.get(c)) for r in rows if isinstance(r.get(c), (int, float))]
+        if vals:
+            allowed.update({round(sum(vals), 2), round(sum(vals))})
+    allowed.add(len(rows))
+    return allowed
+
+
+_DATE_RE = re.compile(r"\d{4}[-/年]\d{1,2}([-/月]\d{1,2}日?)?")
+_UNIT_TAIL = ("天", "日", "月", "年", "点", "%", "倍")
+
+
+def _check_insight(insight, columns, rows):
+    """核对结论：数量词必须等于行数；金额/小数必须出现在结果里。
+
+    过不了就返回 None，由调用方换成确定性摘要。
+    为什么这么严：模型最危险的错误不是 SQL 写错（沙箱会拦），
+    而是把结果里的数字"顺手改一下"——老板不会去核对，但评委会。
+    """
+    if not insight or not rows:
+        return insight
+
+    for n, _unit in _COUNT_RE.findall(insight):
+        try:
+            k = int(n)
+        except ValueError:
+            continue
+        uniq = len({r.get(columns[0]) for r in rows}) if columns else 0
+        if k > 1 and k not in (len(rows), uniq):
+            return None
+
+    allowed = _allowed_numbers(columns, rows)
+    text = _DATE_RE.sub(" ", insight)
+    for m in _NUM_RE.findall(text):
+        x = float(m)
+        tail = text[text.index(m) + len(m):][:1]
+        if tail in _UNIT_TAIL or m.endswith("%"):
+            continue                      # 天数/月份/百分比不参与核对
+        if x < 100 and "." not in m:
+            continue                      # 序号、小整数放过
+        if round(x, 2) in allowed or round(x) in allowed:
+            continue
+        return None
+    return insight
 
 
 def _views_text():
@@ -115,6 +217,27 @@ def _period(ql, today):
     if "今天" in ql or "今日" in ql:
         return today, today, "今天"
     return today - timedelta(days=29), today, "近30天"
+
+
+def _narrate(conn, question, columns, rows, allow_cloud=True):
+    """兜底之后，让模型"看着结果重写一句"——数字由我们喂给它，不给它发挥空间"""
+    sample = [{c: r.get(c) for c in columns} for r in rows[:8]]
+    msgs = [
+        {"role": "system",
+         "content": "你是餐饮老板的助理。只根据给定结果写一句 25 字以内的结论："
+                    "只挑最需要注意的 1 个（最多 2 个），不要罗列全部；"
+                    "必须原样使用结果里的数值和单位（斤就是斤），不要换算、不要四舍五入、"
+                    "不要编造任何数字，不要复述字段名。"},
+        {"role": "user",
+         "content": "问题：%s\n查询结果：%s"
+                    % (question, json.dumps(sample, ensure_ascii=False))},
+    ]
+    try:
+        out = gateway.chat(conn, msgs, allow_cloud=allow_cloud)
+        txt = (out.get("text") or "").strip().strip('"').replace("\n", " ")
+        return txt if txt and _check_insight(txt, columns, rows) else None
+    except Exception:
+        return None
 
 
 def _rule_answer(conn, q):
@@ -200,6 +323,11 @@ def _run_plan(plan, conn, question, provider, model, latency):
     res = sandbox.run(plan["sql"])
     rows = res["rows"]
     columns = res["columns"]
+    raw_insight = plan.get("insight") or ""
+    insight = _check_insight(raw_insight, columns, rows)
+    replaced = insight is None
+    if replaced:
+        insight = _facts(columns, rows)
     chart = plan.get("chart") or _guess_chart(columns, rows)
     if chart not in ("line", "bar", "pie", "table"):
         chart = _guess_chart(columns, rows)
@@ -207,7 +335,8 @@ def _run_plan(plan, conn, question, provider, model, latency):
         "ok": True,
         "question": question,
         "title": plan.get("title") or question[:14],
-        "insight": plan.get("insight") or "",
+        "insight": insight,
+        "insight_replaced": replaced,
         "sql": res["sql"],
         "view": plan.get("view") or "",
         "columns": columns,
@@ -240,6 +369,11 @@ def ask(conn, question, allow_cloud=True):
         provider, model, latency = out["provider"], out["model"], out["latency_ms"]
         try:
             res = _run_plan(plan, conn, question, provider, model, latency)
+            if res.get("insight_replaced"):
+                better = _narrate(conn, question, res["columns"], res["rows"], allow_cloud)
+                if better:
+                    res["insight"] = better
+                    res["insight_replaced"] = False
             _log(conn, res)
             return res
         except sandbox.SqlRejected as e:
@@ -252,6 +386,11 @@ def ask(conn, question, allow_cloud=True):
             plan2 = _extract_json(out2["text"])
             res = _run_plan(plan2, conn, question, out2["provider"], out2["model"],
                             latency + out2["latency_ms"])
+            if res.get("insight_replaced"):
+                better = _narrate(conn, question, res["columns"], res["rows"], allow_cloud)
+                if better:
+                    res["insight"] = better
+                    res["insight_replaced"] = False
             _log(conn, res)
             return res
     except (gateway.ModelUnavailable, AskFailed, sandbox.SqlRejected, KeyError) as e:
