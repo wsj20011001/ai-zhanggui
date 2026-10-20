@@ -1,0 +1,57 @@
+<Slide style={{ width: 1280, height: 720, background: '#0B0D14', padding: '56px 72px', flexDirection: 'column' }}>
+  <Box style={{ height: 96, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <Box style={{ flexDirection: 'column', gap: 8 }}>
+      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#F2F4FF' }}>现场三分钟，只走一条路径</Text>
+      <Text style={{ fontSize: 15, color: '#8A90A6' }}>上午 09:00，老板打开电脑后的真实操作顺序</Text>
+    </Box>
+    <Text style={{ fontSize: 13, color: '#4A5064', letterSpacing: 2 }}>AI 掌柜</Text>
+  </Box>
+  <Box style={{ flex: 1, paddingTop: 8 }}>
+    <Box style={{ flexDirection: 'row', gap: 16, height: 205 }}>
+      <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 14, padding: 24, flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 12, color: '#6C6CF5', letterSpacing: 2 }}>第 1 步 · 30 秒</Text>
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#F2F4FF', marginTop: 6 }}>打开驾驶舱</Text>
+        <Text style={{ fontSize: 14, color: '#8A90A6', lineHeight: 1.8 }}>只有 3 件事：<br />营收跌 20%、3 道菜滞销、<br />牛腩只够 1.5 天。</Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 14, padding: 24, flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 12, color: '#6C6CF5', letterSpacing: 2 }}>第 2 步 · 60 秒</Text>
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#F2F4FF', marginTop: 6 }}>点「营收下滑」</Text>
+        <Text style={{ fontSize: 14, color: '#8A90A6', lineHeight: 1.8 }}>拆成客流 −18%、客单价 −3%，<br />结论：人少了，<br />不是点便宜了。</Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 14, padding: 24, flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 12, color: '#6C6CF5', letterSpacing: 2 }}>第 3 步 · 60 秒</Text>
+        <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#F2F4FF', marginTop: 6 }}>点「缺货」</Text>
+        <Text style={{ fontSize: 14, color: '#8A90A6', lineHeight: 1.8 }}>按 7 天用量生成采购单<br />→ 确认入库<br />→ 库存与流水同步。</Text>
+      </Box>
+    </Box>
+    <Box style={{ marginTop: 20, background: '#171A2E', border: '1px solid #6C6CF5', borderRadius: 14, padding: '20px 24px', flexDirection: 'row', alignItems: 'center', gap: 24 }}>
+      <Text style={{ fontSize: 13, color: '#6C6CF5', letterSpacing: 2, width: 132 }}>加演 · 一句话</Text>
+      <Box style={{ flexDirection: 'column', gap: 6 }}>
+        <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#F2F4FF' }}>「明天 8 人宴席，人均 150」</Text>
+        <Text style={{ fontSize: 13, color: '#8A90A6' }}>按中餐宴席结构排 10 道菜 → 一键成单 → 后厨立刻看到，可人工增减。</Text>
+      </Box>
+    </Box>
+    <Box style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #242A3D', flexDirection: 'row', gap: 0 }}>
+      <Box style={{ flex: 1, flexDirection: 'column', gap: 3 }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#F2F4FF' }}>1 张</Text>
+        <Text style={{ fontSize: 12, color: '#8A90A6' }}>采购单（7 项 / 2,757 元）</Text>
+      </Box>
+      <Box style={{ flex: 1, flexDirection: 'column', gap: 3 }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#F2F4FF' }}>7 种</Text>
+        <Text style={{ fontSize: 12, color: '#8A90A6' }}>食材库存与流水同步更新</Text>
+      </Box>
+      <Box style={{ flex: 1, flexDirection: 'column', gap: 3 }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#F2F4FF' }}>3 条</Text>
+        <Text style={{ fontSize: 12, color: '#8A90A6' }}>操作留痕，任何一条可回滚</Text>
+      </Box>
+      <Box style={{ flex: 1.2, flexDirection: 'column', gap: 3 }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#6C6CF5' }}>0 次</Text>
+        <Text style={{ fontSize: 12, color: '#8A90A6' }}>页面跳转 —— 决策与执行同屏</Text>
+      </Box>
+    </Box>
+  </Box>
+  <Box style={{ height: 36, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Text style={{ fontSize: 12, color: '#4A5064' }}>2026 武汉 1024 · 产业应用赛道</Text>
+    <Text style={{ fontSize: 12, color: '#4A5064' }}>05 / 12</Text>
+  </Box>
+</Slide>

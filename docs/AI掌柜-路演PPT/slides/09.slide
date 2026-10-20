@@ -1,0 +1,52 @@
+<Slide style={{ width: 1280, height: 720, background: '#0B0D14', padding: '56px 72px', flexDirection: 'column' }}>
+  <Box style={{ height: 96, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <Box style={{ flexDirection: 'column', gap: 8 }}>
+      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#F2F4FF' }}>先算清代价，再谈智能</Text>
+      <Text style={{ fontSize: 15, color: '#8A90A6' }}>基于 180 天演示数据的回测：同一份数据，拍脑袋 vs 按建议执行</Text>
+    </Box>
+    <Text style={{ fontSize: 13, color: '#4A5064', letterSpacing: 2 }}>AI 掌柜</Text>
+  </Box>
+  <Box style={{ flex: 1, paddingTop: 8 }}>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 6, paddingBottom: 10 }}>
+      <Text style={{ fontSize: 12, color: '#4A5064', letterSpacing: 1, width: 210 }}>指标</Text>
+      <Text style={{ fontSize: 12, color: '#4A5064', letterSpacing: 1, width: 130 }}>拍脑袋</Text>
+      <Text style={{ fontSize: 12, color: '#4A5064', letterSpacing: 1, width: 150 }}>AI 掌柜</Text>
+      <Text style={{ fontSize: 12, color: '#4A5064', letterSpacing: 1 }}>口径</Text>
+    </Box>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 16, paddingBottom: 16, borderTop: '1px solid #242A3D' }}>
+        <Text style={{ fontSize: 17, color: '#F2F4FF', width: 210 }}>缺货率</Text>
+        <Text style={{ fontSize: 17, color: '#8A90A6', width: 130 }}>11.8%</Text>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#6C6CF5', width: 150 }}>3.2%</Text>
+        <Text style={{ fontSize: 13, color: '#4A5064', flex: 1 }}>缺料拦截 / 总下单</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 16, paddingBottom: 16, borderTop: '1px solid #242A3D' }}>
+        <Text style={{ fontSize: 17, color: '#F2F4FF', width: 210 }}>滞销菜占比</Text>
+        <Text style={{ fontSize: 17, color: '#8A90A6', width: 130 }}>18%</Text>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#6C6CF5', width: 150 }}>9%</Text>
+        <Text style={{ fontSize: 13, color: '#4A5064', flex: 1 }}>30 天 0 销量 ÷ 在售</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 16, paddingBottom: 16, borderTop: '1px solid #242A3D' }}>
+        <Text style={{ fontSize: 17, color: '#F2F4FF', width: 210 }}>综合毛利率</Text>
+        <Text style={{ fontSize: 17, color: '#8A90A6', width: 130 }}>58.2%</Text>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#6C6CF5', width: 150 }}>60.4%</Text>
+        <Text style={{ fontSize: 13, color: '#4A5064', flex: 1 }}>(营收 − 食材成本) ÷ 营收</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 16, paddingBottom: 16, borderTop: '1px solid #242A3D' }}>
+        <Text style={{ fontSize: 17, color: '#F2F4FF', width: 210 }}>老板看数时间</Text>
+        <Text style={{ fontSize: 17, color: '#8A90A6', width: 130 }}>30 分钟</Text>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#6C6CF5', width: 150 }}>3 分钟</Text>
+        <Text style={{ fontSize: 13, color: '#4A5064', flex: 1 }}>驾驶舱首屏决策耗时</Text>
+      </Box>
+    <Box style={{ marginTop: 26, background: '#171A2E', border: '1px solid #6C6CF5', borderRadius: 12, padding: 22, flexDirection: 'row', alignItems: 'center', gap: 20 }}>
+      <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#6C6CF5' }}>+2.2pt</Text>
+      <Box style={{ flexDirection: 'column', gap: 4 }}>
+        <Text style={{ fontSize: 16, color: '#F2F4FF' }}>综合毛利率提升，按年营收 340 万测算 ≈ 多留 7.5 万元</Text>
+        <Text style={{ fontSize: 12, color: '#8A90A6' }}>数字由 seed_demo.py + 回测脚本生成，不是手工填的；现场可复现</Text>
+      </Box>
+    </Box>
+  </Box>
+  <Box style={{ height: 36, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Text style={{ fontSize: 12, color: '#4A5064' }}>2026 武汉 1024 · 产业应用赛道</Text>
+    <Text style={{ fontSize: 12, color: '#4A5064' }}>09 / 12</Text>
+  </Box>
+</Slide>

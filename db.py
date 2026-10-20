@@ -644,14 +644,16 @@ def init_db(conn=None):
     try:
         conn.executescript(SCHEMA)
         conn.commit()
-        migrate(conn)
+        # 先判断是否首次初始化，再跑迁移 —— 迁移会写入默认配置项，
+        # 顺序反了会让新库被误判成"老库"，种子数据（桌台/菜品）就永远建不出来。
         first = conn.execute("SELECT COUNT(*) c FROM settings").fetchone()[0] == 0
+        migrate(conn)
         if first:
             now = now_str()
             seed = dict(DEFAULT_SETTINGS)
             seed["admin_pwd"] = make_pwd_hash("admin123")
             conn.executemany(
-                "INSERT INTO settings(key, value) VALUES(?, ?)",
+                "INSERT OR REPLACE INTO settings(key, value) VALUES(?, ?)",
                 list(seed.items()))
             for i, (name, ttype, cap) in enumerate(SEED_TABLES):
                 conn.execute(

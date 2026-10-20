@@ -1,0 +1,48 @@
+<Slide style={{ width: 1280, height: 720, background: '#0B0D14', padding: '56px 72px', flexDirection: 'column' }}>
+  <Box style={{ height: 96, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <Box style={{ flexDirection: 'column', gap: 8 }}>
+      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#F2F4FF' }}>AI 不会算错账，因为它不算账</Text>
+      <Text style={{ fontSize: 15, color: '#8A90A6' }}>所有数字只有一个实现，模型只负责理解问题与组织语言</Text>
+    </Box>
+    <Text style={{ fontSize: 13, color: '#4A5064', letterSpacing: 2 }}>AI 掌柜</Text>
+  </Box>
+  <Box style={{ flex: 1, paddingTop: 8 }}>
+    <Box style={{ flexDirection: 'row', gap: 28, alignItems: 'center' }}>
+      <Box style={{ flexDirection: 'column', width: 380 }}>
+        <Text style={{ fontSize: 13, color: '#8A90A6', letterSpacing: 1 }}>昨日营收（元）</Text>
+        <Text style={{ fontSize: 68, fontWeight: 'bold', color: '#F2F4FF', letterSpacing: -2 }}>6,029.65</Text>
+        <Text style={{ fontSize: 13, color: '#8A90A6', marginTop: 6 }}>同星期基线 8,024.45 · 低 24.8%</Text>
+      </Box>
+      <Box style={{ flex: 1, flexDirection: 'column', gap: 10 }}>
+        <Text style={{ fontSize: 13, color: '#8A90A6' }}>这个数字出现在三个地方，必须完全相等</Text>
+        <Box style={{ flexDirection: 'row', gap: 12 }}>
+          <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 10, padding: 16 }}>
+            <Text style={{ fontSize: 15, color: '#F2F4FF' }}>AI 驾驶舱</Text>
+            <Text style={{ fontSize: 12, color: '#8A90A6', marginTop: 6 }}>KPI 卡片</Text>
+          </Box>
+          <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 10, padding: 16 }}>
+            <Text style={{ fontSize: 15, color: '#F2F4FF' }}>营收报表</Text>
+            <Text style={{ fontSize: 12, color: '#8A90A6', marginTop: 6 }}>按日汇总</Text>
+          </Box>
+          <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 10, padding: 16 }}>
+            <Text style={{ fontSize: 15, color: '#F2F4FF' }}>AI 问答</Text>
+            <Text style={{ fontSize: 12, color: '#8A90A6', marginTop: 6 }}>SQL 结果</Text>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+    <Box style={{ marginTop: 26, background: '#12141F', border: '1px solid #242A3D', borderRadius: 12, padding: 22 }}>
+      <Text style={{ fontSize: 12, color: '#4A5064', letterSpacing: 1 }}>analytics / metrics.py</Text>
+      <Text style={{ fontSize: 14, color: '#8A90A6', marginTop: 10, lineHeight: 1.9 }}>
+        def q_kpi(conn, d1, d2):&nbsp;&nbsp;<span style={{ color: '#6C6CF5' }}># 全系统唯一的营收口径</span><br />
+        &nbsp;&nbsp;revenue = SUM(final_amount) WHERE status='settled'<br />
+        &nbsp;&nbsp;return dict(revenue=money(revenue), margin_rate=...)
+      </Text>
+    </Box>
+    <Text style={{ fontSize: 14, color: '#8A90A6', marginTop: 16 }}>数字由 SQL 算出，模型只写解读；结论必须引用 evidence，点开能看到原始 SQL。</Text>
+  </Box>
+  <Box style={{ height: 36, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Text style={{ fontSize: 12, color: '#4A5064' }}>2026 武汉 1024 · 产业应用赛道</Text>
+    <Text style={{ fontSize: 12, color: '#4A5064' }}>08 / 12</Text>
+  </Box>
+</Slide>

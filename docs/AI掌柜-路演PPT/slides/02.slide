@@ -1,0 +1,36 @@
+<Slide style={{ width: 1280, height: 720, background: '#0B0D14', padding: '56px 72px', flexDirection: 'column' }}>
+  <Box style={{ height: 96, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <Box style={{ flexDirection: 'column', gap: 8 }}>
+      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#F2F4FF' }}>老板每天问的三个问题，现有工具一个都没回答</Text>
+      <Text style={{ fontSize: 15, color: '#8A90A6' }}>不是缺报表，是缺结论和动作</Text>
+    </Box>
+    <Text style={{ fontSize: 13, color: '#4A5064', letterSpacing: 2 }}>AI 掌柜</Text>
+  </Box>
+  <Box style={{ flex: 1, paddingTop: 8 }}>
+    <Box style={{ flexDirection: 'row', gap: 20, height: 300 }}>
+      <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 14, padding: 26, flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 56, fontWeight: 'bold', color: '#6C6CF5' }}>01</Text>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#F2F4FF' }}>今天到底赚没赚</Text>
+        <Text style={{ fontSize: 15, color: '#8A90A6', lineHeight: 1.8 }}>六张报表翻 30 分钟，只知道跌了，<br />不知道是人少了还是点便宜了。</Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 14, padding: 26, flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 56, fontWeight: 'bold', color: '#6C6CF5' }}>02</Text>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#F2F4FF' }}>明天该买多少</Text>
+        <Text style={{ fontSize: 15, color: '#8A90A6', lineHeight: 1.8 }}>采购靠经验，缺货率 11.8%，<br />断货一次少卖 2,400 元。</Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 14, padding: 26, flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 56, fontWeight: 'bold', color: '#6C6CF5' }}>03</Text>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#F2F4FF' }}>哪道菜在赔钱</Text>
+        <Text style={{ fontSize: 15, color: '#8A90A6', lineHeight: 1.8 }}>207 道菜只有 107 道算得清成本，<br />卖得越多，可能亏得越多。</Text>
+      </Box>
+    </Box>
+    <Box style={{ marginTop: 34, paddingTop: 24, borderTop: '1px solid #242A3D', flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+      <Box style={{ width: 6, height: 28, background: '#6C6CF5', borderRadius: 3 }} />
+      <Text style={{ fontSize: 24, color: '#F2F4FF' }}>中小餐饮不缺数据，缺一个<Text style={{ fontSize: 24, fontWeight: 'bold', color: '#6C6CF5' }}>能替他做决定</Text>的角色。</Text>
+    </Box>
+  </Box>
+  <Box style={{ height: 36, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Text style={{ fontSize: 12, color: '#4A5064' }}>2026 武汉 1024 · 产业应用赛道</Text>
+    <Text style={{ fontSize: 12, color: '#4A5064' }}>02 / 12</Text>
+  </Box>
+</Slide>

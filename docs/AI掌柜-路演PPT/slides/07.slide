@@ -1,0 +1,76 @@
+<Slide style={{ width: 1280, height: 720, background: '#0B0D14', padding: '56px 72px', flexDirection: 'column' }}>
+  <Box style={{ height: 96, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <Box style={{ flexDirection: 'column', gap: 8 }}>
+      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#F2F4FF' }}>敢让它查数，是因为它改不了数</Text>
+      <Text style={{ fontSize: 15, color: '#8A90A6' }}>自然语言查数的五道闸 —— 对应评审的「稳定性与合规性」</Text>
+    </Box>
+    <Text style={{ fontSize: 13, color: '#4A5064', letterSpacing: 2 }}>AI 掌柜</Text>
+  </Box>
+  <Box style={{ flex: 1, paddingTop: 8 }}>
+    <Box style={{ flexDirection: 'row', gap: 26 }}>
+      <Box style={{ flex: 1.3, flexDirection: 'column', gap: 18 }}>
+        <Box style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#6C6CF5', width: 34 }}>01</Text>
+          <Box style={{ flexDirection: 'column', gap: 4 }}>
+            <Text style={{ fontSize: 19, color: '#F2F4FF' }}>只读连接</Text>
+            <Text style={{ fontSize: 14, color: '#8A90A6' }}>query_only=ON，数据库层面拒绝一切写操作</Text>
+          </Box>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#6C6CF5', width: 34 }}>02</Text>
+          <Box style={{ flexDirection: 'column', gap: 4 }}>
+            <Text style={{ fontSize: 19, color: '#F2F4FF' }}>视图白名单</Text>
+            <Text style={{ fontSize: 14, color: '#8A90A6' }}>只认 8 个 v_* 语义视图，读不到会员手机号与设置表</Text>
+          </Box>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#6C6CF5', width: 34 }}>03</Text>
+          <Box style={{ flexDirection: 'column', gap: 4 }}>
+            <Text style={{ fontSize: 19, color: '#F2F4FF' }}>语法校验</Text>
+            <Text style={{ fontSize: 14, color: '#8A90A6' }}>单条 SELECT；禁 DDL / DML / ATTACH / UNION / 系统表</Text>
+          </Box>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#6C6CF5', width: 34 }}>04</Text>
+          <Box style={{ flexDirection: 'column', gap: 4 }}>
+            <Text style={{ fontSize: 19, color: '#F2F4FF' }}>强制约束</Text>
+            <Text style={{ fontSize: 14, color: '#8A90A6' }}>自动补 LIMIT 500，6 秒超时中断，慢查询拖不死库</Text>
+          </Box>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#6C6CF5', width: 34 }}>05</Text>
+          <Box style={{ flexDirection: 'column', gap: 4 }}>
+            <Text style={{ fontSize: 19, color: '#F2F4FF' }}>结果上限</Text>
+            <Text style={{ fontSize: 14, color: '#8A90A6' }}>最多 500 行，不会把大结果集塞进模型上下文</Text>
+          </Box>
+        </Box>
+      </Box>
+      <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 14, padding: 26, flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Box>
+          <Text style={{ fontSize: 13, color: '#8A90A6', letterSpacing: 1 }}>自动化验证</Text>
+          <Text style={{ fontSize: 62, fontWeight: 'bold', color: '#6C6CF5', marginTop: 6 }}>8 / 8</Text>
+          <Text style={{ fontSize: 15, color: '#F2F4FF', marginTop: 4 }}>越界语句全部拦截</Text>
+        </Box>
+        <Box style={{ flexDirection: 'column', gap: 6 }}>
+          <Text style={{ fontSize: 12, color: '#8A90A6' }}>SELECT * FROM members</Text>
+          <Text style={{ fontSize: 12, color: '#8A90A6' }}>DROP TABLE orders</Text>
+          <Text style={{ fontSize: 12, color: '#8A90A6' }}>SELECT 1; DELETE FROM orders</Text>
+          <Text style={{ fontSize: 12, color: '#8A90A6' }}>... UNION SELECT * FROM settings</Text>
+          <Text style={{ fontSize: 12, color: '#8A90A6' }}>ATTACH / PRAGMA / sqlite_master</Text>
+        </Box>
+        <Text style={{ fontSize: 12, color: '#6C6CF5' }}>越界时先自动修复一轮 SQL，再失败才降级</Text>
+      </Box>
+    </Box>
+    <Box style={{ marginTop: 22, paddingTop: 18, borderTop: '1px solid #242A3D', flexDirection: 'row', gap: 16 }}>
+      <Box style={{ width: 5, height: 46, background: '#6C6CF5', borderRadius: 3 }} />
+      <Text style={{ fontSize: 16, color: '#8A90A6', lineHeight: 1.75, flex: 1 }}>
+        黑名单永远会被绕过。真正的安全来自两层：数据库层面拒绝写、语义视图看不到敏感表；<br />
+        其余三道闸只是把越界请求挡在更早的地方，顺便给出人能看懂的拒绝理由。
+      </Text>
+    </Box>
+  </Box>
+  <Box style={{ height: 36, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Text style={{ fontSize: 12, color: '#4A5064' }}>2026 武汉 1024 · 产业应用赛道</Text>
+    <Text style={{ fontSize: 12, color: '#4A5064' }}>07 / 12</Text>
+  </Box>
+</Slide>

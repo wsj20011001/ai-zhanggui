@@ -1,0 +1,71 @@
+=== boot pid=1144 ts=2026-10-20 13:57:46.303 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js create AI掌柜-路演PPT.pptx ===
+[2026-10-20 13:57:46.302] [INFO ] [pid=1144] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+=== boot pid=22336 ts=2026-10-20 13:57:57.112 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/01.slide ===
+[2026-10-20 13:57:57.111] [INFO ] [pid=22336] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 13:57:57.138] [INFO ] [pid=22336] [slide-version] fileId=9CD6683C version=0 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=4476 ts=2026-10-20 13:58:09.585 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/02.slide ===
+[2026-10-20 13:58:09.584] [INFO ] [pid=4476] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 13:58:09.613] [INFO ] [pid=4476] [slide-version] fileId=9CD6683C version=1 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=5328 ts=2026-10-20 13:58:16.604 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/03.slide ===
+[2026-10-20 13:58:16.604] [INFO ] [pid=5328] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 13:58:16.633] [INFO ] [pid=5328] [slide-version] fileId=9CD6683C version=2 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=17008 ts=2026-10-20 13:58:23.688 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/04.slide ===
+[2026-10-20 13:58:23.687] [INFO ] [pid=17008] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 13:58:23.716] [INFO ] [pid=17008] [slide-version] fileId=9CD6683C version=3 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=14984 ts=2026-10-20 13:58:30.719 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/05.slide ===
+[2026-10-20 13:58:30.719] [INFO ] [pid=14984] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 13:58:30.748] [INFO ] [pid=14984] [slide-version] fileId=9CD6683C version=4 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=29060 ts=2026-10-20 13:58:37.819 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/06.slide ===
+[2026-10-20 13:58:37.819] [INFO ] [pid=29060] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 13:58:37.847] [INFO ] [pid=29060] [slide-version] fileId=9CD6683C version=5 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=33108 ts=2026-10-20 13:58:51.709 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/07.slide ===
+[2026-10-20 13:58:51.708] [INFO ] [pid=33108] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 13:58:51.737] [INFO ] [pid=33108] [slide-version] fileId=9CD6683C version=6 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=22688 ts=2026-10-20 13:58:58.829 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/08.slide ===
+[2026-10-20 13:58:58.828] [INFO ] [pid=22688] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 13:58:58.857] [INFO ] [pid=22688] [slide-version] fileId=9CD6683C version=7 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=38572 ts=2026-10-20 13:59:05.851 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/09.slide ===
+[2026-10-20 13:59:05.851] [INFO ] [pid=38572] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 13:59:05.879] [INFO ] [pid=38572] [slide-version] fileId=9CD6683C version=8 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=4728 ts=2026-10-20 13:59:12.918 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/10.slide ===
+[2026-10-20 13:59:12.917] [INFO ] [pid=4728] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 13:59:12.946] [INFO ] [pid=4728] [slide-version] fileId=9CD6683C version=9 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=12392 ts=2026-10-20 13:59:19.954 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/11.slide ===
+[2026-10-20 13:59:19.954] [INFO ] [pid=12392] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 13:59:19.983] [INFO ] [pid=12392] [slide-version] fileId=9CD6683C version=10 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=35064 ts=2026-10-20 13:59:27.055 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/12.slide ===
+[2026-10-20 13:59:27.054] [INFO ] [pid=35064] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 13:59:27.082] [INFO ] [pid=35064] [slide-version] fileId=9CD6683C version=11 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=30372 ts=2026-10-20 13:59:47.736 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js screenshot AI掌柜-路演PPT.pptx --page-index 0 --out shot_01.png ===
+[2026-10-20 13:59:47.734] [INFO ] [pid=30372] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 13:59:47.768] [INFO ] [pid=30372] [slide-version] fileId=9CD6683C version=12 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=7852 ts=2026-10-20 14:00:01.724 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js screenshot AI掌柜-路演PPT.pptx --page-index 6 --out shot_07.png ===
+[2026-10-20 14:00:01.721] [INFO ] [pid=7852] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 14:00:01.757] [INFO ] [pid=7852] [slide-version] fileId=9CD6683C version=12 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=35072 ts=2026-10-20 14:00:04.484 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js screenshot AI掌柜-路演PPT.pptx --page-index 8 --out shot_09.png ===
+[2026-10-20 14:00:04.481] [INFO ] [pid=35072] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 14:00:04.517] [INFO ] [pid=35072] [slide-version] fileId=9CD6683C version=12 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=31024 ts=2026-10-20 14:00:31.605 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/07.slide --page-index 6 ===
+[2026-10-20 14:00:31.605] [INFO ] [pid=31024] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 14:00:31.634] [INFO ] [pid=31024] [slide-version] fileId=9CD6683C version=12 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=15068 ts=2026-10-20 14:00:37.066 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js screenshot AI掌柜-路演PPT.pptx --page-index 6 --out shot_07.png ===
+[2026-10-20 14:00:37.063] [INFO ] [pid=15068] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 14:00:37.099] [INFO ] [pid=15068] [slide-version] fileId=9CD6683C version=13 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=37760 ts=2026-10-20 14:00:50.996 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js screenshot AI掌柜-路演PPT.pptx --page-index 4 --out shot_05.png ===
+[2026-10-20 14:00:50.993] [INFO ] [pid=37760] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 14:00:51.028] [INFO ] [pid=37760] [slide-version] fileId=9CD6683C version=13 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=21376 ts=2026-10-20 14:00:53.710 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js screenshot AI掌柜-路演PPT.pptx --page-index 5 --out shot_06.png ===
+[2026-10-20 14:00:53.707] [INFO ] [pid=21376] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 14:00:53.743] [INFO ] [pid=21376] [slide-version] fileId=9CD6683C version=13 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=19264 ts=2026-10-20 14:01:24.420 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/05.slide --page-index 4 ===
+[2026-10-20 14:01:24.420] [INFO ] [pid=19264] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 14:01:24.449] [INFO ] [pid=19264] [slide-version] fileId=9CD6683C version=13 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=19844 ts=2026-10-20 14:01:29.739 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js screenshot AI掌柜-路演PPT.pptx --page-index 4 --out shot_05.png ===
+[2026-10-20 14:01:29.737] [INFO ] [pid=19844] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 14:01:29.773] [INFO ] [pid=19844] [slide-version] fileId=9CD6683C version=14 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=28084 ts=2026-10-20 14:01:33.359 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js upsert-dsl AI掌柜-路演PPT.pptx --dsl-file slides/06.slide --page-index 5 ===
+[2026-10-20 14:01:33.358] [INFO ] [pid=28084] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 14:01:33.387] [INFO ] [pid=28084] [slide-version] fileId=9CD6683C version=14 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
+=== boot pid=20960 ts=2026-10-20 14:01:38.696 cwd=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT argv=C:\Users\92345\.workbuddy\binaries\node\versions\22.22.2-6\node_modules\@tencent\slidep\dist\index.js screenshot AI掌柜-路演PPT.pptx --page-index 5 --out shot_06.png ===
+[2026-10-20 14:01:38.694] [INFO ] [pid=20960] [server-url] baseUrl=http://127.0.0.1:39099 source=env
+[2026-10-20 14:01:38.729] [INFO ] [pid=20960] [slide-version] fileId=9CD6683C version=15 filePath=D:\Develop\Claude Code\AI掌柜\docs\AI掌柜-路演PPT\AI掌柜-路演PPT.pptx
