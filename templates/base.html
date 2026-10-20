@@ -26,6 +26,8 @@
       <li><a class="nav-link {% if active_nav == 'ana_traffic' %}active{% endif %}" href="{{ url_for('analytics.traffic') }}">⏰ 客流时段</a></li>
       <li><a class="nav-link {% if active_nav == 'ana_forecast' %}active{% endif %}" href="{{ url_for('analytics.forecast') }}">📦 预测备货</a></li>
       <li><a class="nav-link {% if active_nav == 'ana_members' %}active{% endif %}" href="{{ url_for('analytics.members') }}">💳 会员资产</a></li>
+      <li><a class="nav-link {% if active_nav == 'ana_simulator' %}active{% endif %}" href="{{ url_for('tools.simulator_page') }}">🎛️ 决策推演</a></li>
+      <li><a class="nav-link {% if active_nav == 'ana_import' %}active{% endif %}" href="{{ url_for('tools.import_page') }}">📥 数据导入</a></li>
       <li class="nav-label">门店执行</li>
       <li><a class="nav-link {% if active_nav == 'dashboard' %}active{% endif %}" href="{{ url_for('ops_dashboard') }}">🏠 运营首页</a></li>
       <li><a class="nav-link {% if active_nav == 'cashier' %}active{% endif %}" href="{{ url_for('cashier.cashier') }}">💰 收银结算</a></li>

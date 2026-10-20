@@ -20,6 +20,8 @@
 | **点库存那条** | 基围虾只够 1.5 天 → 一键生成采购单 → 确认入库 → 库存与流水同步变化 |
 | **经营问答** | "上个月哪 5 道菜毛利最高" → 柱状图 + 结论 + 可展开的 SQL 与执行信息 |
 | **菜品工程** | 销量 × 毛利四象限，一眼看出谁是明星、谁在赔钱；滞销菜一键设为主推 |
+| **决策推演** | 拖两个滑块：只给 20 道低毛利菜涨 5%，月毛利 +9,000、年化 +11 万，并告诉你"销量再掉 23% 才不划算" |
+| **数据导入** | 收银系统导出的 CSV 拖进来，自动识别表头、按订单号幂等去重、即时重算事实表 |
 
 ---
 
@@ -115,6 +117,8 @@ Key 存在 `data/ai_key.txt`，不入库、不进日志、不随备份库外流�
 | `ai/sandbox.py` | SQL 五道闸（只读、白名单、AST 级校验、LIMIT、超时） |
 | `ai/nl2sql.py` | 受控自然语言查询，失败自动修复一轮，再失败走规则 |
 | `ai/tools.py` | 采购、调价、主推、撤销（带 before 快照） |
+| `analytics/simulate.py` | 经营推演：调价 × 弹性 × 折扣的纯算术模型，不调模型 |
+| `analytics/importer.py` | CSV 导入：表头识别、订单号幂等、导入后自动重算事实表 |
 | `seed_demo.py` | 180 天可复现演示数据（含 4 个刻意植入的经营故事） |
 
 ---
@@ -139,6 +143,7 @@ Key 存在 `data/ai_key.txt`，不入库、不进日志、不随备份库外流�
 venv\Scripts\python tests\smoke.py        # 20 个页面全量渲染（模板/路由/变量）
 venv\Scripts\python tests\test_ai.py      # 沙箱 8 条拦截 + 7 类问答 + 执行 + 撤销
 venv\Scripts\python tests\test_metrics.py # 口径一致：原始表/视图/驾驶舱/报表/AI 五处同值
+venv\Scripts\python tests\test_import.py  # CSV 导入：表头识别 / 幂等 / 失败行 / 事实表重算
 venv\Scripts\python tests\mock_llm.py     # Mock 云端：越界 SQL → 拦截 → 自修复 → 真实结果
 venv\Scripts\python test_units.py         # 原有单元测试（金额/订单号/口令/BOM）
 ```

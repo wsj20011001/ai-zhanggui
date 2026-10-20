@@ -23,6 +23,8 @@ ROUTES = [
     "/admin/analytics/forecast",
     "/admin/analytics/members",
     "/admin/purchase",
+    "/admin/analytics/simulator",
+    "/admin/analytics/import",
     "/admin/ops",
     "/admin/cashier",
     "/admin/orders",

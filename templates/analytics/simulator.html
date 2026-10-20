@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}决策推演 · {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="ai-head">
+  <div>
+    <h4>决策推演</h4>
+    <div class="sub">AI 给建议，你也可以自己推：拖两个滑块，看一个月后毛利、客流、净收益怎么变</div>
+  </div>
+  <span class="ai-badge"><span class="dot"></span>纯算术 · 不调模型</span>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="panel">
+      <h6>假设条件</h6>
+
+      <div class="mb-4">
+        <div class="d-flex justify-content-between">
+          <label class="form-label small mb-1">调价幅度</label>
+          <span class="small fw-bold" id="plabel">+5.0%</span>
+        </div>
+        <input type="range" class="form-range" id="price" min="-10" max="15" step="0.5" value="5">
+        <div class="d-flex justify-content-between small text-muted"><span>-10%</span><span>+15%</span></div>
+      </div>
+
+      <div class="mb-4">
+        <div class="d-flex justify-content-between">
+          <label class="form-label small mb-1">价格弹性（客流对涨价的敏感度）</label>
+          <span class="small fw-bold" id="elabel">0.8</span>
+        </div>
+        <input type="range" class="form-range" id="elast" min="0.2" max="1.5" step="0.1" value="0.8">
+        <div class="d-flex justify-content-between small text-muted"><span>0.2 不敏感</span><span>1.5 很敏感</span></div>
+      </div>
+
+      <div class="mb-3">
+        <div class="d-flex justify-content-between">
+          <label class="form-label small mb-1">目标折扣率</label>
+          <span class="small fw-bold" id="dlabel">{{ '%.1f'|format(initial.discount_rate_now*100) }}%</span>
+        </div>
+        <input type="range" class="form-range" id="disc" min="0" max="15" step="0.1"
+               value="{{ '%.1f'|format(initial.discount_rate_now*100) }}">
+        <div class="text-muted small">当前 {{ '%.1f'|format(initial.discount_rate_now*100) }}%，往下拖 = 收回让利</div>
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label small">作用范围</label>
+        <select class="form-select form-select-sm" id="scope">
+          <option value="low_margin" selected>毛利率低于 40% 的菜（{{ initial.dish_count }} 道）</option>
+          <option value="all">全部有配方的菜</option>
+          <option value="top20">销量 Top 20</option>
+        </select>
+      </div>
+
+      <button class="btn-ai w-100 mt-2" id="runBtn">重新推演</button>
+      <div class="small text-muted mt-2">拖动滑块即时计算，不需要点按钮。</div>
+    </div>
+
+    <div class="panel mt-3">
+      <h6>滞销菜下架 <span>只报事实，不编收益</span></h6>
+      <div class="d-flex justify-content-between small py-1"><span>连续 3 天 0 销量</span><b>{{ initial.slow.count }} 道</b></div>
+      <div class="d-flex justify-content-between small py-1"><span>涉及食材种类</span><b>{{ initial.slow.ingredients }} 种</b></div>
+      <div class="d-flex justify-content-between small py-1"><span>占用库存金额</span><b>{{ '{:,.0f}'.format(initial.slow.stock_value) }} 元</b></div>
+      <div class="small text-muted mt-2">{{ initial.slow.names|join('、') }}{% if initial.slow.count > 5 %} 等{% endif %}</div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="row g-3">
+      <div class="col-6 col-md-3"><div class="kpi">
+        <div class="lb">月毛利变化</div>
+        <div class="v" id="pDelta">—</div>
+        <div class="d flat" id="pYear">—</div>
+      </div></div>
+      <div class="col-6 col-md-3"><div class="kpi">
+        <div class="lb">新毛利率</div>
+        <div class="v" id="mNew">—</div>
+        <div class="d flat" id="mDelta">—</div>
+      </div></div>
+      <div class="col-6 col-md-3"><div class="kpi">
+        <div class="lb">这些菜的销量变化</div>
+        <div class="v" id="qChange">—</div>
+        <div class="d flat" id="qNote">按弹性假设推算</div>
+      </div></div>
+      <div class="col-6 col-md-3"><div class="kpi">
+        <div class="lb">结论</div>
+        <div class="v" id="verdict" style="font-size:1.1rem">—</div>
+        <div class="d flat" id="beNote">—</div>
+      </div></div>
+    </div>
+
+    <div class="panel mt-3">
+      <h6>调价前后对比 <span>近 30 天口径</span></h6>
+      <div id="cmp" class="chart"></div>
+    </div>
+
+    <div class="panel mt-3">
+      <h6>这个数字是怎么算的</h6>
+      <div class="small text-muted" id="formula" style="line-height:1.9">{{ formula }}</div>
+      <details class="sqlbox mt-2">
+        <summary>展开完整假设</summary>
+        <div class="small text-muted mt-2" style="line-height:1.9">
+          ① 调价只作用于「有配方」的菜，因为只有它们有成本数据；<br />
+          ② 销量按价格弹性线性收缩：新销量 = 原销量 × (1 − 弹性 × 涨幅)，涨幅为正时销量下降；<br />
+          ③ 折扣收回假设不影响客流（保守起见，没有把"少打折带来更多客人"算进去）；<br />
+          ④ 未考虑竞争对手反应、菜单重印成本、顾客心理价位；<br />
+          ⑤ 弹性是假设值，不是拟合出来的——所以给了滑块，让老板按自己的经验调。
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ai.js') }}"></script>
+<script>
+const $ = id => document.getElementById(id);
+let chart = null, timer = null;
+
+function fmt(n) { return (n >= 0 ? '+' : '') + Math.round(n).toLocaleString(); }
+
+async function run() {
+  const body = {
+    price_pct: +$('price').value / 100,
+    elasticity: +$('elast').value,
+    target_discount: +$('disc').value / 100,
+    scope: $('scope').value,
+  };
+  $('plabel').textContent = (body.price_pct >= 0 ? '+' : '') + (body.price_pct * 100).toFixed(1) + '%';
+  $('elabel').textContent = body.elasticity.toFixed(1);
+  $('dlabel').textContent = (body.target_discount * 100).toFixed(1) + '%';
+
+  const r = await AI.post('/admin/api/simulate', body);
+  if (!r.ok) { AI.toast(r.msg || '推演失败', 'bad'); return; }
+  const d = r.data;
+
+  $('pDelta').textContent = fmt(d.profit_effect) + ' 元';
+  $('pDelta').style.color = d.profit_effect >= 0 ? '#1d9e75' : '#d64545';
+  $('pYear').textContent = '年化 ' + fmt(d.yearly) + ' 元';
+  $('mNew').textContent = (d.new_margin * 100).toFixed(1) + '%';
+  $('mDelta').textContent = (d.margin_delta >= 0 ? '+' : '') + (d.margin_delta * 100).toFixed(1) + 'pt（原 ' + (d.base.margin_rate * 100).toFixed(1) + '%）';
+  $('qChange').textContent = (d.qty_change * 100).toFixed(1) + '%';
+  $('qChange').style.color = d.qty_change >= 0 ? '#1d9e75' : '#d64545';
+  $('qNote').textContent = '影响 ' + d.dish_count + ' 道菜';
+
+  const good = d.profit_effect > 0;
+  $('verdict').textContent = good ? '值得做' : '不划算';
+  $('verdict').style.color = good ? '#1d9e75' : '#d64545';
+  $('beNote').textContent = d.breakeven_elasticity
+      ? '销量要再掉 ' + Math.round(d.breakeven_elasticity * d.inputs.price_pct * 100) + '% 才不划算'
+      : '当前方向不利于毛利';
+
+  $('formula').textContent = d.formula;
+
+  const el = $('cmp');
+  if (chart) chart.dispose();
+  chart = echarts.init(el);
+  chart.setOption({
+    animation: false,
+    color: ['#8A90A6', '#6C6CF5'],
+    grid: { left: 8, right: 16, top: 30, bottom: 6, containLabel: true },
+    legend: { top: 0, right: 0, icon: 'circle', itemWidth: 8, itemHeight: 8, textStyle: { fontSize: 11 } },
+    tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#e3e5f2', textStyle: { color: '#2b2f4a', fontSize: 12 } },
+    xAxis: { type: 'category', data: ['营收', '毛利'], axisLine: { lineStyle: { color: '#e3e5f2' } }, axisTick: { show: false }, axisLabel: { color: '#8a92a2' } },
+    yAxis: { type: 'value', axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: '#8a92a2' }, splitLine: { lineStyle: { color: '#f2f3f9' } } },
+    series: [
+      { name: '现在', type: 'bar', barMaxWidth: 46, itemStyle: { borderRadius: [6, 6, 0, 0] },
+        data: [Math.round(d.base.revenue), Math.round(d.base.profit)] },
+      { name: '推演后', type: 'bar', barMaxWidth: 46, itemStyle: { borderRadius: [6, 6, 0, 0] },
+        data: [Math.round(d.new_revenue), Math.round(d.new_profit)] },
+    ],
+  });
+}
+
+['price', 'elast', 'disc'].forEach(id => {
+  $(id).addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(run, 180); });
+});
+$('scope').addEventListener('change', run);
+$('runBtn').addEventListener('click', run);
+run();
+</script>
+{% endblock %}

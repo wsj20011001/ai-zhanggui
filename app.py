@@ -93,11 +93,12 @@ def create_app():
     from blueprints.ai_bp import bp as ai_bp, api as ai_api_bp
     from blueprints.analytics_bp import bp as analytics_bp
     from blueprints.purchase_bp import bp as purchase_bp
+    from blueprints.tools_bp import bp as tools_bp
     app.register_blueprint(mobile_bp)
     app.register_blueprint(ai_api_bp, url_prefix="/api/ai")
     for bp in (settings_bp, dishes_bp, orders_bp, cashier_bp,
                members_bp, reservations_bp, reports_bp, employees_bp,
-               ai_bp, analytics_bp, purchase_bp):
+               ai_bp, analytics_bp, purchase_bp, tools_bp):
         app.register_blueprint(bp, url_prefix="/admin")
 
     # ---- 登录后首页：AI 驾驶舱 ----

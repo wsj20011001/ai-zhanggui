@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}数据导入 · {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="ai-head">
+  <div>
+    <h4>导入真实数据</h4>
+    <div class="sub">把收银系统导出的订单明细拖进来，系统立刻用你的数据跑分析和 AI 洞察</div>
+  </div>
+  <a class="btn-ai-ghost" href="{{ url_for('tools.import_template') }}">下载模板</a>
+</div>
+
+{% if result %}
+<div class="row g-3">
+  <div class="col-6 col-lg-3"><div class="kpi"><div class="lb">新增订单</div>
+    <div class="v">{{ result.orders }}</div><div class="d flat">{{ result.items }} 行菜品明细</div></div></div>
+  <div class="col-6 col-lg-3"><div class="kpi"><div class="lb">跳过重复</div>
+    <div class="v">{{ result.skipped }}</div><div class="d flat">订单号已存在，幂等</div></div></div>
+  <div class="col-6 col-lg-3"><div class="kpi"><div class="lb">失败行</div>
+    <div class="v">{{ result.bad }}</div><div class="d flat">共读入 {{ result.rows }} 行</div></div></div>
+  <div class="col-6 col-lg-3"><div class="kpi"><div class="lb">日期范围</div>
+    <div class="v" style="font-size:1.05rem">{{ result.date_from }}<br/>{{ result.date_to }}</div>
+    <div class="d flat">事实表已重算</div></div></div>
+</div>
+
+{% if result.errors %}
+<div class="panel mt-3">
+  <h6>失败原因 <span>最多显示 10 条</span></h6>
+  {% for e in result.errors %}<div class="small text-muted py-1">· {{ e }}</div>{% endfor %}
+</div>
+{% endif %}
+
+<div class="panel mt-3">
+  <h6>接下来</h6>
+  <div class="small text-muted" style="line-height:1.9">
+    看板、四象限、洞察中心现在读的都是刚导入的数据。去
+    <a href="{{ url_for('ai.dashboard') }}">AI 驾驶舱</a> 或
+    <a href="{{ url_for('analytics.overview') }}">经营总览</a> 看一眼；
+    如果数据量少，洞察可能只有一两条，这是正常的。
+  </div>
+</div>
+
+<div class="mt-3"><a class="btn-ai" href="{{ url_for('tools.import_page') }}">再导一份</a></div>
+
+{% elif prev %}
+<div class="row g-3">
+  <div class="col-lg-5">
+    <div class="panel">
+      <h6>字段映射 <span>{{ prev.filename }}</span></h6>
+      <div class="small text-muted mb-2">共读入 {{ prev.rows }} 行，已自动识别；识别错的改一下即可。</div>
+      <form method="post" enctype="multipart/form-data">
+        <input type="hidden" name="token" value="{{ prev.token }}">
+        <input type="hidden" name="action" value="run">
+        <table class="table table-sm ai-table mb-2">
+          <tbody>
+          {% for key, label, req, desc in fields %}
+          <tr>
+            <td style="width:34%">
+              <span class="{% if req %}required{% endif %}">{{ label }}</span>
+              {% if req %}<span class="text-danger small">*</span>{% endif %}
+            </td>
+            <td>
+              <select class="form-select form-select-sm" name="map_{{ key }}">
+                <option value="">（不使用）</option>
+                {% for h in prev.headers %}
+                <option value="{{ h }}" {{ 'selected' if prev.mapping.get(key) == h }}>{{ h }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <button class="btn-ai w-100">确认导入</button>
+      </form>
+      <div class="small text-muted mt-2">按订单号幂等：重复导入同一份文件不会产生重复订单。</div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="panel">
+      <h6>前 8 行预览 <span>确认列对得上再导</span></h6>
+      <div class="table-responsive">
+        <table class="table table-sm ai-table mb-0">
+          <thead><tr>{% for key, label, req, desc in fields %}<th>{{ label }}</th>{% endfor %}</tr></thead>
+          <tbody>
+          {% for row in prev.sample %}
+          <tr>{% for key, label, req, desc in fields %}<td>{{ row.get(key, '') }}</td>{% endfor %}</tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% else %}
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="panel">
+      <h6>上传 CSV</h6>
+      <form method="post" enctype="multipart/form-data">
+        <input type="file" class="form-control form-control-sm mb-3" name="file" accept=".csv,.txt">
+        <button class="btn-ai">上传并预览</button>
+      </form>
+      <div class="small text-muted mt-3" style="line-height:1.9">
+        支持 UTF-8 / GBK（Excel 另存的 CSV 直接可用）。<br />
+        格式要求：<b>一行一道菜</b>，同一单的多行用同一个订单号；必填列是订单号、日期、菜品名称、数量、单价。
+      </div>
+      <details class="sqlbox mt-2">
+        <summary>看一个例子</summary>
+        <pre>订单号,日期,菜品名称,数量,单价,桌台,人数,支付方式,实收金额
+D20261001-0001,2026-10-01 12:20,红烧肉,1,46,大厅1,3,微信,
+D20261001-0001,2026-10-01 12:20,米饭,2,3,大厅1,3,微信,52</pre>
+      </details>
+    </div>
+
+    <div class="panel mt-3">
+      <h6>支持哪些列 <span>前 5 列必填，其余可留空</span></h6>
+      <table class="table table-sm ai-table mb-0">
+        <tbody>
+        {% for key, label, req, desc in fields %}
+        <tr>
+          <td style="width:96px"><span class="{% if req %}required{% endif %}">{{ label }}</span></td>
+          <td class="text-muted small">{{ desc }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="panel">
+      <h6>现在库里的数据</h6>
+      {% if stats %}
+      <div class="d-flex justify-content-between small py-1"><span>已结算订单</span><b>{{ stats['c'] }} 单</b></div>
+      <div class="d-flex justify-content-between small py-1"><span>日期范围</span><b>{{ stats['a'] }} ~ {{ stats['b'] }}</b></div>
+      {% else %}
+      <div class="small text-muted">还没有订单</div>
+      {% endif %}
+      <div class="small text-muted mt-3" style="line-height:1.9">
+        导入不会覆盖原有数据，也不会动演示数据 —— 订单号重复的会被跳过。<br />
+        导入后自动重算日粒度事实表，看板与 AI 问答立刻可用。
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
