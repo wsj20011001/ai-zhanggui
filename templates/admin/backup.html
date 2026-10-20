@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}数据备份 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<h5 class="mb-3">💾 数据备份与恢复</h5>
+{% if pending %}
+<div class="alert alert-info">⏳ 有备份恢复请求待生效，下次启动程序时自动恢复。</div>
+{% endif %}
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>一键备份</h6>
+      <p class="text-muted small">将当前全部数据打包为备份文件，保存在程序目录 data\backups\ 下，可直接复制到 U 盘存档。</p>
+      <form method="post" action="{{ url_for('settings.backup_run') }}">
+        <button class="btn btn-primary w-100">💾 立即备份</button>
+      </form>
+    </div></div>
+  </div>
+  <div class="col-md-8">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>备份列表</h6>
+      {% if backups %}
+      <table class="table table-sm align-middle">
+        <thead><tr><th>文件名</th><th>备份时间</th><th>大小</th><th class="text-end">操作</th></tr></thead>
+        <tbody>
+        {% for b in backups %}
+        <tr>
+          <td class="small">{{ b.name }}</td>
+          <td class="small">{{ b.time }}</td>
+          <td class="small">{{ '%.1f'|format(b.size / 1024) }} KB</td>
+          <td class="text-end">
+            <form class="d-inline" method="post" action="{{ url_for('settings.restore_apply') }}"
+                  onsubmit="return confirm('确认恢复此备份？当前数据将被替换，且重启程序后生效。')">
+              <input type="hidden" name="file" value="{{ b.name }}">
+              <button class="btn btn-sm btn-outline-warning">恢复</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="text-muted">暂无备份文件</p>
+      {% endif %}
+    </div></div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% for t in tables %}
+<a href="{{ url_for('mobile.order_page', table_id=t['id']) }}" class="table-card-m t-{{ t['status'] }}" style="text-decoration:none">
+  <div class="t-name">{{ t['name'] }}</div>
+  <div class="t-cap">{{ t['type'] }} · {{ t['capacity'] }}人</div>
+  <div class="t-cap">{{ table_status_label[t['status']] }}</div>
+</a>
+{% endfor %}

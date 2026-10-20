@@ -1,0 +1,63 @@
+﻿{% extends "base.html" %}
+{% block title %}规格 · {{ dish['name'] }} - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>🍽️ 规格 · {{ dish['name'] }} <span class="text-muted small">（当前售价 {{ '%.2f'|format(dish['price']) }} 元）</span></h5>
+  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('dishes.dishes') }}">← 返回菜品</a>
+</div>
+
+<div class="alert alert-info">
+  同一个主料、不同做法或份量，价格不同时用规格。点餐端会弹出选择，<b>最终单价 = 售价 + 规格加价</b>。<br>
+  例：<code>笋干烧 +0 / 啤酒烧 +10 / 肚条烧 +25</code> —— 客人选「啤酒烧」，按 <b>{{ '%.2f'|format(dish['price'] + 10) }}</b> 元计。
+</div>
+
+<div class="row g-3">
+  <div class="col-md-8">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <form method="post">
+        <table class="table align-middle">
+          <thead><tr><th style="width:60px">默认</th><th>规格名称</th><th style="width:170px">加价（元）</th></tr></thead>
+          <tbody>
+          {% for i in range(8) %}
+          {% set sp = specs[i] if specs|length > i else None %}
+          <tr>
+            <td><input class="form-check-input" type="radio" name="spec_default" value="{{ i }}"
+                       {{ 'checked' if (sp and sp['is_default']) or (not specs and i == 0) }}></td>
+            <td><input class="form-control" name="spec_name" value="{{ sp['name'] if sp else '' }}"
+                       placeholder="{{ '如：啤酒烧' if i == 0 else '' }}"></td>
+            <td><input type="number" step="0.01" class="form-control" name="spec_delta"
+                       value="{{ '%.2f'|format(sp['price_delta']) if sp else '0.00' }}"></td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <button class="btn btn-primary">保存规格</button>
+        <span class="text-muted small ms-2">留空的规格会被删除；加价可填负数（如小份 -30）</span>
+      </form>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>当前规格</h6>
+      {% if specs %}
+      <table class="table table-sm mb-0">
+        {% for s in specs %}
+        <tr><td>{{ s['name'] }}{% if s['is_default'] %} <span class="badge bg-primary">默认</span>{% endif %}</td>
+            <td class="text-end">{{ '%.2f'|format(dish['price'] + s['price_delta']) }} 元</td></tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <p class="text-muted mb-0">暂无规格。填好左侧表格保存即可。</p>
+      {% endif %}
+    </div></div>
+    <div class="card table-card shadow-sm mt-3"><div class="card-body">
+      <h6>提示</h6>
+      <ul class="small text-muted mb-0">
+        <li>时价菜不支持规格（价格本身待定）</li>
+        <li>规格不同的同一道菜，在购物车里是<b>两行</b>，可分别下单</li>
+        <li>报表与销量按菜品名统计，规格记录在订单明细里</li>
+      </ul>
+    </div></div>
+  </div>
+</div>
+{% endblock %}

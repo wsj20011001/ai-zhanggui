@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}桌台客流 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<h5 class="mb-3">🪑 桌台客流统计</h5>
+<form method="get" class="row g-2 align-items-end mb-3">
+  <div class="col-auto"><label class="form-label small mb-1">开始日期</label>
+    <input type="date" class="form-control form-control-sm" name="d1" value="{{ d1 }}"></div>
+  <div class="col-auto"><label class="form-label small mb-1">结束日期</label>
+    <input type="date" class="form-control form-control-sm" name="d2" value="{{ d2 }}"></div>
+  <div class="col-auto"><button class="btn btn-sm btn-primary">查询</button></div>
+</form>
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-4"><div class="card stat-card shadow-sm"><div class="card-body">
+    <div class="text-muted small">接待桌数</div><div class="num text-primary">{{ total_tables }}</div>
+  </div></div></div>
+  <div class="col-6 col-md-4"><div class="card stat-card shadow-sm"><div class="card-body">
+    <div class="text-muted small">总客人数</div><div class="num text-success">{{ total_persons }}</div>
+  </div></div></div>
+  <div class="col-6 col-md-4"><div class="card stat-card shadow-sm"><div class="card-body">
+    <div class="text-muted small">总营收（元）</div><div class="num text-danger">{{ '%.2f'|format(total_amount) }}</div>
+  </div></div></div>
+</div>
+<div class="card table-card shadow-sm"><div class="card-body">
+  <table class="table align-middle">
+    <thead><tr><th>桌台</th><th>订单数（翻台）</th><th>客人数</th><th class="text-end">营收（元）</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+    <tr>
+      <td><b>{{ r['table_name'] }}</b></td>
+      <td>{{ r['cnt'] }} 单</td>
+      <td>{{ r['persons'] }} 人</td>
+      <td class="text-end text-danger fw-bold">{{ '%.2f'|format(r['amount'] or 0) }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4" class="text-center text-muted py-4">该时段暂无数据</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+{% endblock %}

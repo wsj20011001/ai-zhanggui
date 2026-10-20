@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+*.egg-info/
+
+# 数据与密钥（不入库）
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/secret.key
+data/ai_key.txt
+data/backups/
+data/*.log
+
+# 打包产物
+build/
+dist/
+*.spec.bak
+
+# 演示数据快照（体积大，单独分发）
+demo_snapshot.db
+
+# 编辑器
+.vscode/
+.idea/
+.DS_Store

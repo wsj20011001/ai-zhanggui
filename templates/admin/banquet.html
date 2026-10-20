@@ -1,0 +1,109 @@
+﻿{% extends "base.html" %}
+{% block title %}宴席排菜 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>🍽️ 宴席排菜 <span class="text-muted small">按人均标准自动出一套建议菜单</span></h5>
+  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('dishes.categories') }}">🍱 设置宴席角色</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>排菜条件</h6>
+      <form method="post">
+        <div class="row">
+          <div class="col-6 mb-2"><label class="form-label small required">人数</label>
+            <input type="number" min="1" class="form-control" name="persons" value="{{ params.persons }}" required></div>
+          <div class="col-6 mb-2"><label class="form-label small required">人均标准（元）</label>
+            <input type="number" min="1" step="10" class="form-control" name="per_person"
+                   value="{{ params.per_person }}" required></div>
+        </div>
+        <div class="mb-2"><label class="form-label small">策略</label>
+          <select class="form-select" name="mode">
+            <option value="balanced" {{ 'selected' if params.mode == 'balanced' }}>均衡（兼顾毛利与库存）</option>
+            <option value="profit" {{ 'selected' if params.mode == 'profit' }}>保利润优先</option>
+            <option value="clear" {{ 'selected' if params.mode == 'clear' }}>清库存优先</option>
+          </select></div>
+        <div class="mb-2"><label class="form-label small">不要的环节</label>
+          <div class="d-flex flex-wrap gap-2">
+            {% for r in roles %}
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="exclude" value="{{ r }}"
+                     id="ex-{{ loop.index }}" {{ 'checked' if r in params.exclude }}>
+              <label class="form-check-label small" for="ex-{{ loop.index }}">{{ r }}</label>
+            </div>
+            {% endfor %}
+          </div></div>
+        <button class="btn btn-primary w-100">🎲 生成建议菜单</button>
+      </form>
+    </div></div>
+    <div class="card table-card shadow-sm mt-3"><div class="card-body">
+      <h6>说明</h6>
+      <ul class="small text-muted mb-0">
+        <li>按中餐宴席结构分配预算：<b>凉菜15% / 热菜40% / 主菜30% / 汤10% / 主食5%</b></li>
+        <li>主菜挑价格高的撑场面，其余按推荐分（毛利+库存）挑</li>
+        <li>已自动排除：下架菜、过季时令菜、时价菜、原料不足的菜</li>
+        <li><b>这只是建议</b>，请按客人忌口和场合人工增减</li>
+      </ul>
+    </div></div>
+  </div>
+
+  <div class="col-md-8">
+    {% if plan %}
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="mb-0">建议菜单（{{ plan.persons }} 人）</h6>
+        <div>
+          <span class="me-3">预算 <b>{{ '%.2f'|format(plan.target) }}</b> 元</span>
+          <span class="me-3">合计 <b class="text-danger">{{ '%.2f'|format(plan.total) }}</b> 元</span>
+          <span>实际人均 <b class="{{ 'text-danger' if plan.actual_per > plan.per_person else 'text-success' }}">
+            {{ '%.2f'|format(plan.actual_per) }}</b> 元</span>
+        </div>
+      </div>
+      <div class="alert {{ 'alert-warning' if plan.diff|abs > plan.target * 0.1 else 'alert-success' }} py-1 px-2 small mb-3">
+        {% if plan.diff > 0 %}超出预算 {{ '%.2f'|format(plan.diff) }} 元{% else %}低于预算 {{ '%.2f'|format(-plan.diff) }} 元{% endif %}
+        —— 可取消勾选下面的菜来调整
+      </div>
+
+      <form method="post" action="{{ url_for('reports.banquet_create') }}">
+        <input type="hidden" name="persons" value="{{ plan.persons }}">
+        <input type="hidden" name="per_person" value="{{ plan.per_person }}">
+        {% for c in plan.courses %}
+        <div class="d-flex justify-content-between align-items-center mt-3 border-bottom">
+          <b>{{ c.role }} <span class="text-muted small">（{{ c.dishes|length }} 道 · 预算 {{ '%.0f'|format(c.budget) }} 元）</span></b>
+          <span class="text-danger fw-bold">{{ '%.2f'|format(c.subtotal) }} 元</span>
+        </div>
+        <table class="table table-sm align-middle mb-0">
+          {% for d in c.dishes %}
+          <tr>
+            <td style="width:36px"><input class="form-check-input" type="checkbox" name="dish_id" value="{{ d.dish_id }}" checked></td>
+            <td><b>{{ d.name }}</b>
+              {% if d.can_make is not none and d.can_make <= 5 %}<span class="badge bg-danger ms-1">仅剩 {{ d.can_make }} 份</span>{% endif %}
+              {% if d.reason %}<div class="small text-muted">{{ d.reason }}</div>{% endif %}</td>
+            <td class="text-end" style="width:90px">{{ '%.2f'|format(d.price) }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+        {% endfor %}
+
+        <div class="d-flex gap-2 align-items-center mt-3">
+          <select class="form-select" name="table_id" style="max-width:220px" required>
+            <option value="">选择桌台…</option>
+            {% for t in tables %}
+            <option value="{{ t['id'] }}">{{ t['name'] }}（{{ t['type'] }}·{{ t['capacity'] }}人）</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-danger">➡️ 生成订单</button>
+          <span class="text-muted small">取消勾选的菜不会下单</span>
+        </div>
+      </form>
+    </div></div>
+    {% else %}
+    <div class="card table-card shadow-sm"><div class="card-body text-center text-muted py-5">
+      <div style="font-size:2.5rem">🍽️</div>
+      <p class="mb-0 mt-2">填好左边的人数与人均标准，点「生成建议菜单」</p>
+    </div></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

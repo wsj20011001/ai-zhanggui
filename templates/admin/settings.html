@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}店铺设置 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<h5 class="mb-3">⚙️ 店铺设置</h5>
+<form method="post" class="row g-3">
+  <div class="col-md-8">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6 class="mb-3">店铺信息</h6>
+      <div class="mb-3"><label class="form-label required">店铺名称</label>
+        <input class="form-control" name="shop_name" value="{{ s.shop_name }}" required></div>
+      <div class="row">
+        <div class="col-md-6 mb-3"><label class="form-label">联系电话</label>
+          <input class="form-control" name="shop_phone" value="{{ s.shop_phone }}"></div>
+        <div class="col-md-6 mb-3"><label class="form-label">店铺地址</label>
+          <input class="form-control" name="shop_address" value="{{ s.shop_address }}"></div>
+      </div>
+      <h6 class="mb-3 mt-2">营销规则</h6>
+      <div class="row">
+        <div class="col-md-4 mb-3"><label class="form-label">会员折扣率（0.95 = 95折）</label>
+          <input class="form-control" name="member_discount" value="{{ s.member_discount }}"></div>
+        <div class="col-md-4 mb-3"><label class="form-label">满减规则（满100减10,满200减25）</label>
+          <input class="form-control" name="full_reduction" value="{{ s.full_reduction }}" placeholder="100:10,200:25"></div>
+        <div class="col-md-4 mb-3"><label class="form-label">积分抵扣比例（100分=几元）</label>
+          <input class="form-control" name="points_money_ratio" value="{{ s.points_money_ratio }}"></div>
+        <div class="col-md-4 mb-3"><label class="form-label">每消费1元得积分</label>
+          <input class="form-control" name="points_earn_per_yuan" value="{{ s.points_earn_per_yuan }}"></div>
+        <div class="col-md-4 mb-3"><label class="form-label">流失提醒天数</label>
+          <input class="form-control" name="lost_days" value="{{ s.lost_days }}"></div>
+      </div>
+      <h6 class="mb-3 mt-2">点餐推荐策略</h6>
+      <div class="row">
+        <div class="col-md-6 mb-3"><label class="form-label">推荐策略（影响点餐端「今日主推」排序）</label>
+          <select class="form-select" name="rec_mode">
+            <option value="balanced" {{ 'selected' if s.get('rec_mode','balanced') == 'balanced' }}>均衡推荐（利润 40 / 库存 30 / 临期 20）</option>
+            <option value="profit" {{ 'selected' if s.get('rec_mode') == 'profit' }}>保利润优先（利润 70 / 库存 20 / 临期 10）</option>
+            <option value="clear" {{ 'selected' if s.get('rec_mode') == 'clear' }}>清库存优先（利润 20 / 库存 30 / 临期 50）</option>
+          </select></div>
+        <div class="col-md-6 mb-3"><label class="form-label">原料不足时</label>
+          <select class="form-select" name="stock_block_order">
+            <option value="0" {{ 'selected' if s.get('stock_block_order','0') != '1' }}>只提示，仍可下单（推荐）</option>
+            <option value="1" {{ 'selected' if s.get('stock_block_order') == '1' }}>直接拦截，不允许下单</option>
+          </select>
+          <div class="form-text">仅在菜品已录配方时生效；库存数字不准时建议用"只提示"</div>
+        </div>
+      </div>
+      <h6 class="mb-3 mt-2">启动选项</h6>
+      <div class="mb-3">
+        <select class="form-select" name="auto_open_browser">
+          <option value="1" {{ 'selected' if s.get('auto_open_browser','1') == '1' }}>启动时自动打开浏览器（推荐）</option>
+          <option value="0" {{ 'selected' if s.get('auto_open_browser') == '0' }}>不自动打开，手动访问地址</option>
+        </select>
+        <div class="form-text">
+          如果每次启动都弹出 Edge 的「现有实例正在以提升的权限运行」，请选<b>「不自动打开」</b>；
+          根治办法是别用管理员身份运行 Edge，详见 README 常见问题。
+        </div>
+      </div>
+
+      <h6 class="mb-3 mt-2">时令与季节</h6>
+      <div class="row">
+        <div class="col-md-4 mb-3"><label class="form-label">当前季节</label>
+          <select class="form-select" name="current_season">
+            <option value="">自动（按月份）</option>
+            {% for sn in ['春','夏','秋','冬'] %}
+            <option value="{{ sn }}" {{ 'selected' if s.get('current_season') == sn }}>{{ sn }}季</option>
+            {% endfor %}
+          </select>
+          <div class="form-text">现在生效：<b>{{ season_now }}</b>季</div></div>
+        <div class="col-md-8 mb-3"><label class="form-label">过季的时令菜</label>
+          <select class="form-select" name="seasonal_block_order">
+            <option value="1" {{ 'selected' if s.get('seasonal_block_order','1') == '1' }}>点餐端隐藏/置灰，不允许下单（推荐）</option>
+            <option value="0" {{ 'selected' if s.get('seasonal_block_order') == '0' }}>只显示「过季」标记，仍可下单</option>
+          </select>
+          <div class="form-text">避免客人点了却买不到原料</div></div>
+      </div>
+      <div class="mb-3"><label class="form-label">小票页脚</label>
+        <input class="form-control" name="receipt_footer" value="{{ s.receipt_footer }}"></div>
+      <button class="btn btn-primary">保存设置</button>
+    </div></div>
+  </div>
+</form>
+{% endblock %}

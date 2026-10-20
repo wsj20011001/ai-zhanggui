@@ -1,0 +1,155 @@
+/* ============ PC 管理端布局 ============ */
+.admin-body { background: #f5f6f8; min-height: 100vh; }
+.sidebar {
+  width: 200px; min-height: 100vh; background: #23282d; padding: 12px 8px;
+  position: sticky; top: 0;
+}
+.sidebar-brand {
+  color: #ffd77a; font-weight: 700; font-size: 1.05rem; text-align: center;
+  padding: 8px 0 14px; border-bottom: 1px solid #3a4148; margin-bottom: 10px;
+}
+.sidebar .nav-link { color: #c8cdd2; padding: 8px 12px; font-size: .92rem; }
+.sidebar .nav-link:hover { color: #fff; background: #2f363d; }
+.sidebar .nav-link.active { background: #0d6efd; color: #fff; }
+.sidebar .nav-label { color: #6c757d; font-size: .75rem; padding: 10px 12px 2px; }
+.main-area { min-width: 0; }
+.topbar {
+  background: #fff; border-bottom: 1px solid #e5e7eb; padding: 10px 16px;
+  font-size: .9rem; position: sticky; top: 0; z-index: 100;
+}
+.content { max-width: 1400px; }
+
+/* ============ 通用卡片/表格 ============ */
+.stat-card { border: none; border-radius: 10px; }
+.stat-card .num { font-size: 1.5rem; font-weight: 700; }
+.table-card { background: #fff; border-radius: 10px; border: 1px solid #e5e7eb; }
+.dish-thumb { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; background: #eee; }
+.badge-tag { font-weight: 500; }
+.required::after { content: " *"; color: #dc3545; }
+.bar-cell { background: #e9ecef; border-radius: 4px; overflow: hidden; }
+.bar-fill { background: #0d6efd; color: #fff; font-size: .78rem; padding: 2px 8px; white-space: nowrap; }
+tr.hurry-row td { background: #fff3cd !important; animation: blink 1s infinite; }
+@keyframes blink { 50% { background: #ffe08a !important; } }
+
+/* ============ 小票打印（58mm） ============ */
+.receipt-body { background: #e0e0e0; }
+.receipt-wrap {
+  width: 58mm; margin: 16px auto; background: #fff; padding: 4mm 2mm;
+  font-size: 11px; color: #000; font-family: "Microsoft YaHei", sans-serif;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+.receipt-wrap h4 { font-size: 15px; font-weight: 700; text-align: center; margin: 2px 0; }
+.receipt-wrap .r-line { text-align: center; margin: 1px 0; }
+.receipt-wrap table { width: 100%; }
+.receipt-wrap td { padding: 2px 0; font-size: 11px; vertical-align: top; }
+.receipt-wrap .r-total { border-top: 1px dashed #000; font-weight: 700; }
+.receipt-wrap .r-dashed { border-top: 1px dashed #000; margin: 4px 0; }
+.receipt-footer { text-align: center; margin-top: 6px; }
+.no-print { max-width: 58mm; margin: 0 auto; }
+@media print {
+  body * { visibility: hidden; }
+  .receipt-wrap, .receipt-wrap * { visibility: visible; }
+  .receipt-wrap { position: absolute; left: 0; top: 0; width: 58mm; box-shadow: none; margin: 0; }
+  .no-print { display: none; }
+  @page { size: 58mm auto; margin: 0; }
+}
+
+/* ============ 登录页 ============ */
+.login-body {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #2b5876, #4e4376);
+}
+.login-card { width: 360px; max-width: 92vw; border-radius: 14px; }
+
+/* ============ 移动端点餐 ============ */
+.mobile-body { background: #f4f5f7; }
+.mobile-header {
+  background: #23282d; color: #fff; padding: 10px 14px; font-size: 1.05rem;
+  position: sticky; top: 0; z-index: 1050;
+}
+.mobile-header a { color: #fff; text-decoration: none; }
+.table-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 14px; }
+.table-card-m {
+  border-radius: 14px; text-align: center; padding: 18px 6px; color: #fff;
+  cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.12); border: none;
+}
+.table-card-m .t-name { font-size: 1.05rem; font-weight: 700; }
+.table-card-m .t-cap { font-size: .78rem; opacity: .85; }
+.t-idle { background: #23a55a; }
+.t-ordering { background: #e8a13d; }
+.t-occupied { background: #c0392b; }
+/* 点餐页：左侧竖排分类 + 右侧菜品列表 */
+.order-page { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+.order-page .mobile-header { flex-shrink: 0; }
+.menu-layout { flex: 1; display: flex; overflow: hidden; }
+.cat-rail { width: 92px; flex-shrink: 0; overflow-y: auto; background: #f0f1f3; }
+.cat-rail .cat-item {
+  display: block; width: 100%; padding: 14px 6px; border: none; background: none;
+  font-size: .85rem; text-align: center; color: #555;
+  border-left: 3px solid transparent;
+}
+.cat-rail .cat-item.active {
+  background: #fff; border-left-color: #0d6efd; color: #0d6efd; font-weight: 600;
+}
+.dish-list { flex: 1; overflow-y: auto; background: #fff; padding-bottom: 120px; }
+.dish-row {
+  display: flex; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #f2f2f2;
+  align-items: flex-start;
+}
+.dish-row:active { background: #fafafa; }
+.dish-row .d-thumb {
+  width: 64px; height: 64px; border-radius: 8px; object-fit: cover; flex-shrink: 0;
+  background: #f0f0f0;
+}
+.dish-row .d-thumb-ph {
+  width: 64px; height: 64px; border-radius: 8px; flex-shrink: 0; background: #f7f7f7;
+  display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+}
+.dish-row .d-body { flex: 1; min-width: 0; }
+.dish-row .d-name { font-size: .92rem; font-weight: 600; }
+.dish-row .d-price { color: #e74c3c; font-weight: 700; font-size: .95rem; }
+.dish-row .d-desc { font-size: .75rem; color: #999; }
+
+/* 口味备注弹窗（点选式） */
+.note-modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1070;
+  display: flex; align-items: flex-end;
+}
+.note-sheet {
+  width: 100%; background: #fff; border-radius: 16px 16px 0 0;
+  max-height: 82vh; overflow-y: auto;
+}
+.chip-group { display: flex; flex-wrap: wrap; }
+.chip {
+  border: 1px solid #ddd; background: #fff; border-radius: 999px;
+  padding: 7px 16px; font-size: .88rem; margin: 0 8px 8px 0; color: #333;
+}
+.chip.active { background: #0d6efd; color: #fff; border-color: #0d6efd; }
+.cart-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; background: #23282d; color: #fff;
+  padding: 10px 14px; z-index: 1050; display: flex; align-items: center;
+}
+.cart-bar .cb-count { background: #e74c3c; border-radius: 50%; min-width: 24px; height: 24px;
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+.cart-drawer { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1060; display: flex; }
+.cart-drawer .cd-panel {
+  width: 92%; max-width: 480px; height: 100%; background: #fff; margin-left: auto;
+  display: flex; flex-direction: column;
+}
+@media (orientation: landscape) {
+  .table-grid { grid-template-columns: repeat(4, 1fr); }
+  .cat-rail { width: 110px; }
+}
+
+/* ---------- 今日主推 / 原料不足 ---------- */
+.pick-strip { padding: 10px 10px 6px; background: linear-gradient(135deg, #fff8e1, #fffdf5);
+  border-bottom: 1px solid #f0e6c8; }
+.pick-title { font-weight: 700; font-size: .88rem; margin-bottom: 8px; }
+.pick-cards { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
+.pick-card { flex: 0 0 auto; width: 138px; background: #fff; border: 1px solid #ffe0a3;
+  border-radius: 10px; padding: 8px 9px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.pick-card:active { transform: scale(.97); }
+.pc-name { font-weight: 600; font-size: .82rem; line-height: 1.25; height: 2.5em; overflow: hidden; }
+.pc-reason { font-size: .68rem; color: #8a6d3b; margin-top: 3px; height: 2.6em; overflow: hidden; }
+.pc-price { font-size: .82rem; color: #c0392b; font-weight: 700; margin-top: 4px; }
+.dish-row.sold-out { opacity: .45; filter: grayscale(1); }

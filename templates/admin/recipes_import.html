@@ -1,0 +1,66 @@
+﻿{% extends "base.html" %}
+{% block title %}配方批量导入 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>📥 配方批量导入</h5>
+  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('dishes.dishes') }}">← 返回菜品</a>
+</div>
+
+<div class="alert alert-info">
+  已录配方：<b>{{ have }}</b> / {{ total }} 道菜。
+  207 道菜手工录配方不现实，建议<b>先只录销量 Top 30~50 的菜</b>，
+  其余保持"无配方"（不受库存限制、不参与毛利统计），跑一个月看数据再决定扩不扩。
+</div>
+
+<div class="row g-3">
+  <div class="col-md-7">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>上传 CSV</h6>
+      <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+          <input type="file" class="form-control" name="file" accept=".csv" required>
+          <div class="form-text">
+            三列：<code>菜品名称,食材名称,单份用量</code>；第一行可以是表头。
+            编码支持 UTF-8 / GBK。同名菜品会被<b>整单覆盖</b>（先删后建）。
+          </div>
+        </div>
+        <button class="btn btn-primary">开始导入</button>
+      </form>
+      <hr>
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('dishes.recipes_import', tpl=1) }}">⬇️ 下载模板</a>
+        <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('dishes.recipes_import', export=1) }}">⬆️ 导出当前配方</a>
+      </div>
+    </div></div>
+  </div>
+  <div class="col-md-5">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>示例</h6>
+      <pre class="small mb-0">菜品名称,食材名称,单份用量
+春归燕招牌鸡,土鸡,0.5
+春归燕招牌鸡,生姜,0.02
+红烧肉,五花肉,0.3</pre>
+    </div></div>
+  </div>
+</div>
+
+{% if result %}
+<div class="card table-card shadow-sm mt-3"><div class="card-body">
+  <h6>导入结果</h6>
+  <p class="mb-2">成功：<b class="text-success">{{ result['dishes'] }}</b> 道菜 /
+    <b class="text-success">{{ result['items'] }}</b> 条配方</p>
+  {% if result['n_bad_dish'] %}
+  <p class="mb-1 text-danger">未匹配到的菜品（{{ result['n_bad_dish'] }} 个，需先在菜品管理里建好）：</p>
+  <p class="small text-muted">{{ result['bad_dish']|join('、') }}{% if result['n_bad_dish'] > 20 %} …{% endif %}</p>
+  {% endif %}
+  {% if result['n_bad_ing'] %}
+  <p class="mb-1 text-danger">未匹配到的食材（{{ result['n_bad_ing'] }} 个，需先在食材库存里建好）：</p>
+  <p class="small text-muted">{{ result['bad_ing']|join('、') }}{% if result['n_bad_ing'] > 20 %} …{% endif %}</p>
+  {% endif %}
+  {% if result['n_bad_qty'] %}
+  <p class="mb-1 text-danger">用量非法的行（{{ result['n_bad_qty'] }} 行）：</p>
+  <p class="small text-muted">{{ result['bad_qty']|join('、') }}{% if result['n_bad_qty'] > 20 %} …{% endif %}</p>
+  {% endif %}
+</div></div>
+{% endif %}
+{% endblock %}

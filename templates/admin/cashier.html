@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}收银台 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<h5 class="mb-3">💰 收银台 <span class="text-muted small">（点击桌台进行结算）</span></h5>
+<div class="row g-3">
+  {% for t in tables %}
+  <div class="col-6 col-md-4 col-lg-3">
+    {% if counts.get(t['id']) %}
+    <a class="card shadow-sm text-decoration-none h-100" style="border:none;background:{% if t['status'] == 'ordering' %}#fff7e8{% else %}#fdf0ef{% endif %}"
+       href="{{ url_for('cashier.cashier_settle', table_id=t['id']) }}">
+      <div class="card-body">
+        <h6 class="mb-1">{{ t['name'] }}</h6>
+        <div class="text-muted small">{{ t['type'] }} · {{ t['capacity'] }}人</div>
+        <div class="mt-2">
+          <span class="badge bg-danger">未结 {{ counts.get(t['id'], 0) }} 单</span>
+          <span class="text-danger fw-bold ms-1">{{ '%.2f'|format(amounts.get(t['id'], 0)) }} 元</span>
+          {% if pending.get(t['id']) %}
+          <div class="mt-1"><span class="badge bg-warning text-dark">⚠️ {{ pending.get(t['id']) }} 单待定价</span></div>
+          {% endif %}
+        </div>
+      </div>
+    </a>
+    {% else %}
+    <div class="card h-100" style="border:none;background:#f2f7f3">
+      <div class="card-body text-muted">
+        <h6 class="mb-1">{{ t['name'] }}</h6>
+        <div class="small">{{ t['type'] }} · {{ t['capacity'] }}人</div>
+        <div class="mt-2 small">{{ table_status_label[t['status']] }} · 无未结订单</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

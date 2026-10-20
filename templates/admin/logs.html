@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}操作日志 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<h5 class="mb-3">🕵️ 操作日志 <span class="text-muted small">（登录、下单、增删改、结算等全部操作，最近 300 条）</span></h5>
+<form method="get" class="row g-2 align-items-end mb-3">
+  <div class="col-auto"><label class="form-label small mb-1">操作类型</label>
+    <select class="form-select form-select-sm" name="op_type">
+      <option value="">全部类型</option>
+      {% for t in op_types %}
+      <option value="{{ t }}" {{ 'selected' if op_type == t }}>{{ t }}</option>
+      {% endfor %}
+    </select></div>
+  <div class="col-auto"><label class="form-label small mb-1">终端</label>
+    <select class="form-select form-select-sm" name="type">
+      <option value="">全部</option>
+      <option value="admin" {{ 'selected' if utype == 'admin' }}>管理端</option>
+      <option value="employee" {{ 'selected' if utype == 'employee' }}>点餐端</option>
+    </select></div>
+  <div class="col-auto"><button class="btn btn-sm btn-primary">筛选</button></div>
+</form>
+<div class="card table-card shadow-sm"><div class="card-body">
+  <div class="table-responsive">
+  <table class="table table-sm align-middle">
+    <thead><tr><th>操作时间</th><th>类型</th><th>终端</th><th>操作人</th><th>详情</th><th>IP</th></tr></thead>
+    <tbody>
+    {% for l in logs %}
+    <tr>
+      <td class="small">{{ l['created_at'] }}</td>
+      <td>
+        {% set badge = {'登录':'bg-primary','修改密码':'bg-warning text-dark','下单':'bg-info text-dark',
+                        '新增':'bg-success','编辑':'bg-secondary','删除':'bg-danger',
+                        '结算':'bg-dark','状态变更':'bg-light text-dark border',
+                        '充值':'bg-success','库存':'bg-info text-dark','备份':'bg-secondary','设置':'bg-light text-dark border'} %}
+        <span class="badge {{ badge.get(l['op_type'], 'bg-secondary') }}">{{ l['op_type'] }}</span>
+      </td>
+      <td>
+        {% if l['user_type'] == 'admin' %}<span class="badge bg-primary">管理端</span>
+        {% else %}<span class="badge bg-info text-dark">点餐端</span>{% endif %}
+      </td>
+      <td>{{ l['user_name'] or l['user_key'] }}</td>
+      <td class="small">{{ l['detail'] }}</td>
+      <td class="small text-muted">{{ l['ip'] }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" class="text-center text-muted py-4">暂无操作记录</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div></div>
+{% endblock %}

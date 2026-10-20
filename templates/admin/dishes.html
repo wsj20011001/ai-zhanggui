@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}菜品管理 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>🍽️ 菜品管理</h5>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{{ url_for('dishes.categories') }}">🍱 分类管理</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('dishes.dishes_batch') }}">📐 批量修改</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('dishes.recipes_import') }}">🧾 配方管理</a>
+    <a class="btn btn-primary" href="{{ url_for('dishes.dish_add') }}">＋ 新增菜品</a>
+  </div>
+</div>
+
+<div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+  <a class="btn btn-sm {% if not sel_cat %}btn-primary{% else %}btn-outline-primary{% endif %}"
+     href="{{ url_for('dishes.dishes', q=q) }}">全部</a>
+  {% for c in cats %}
+  <a class="btn btn-sm {% if sel_cat == c['id']|string %}btn-primary{% else %}btn-outline-primary{% endif %}"
+     href="{{ url_for('dishes.dishes', cat=c['id'], q=q) }}">{{ c['name'] }}</a>
+  {% endfor %}
+  <form class="ms-auto d-flex gap-2" method="get">
+    <input type="hidden" name="cat" value="{{ sel_cat }}">
+    <input class="form-control form-control-sm" style="width:200px" name="q" value="{{ q }}" placeholder="搜索菜名">
+    <button class="btn btn-sm btn-outline-secondary">搜索</button>
+  </form>
+</div>
+
+<div class="card table-card shadow-sm"><div class="card-body">
+  <table class="table align-middle">
+    <thead><tr><th>图片</th><th>名称</th><th>分类</th><th>价格</th><th>标记</th><th>状态</th><th class="text-end">操作</th></tr></thead>
+    <tbody>
+    {% for d in dishes %}
+    <tr class="{{ '' if d['on_sale'] else 'table-secondary' }}">
+      <td>
+        {% if d['image'] %}<img class="dish-thumb" src="{{ url_for('uploads', filename=d['image'].replace('uploads/', '')) }}" alt="">
+        {% else %}<div class="dish-thumb d-flex align-items-center justify-content-center text-muted">🍽️</div>{% endif %}
+      </td>
+      <td><b>{{ d['name'] }}</b>
+        {% if d['is_combo'] %}<span class="badge bg-info text-dark badge-tag ms-1">套餐</span>{% endif %}
+        {% if d['id'] in have_recipe %}<span class="badge bg-success badge-tag ms-1">有配方</span>{% endif %}
+        {% if d['is_seasonal'] %}<span class="badge bg-success badge-tag ms-1">🌿{{ d['season'] or '时令' }}</span>{% endif %}
+        {% if has_spec.get(d['id']) %}<span class="badge bg-primary badge-tag ms-1">{{ has_spec.get(d['id']) }} 规格</span>{% endif %}</td>
+      <td>{{ d['cat_name'] }}</td>
+      <td>{% if d['price_mode'] == 'market' %}
+        <span class="badge bg-warning text-dark">时价·待定</span>
+        {% else %}<span class="text-danger fw-bold">{{ '%.2f'|format(d['price']) }}</span>{% endif %}</td>
+      <td>
+        {% if d['is_recommend'] %}<span class="badge bg-warning text-dark badge-tag">推荐</span>{% endif %}
+        {% if d['is_featured'] %}<span class="badge bg-danger badge-tag">特色</span>{% endif %}
+        {% if d['warn_flag'] %}<span class="badge bg-secondary badge-tag">库存紧张</span>{% endif %}
+      </td>
+      <td>
+        <div class="form-check form-switch">
+          <input class="form-check-input toggle-sale" type="checkbox" data-id="{{ d['id'] }}"
+                 {{ 'checked' if d['on_sale'] }}>
+        </div>
+      </td>
+      <td class="text-end">
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('dishes.dish_recipe', did=d['id']) }}">配方</a>
+        {% if d['price_mode'] != 'market' %}
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('dishes.dish_specs', did=d['id']) }}">规格</a>
+        {% endif %}
+        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('dishes.dish_edit', did=d['id']) }}">编辑</a>
+        <form class="d-inline" method="post" action="{{ url_for('dishes.dish_delete', did=d['id']) }}"
+              onsubmit="return confirm('确认删除菜品 {{ d['name'] }} ？')">
+          <button class="btn btn-sm btn-outline-danger">删除</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="text-center text-muted py-4">暂无菜品，点击右上角新增</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+
+<div class="modal fade" id="catModal" tabindex="-1">
+  <div class="modal-dialog modal-sm"><div class="modal-content">
+    <form method="post" action="{{ url_for('dishes.category_add') }}">
+      <div class="modal-header"><h6 class="modal-title">新增分类</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input class="form-control" name="name" required placeholder="分类名称，如：甜点">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button class="btn btn-primary">添加</button>
+      </div>
+    </form>
+  </div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('.toggle-sale').forEach(el => {
+  el.addEventListener('change', async () => {
+    const r = await fetch('/admin/dishes/' + el.dataset.id + '/toggle',
+                          withCsrf({method: 'POST'}));
+    const data = await r.json();
+    if (!data.ok) { el.checked = !el.checked; alert('操作失败'); }
+  });
+});
+</script>
+{% endblock %}

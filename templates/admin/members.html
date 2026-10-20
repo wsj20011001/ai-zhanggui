@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}会员管理 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>💳 会员管理</h5>
+  <a class="btn btn-primary" href="{{ url_for('members.member_add') }}">＋ 新增会员</a>
+</div>
+{% if lost %}
+<div class="alert alert-warning">⚠️ 有 {{ lost|length }} 位会员超过 {{ shop.lost_days }} 天未到店：
+  {% for m in lost[:8] %}{{ m['name'] }}({{ m['phone'] }}){% if not loop.last %}、{% endif %}{% endfor %}
+  {% if lost|length > 8 %}等{% endif %} — 可电话回访挽回</div>
+{% endif %}
+<form method="get" class="mb-3">
+  <div class="input-group" style="max-width: 400px;">
+    <input class="form-control" name="q" value="{{ q }}" placeholder="搜索姓名或手机号">
+    <button class="btn btn-outline-secondary">搜索</button>
+  </div>
+</form>
+<div class="card table-card shadow-sm"><div class="card-body">
+  <div class="table-responsive">
+  <table class="table align-middle">
+    <thead><tr><th>姓名</th><th>手机号</th><th>等级</th><th>余额</th><th>积分</th><th>累计消费</th><th>最近到店</th><th class="text-end">操作</th></tr></thead>
+    <tbody>
+    {% for m in members %}
+    <tr>
+      <td><b><a href="{{ url_for('members.member_detail', mid=m['id']) }}">{{ m['name'] }}</a></b></td>
+      <td>{{ m['phone'] }}</td>
+      <td>{{ m['level'] }}</td>
+      <td class="text-primary fw-bold">{{ '%.2f'|format(m['balance']) }}</td>
+      <td>{{ m['points'] }}</td>
+      <td>{{ '%.2f'|format(m['total_spend']) }}</td>
+      <td class="small">{{ m['last_visit_at'] or '从未到店' }}</td>
+      <td class="text-end">
+        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('members.member_detail', mid=m['id']) }}">详情</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('members.member_edit', mid=m['id']) }}">编辑</a>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="8" class="text-center text-muted py-4">暂无会员</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div></div>
+{% endblock %}

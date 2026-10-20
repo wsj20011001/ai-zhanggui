@@ -1,0 +1,109 @@
+{% extends "mobile_base.html" %}
+{% block title %}点餐 - {{ table['name'] }} - {{ shop.shop_name }}{% endblock %}
+{% block body_class %}order-page{% endblock %}
+{% block header_left %}<a href="/">←</a> {{ table['name'] }} 点餐{% endblock %}
+{% block header_right %}
+<span id="order-count" class="badge bg-danger">0</span>
+<button class="btn btn-sm btn-outline-light ms-1" id="btn-orders">📋 我的订单</button>
+{% endblock %}
+{% block content %}
+<div class="menu-layout">
+  <div class="cat-rail" id="cat-rail"></div>
+  <div class="dish-list" id="dish-list"></div>
+</div>
+
+<div class="cart-bar" id="cart-bar" style="display:none">
+  <div class="me-2">🛒 <span class="cb-count" id="cb-count">0</span></div>
+  <div class="flex-grow-1">
+    <div class="small">合计 <span class="fw-bold text-warning" id="cb-total">0.00</span> 元</div>
+    <div class="small text-white-50">点击查看购物车</div>
+  </div>
+  <button class="btn btn-sm btn-danger" id="btn-submit">下单</button>
+</div>
+
+<!-- 购物车抽屉 -->
+<div class="cart-drawer" id="cart-drawer" style="display:none">
+  <div class="cd-panel">
+    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+      <b>🛒 已点菜品</b>
+      <button class="btn-close" id="btn-close-cart"></button>
+    </div>
+    <div class="flex-grow-1 overflow-auto p-2" id="cart-list"></div>
+    <div class="border-top p-3">
+      <div class="d-flex mb-2 align-items-center">
+        <span class="me-2">就餐人数</span>
+        <button class="btn btn-sm btn-outline-secondary" id="p-minus">−</button>
+        <span class="mx-2 fw-bold" id="p-count">1</span>
+        <button class="btn btn-sm btn-outline-secondary" id="p-plus">＋</button>
+        <span class="ms-auto text-danger fw-bold fs-5" id="cart-total">0.00</span>
+      </div>
+      <div class="alert alert-warning py-1 px-2 small mb-2" id="cart-market-warn" style="display:none"></div>
+      <input class="form-control form-control-sm mb-2" id="cart-remark" placeholder="整单备注（可选），如：先上凉菜">
+      <div class="d-flex gap-2">
+        <button class="btn btn-danger flex-grow-1" id="btn-submit2">确认下单</button>
+        <button class="btn btn-outline-secondary" id="btn-clear">清空</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 我的订单抽屉 -->
+<div class="cart-drawer" id="orders-drawer" style="display:none">
+  <div class="cd-panel">
+    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+      <b>📋 本桌订单</b>
+      <button class="btn-close" id="btn-close-orders"></button>
+    </div>
+    <div class="flex-grow-1 overflow-auto p-2" id="orders-list"></div>
+    <div class="border-top p-3 d-flex justify-content-between align-items-center">
+      <span class="small text-muted">👤 员工：{{ session.get('emp_name', '') }}（{{ session.get('emp_no', '') }}）</span>
+      <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('mobile.logout') }}">退出登录</a>
+    </div>
+  </div>
+</div>
+
+<!-- 口味备注弹窗（点选式，无输入框） -->
+<div class="note-modal" id="note-modal" style="display:none">
+  <div class="note-sheet">
+    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+      <b id="nm-title">口味备注</b>
+      <button class="btn-close" id="nm-close"></button>
+    </div>
+    <div class="p-3">
+      <div id="nm-spec-wrap" style="display:none">
+        <div class="small text-muted mb-2">🍽️ 规格（单选）</div>
+        <div class="chip-group" id="nm-specs"></div>
+        <div class="text-danger fw-bold mt-2" id="nm-price"></div>
+        <hr>
+      </div>
+      <div class="small text-muted mb-2">🌶️ 辣度（单选，可不选）</div>
+      <div class="chip-group" id="nm-spicy">
+        <button class="chip" data-v="不辣">不辣</button>
+        <button class="chip" data-v="微辣">微辣</button>
+        <button class="chip" data-v="中辣">中辣</button>
+        <button class="chip" data-v="特辣">特辣</button>
+      </div>
+      <div class="small text-muted mb-2 mt-3">🧂 口味要求（可多选）</div>
+      <div class="chip-group" id="nm-tags">
+        <button class="chip" data-v="不放葱">不放葱</button>
+        <button class="chip" data-v="不放香菜">不放香菜</button>
+        <button class="chip" data-v="不放蒜">不放蒜</button>
+        <button class="chip" data-v="少油">少油</button>
+        <button class="chip" data-v="少盐">少盐</button>
+        <button class="chip" data-v="免糖">免糖</button>
+        <button class="chip" data-v="加饭">加饭</button>
+      </div>
+      <div class="d-flex gap-2 mt-4">
+        <button class="btn btn-outline-secondary flex-grow-1" id="nm-cancel">取消</button>
+        <button class="btn btn-danger flex-grow-1" id="nm-confirm">加入购物车</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const TABLE_ID = {{ table['id'] }};
+</script>
+<script src="{{ url_for('static', filename='js/mobile.js') }}"></script>
+{% endblock %}

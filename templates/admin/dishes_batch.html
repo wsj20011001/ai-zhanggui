@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}批量修改 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<h5 class="mb-3">📐 批量修改菜品</h5>
+<div class="card table-card shadow-sm" style="max-width: 520px;"><div class="card-body">
+  <form method="post">
+    <div class="mb-3"><label class="form-label required">选择分类</label>
+      <select class="form-select" name="category_id" required>
+        <option value="">请选择…</option>
+        {% for c in cats %}<option value="{{ c['id'] }}">{{ c['name'] }}</option>{% endfor %}
+      </select></div>
+    <div class="mb-4">
+      <label class="form-label required">操作类型</label>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="action" value="on" id="a-on" checked>
+        <label class="form-check-label" for="a-on">✅ 该分类全部上架</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="action" value="off" id="a-off">
+        <label class="form-check-label" for="a-off">⛔ 该分类全部下架</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="action" value="price" id="a-price">
+        <label class="form-check-label" for="a-price">💰 按百分比调价</label>
+        <input type="number" step="1" class="form-control form-control-sm mt-1" style="width:140px"
+               name="percent" id="in-percent" placeholder="如 10 = 涨价10%，-5 = 降价5%" disabled>
+      </div>
+    </div>
+    <button class="btn btn-primary">执行批量操作</button>
+    <a class="btn btn-secondary" href="{{ url_for('dishes.dishes') }}">返回</a>
+  </form>
+</div></div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('input[name=action]').forEach(r => {
+  r.addEventListener('change', () => {
+    document.getElementById('in-percent').disabled = r.value !== 'price';
+  });
+});
+</script>
+{% endblock %}

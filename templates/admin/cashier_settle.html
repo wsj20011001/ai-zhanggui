@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}结算 {{ table['name'] }} - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>💰 结算：{{ table['name'] }}（{{ table['type'] }} · {{ table['capacity'] }}人）</h5>
+  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('cashier.cashier') }}">← 返回收银台</a>
+</div>
+
+{% if pending_total %}
+<div class="alert alert-warning d-flex align-items-center">
+  <div class="flex-grow-1">
+    ⚠️ 本桌有 <b>{{ pending_total }}</b> 项<b>时价菜尚未定价</b>，无法结算。
+    请先逐单补价，补价后可正常结账。
+  </div>
+</div>
+{% endif %}
+
+<div class="row g-3">
+  <div class="col-md-7">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>未结订单（{{ orders|length }} 笔）</h6>
+      <table class="table table-sm align-middle">
+        <thead><tr><th>订单号</th><th>状态</th><th>合计</th><th>预估实收（满减后）</th><th class="text-end">操作</th></tr></thead>
+        <tbody>
+        {% for p in preview %}
+        <tr>
+          <td><a href="{{ url_for('orders.order_detail', oid=p['order']['id']) }}">{{ p['order']['order_no'] }}</a></td>
+          <td>{{ order_status_label[p['order']['status']] }}</td>
+          <td>{{ '%.2f'|format(p['order']['total_amount']) }}</td>
+          <td class="text-danger fw-bold">{{ '%.2f'|format(p['calc']['final']) }}</td>
+          <td class="text-end">
+            {% if p['pending'] %}
+            <a class="btn btn-sm btn-warning"
+               href="{{ url_for('cashier.order_price', oid=p['order']['id']) }}">💴 补价（{{ p['pending']|length }}）</a>
+            {% endif %}
+            <a class="btn btn-sm btn-outline-primary" target="_blank"
+               href="{{ url_for('orders.order_receipt', oid=p['order']['id']) }}">🖨️ 小票</a>
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot><tr><td colspan="3" class="text-end fw-bold">预估合计</td>
+          <td colspan="2" class="text-danger fw-bold">{{ '%.2f'|format(preview_total) }} 元</td></tr></tfoot>
+      </table>
+    </div></div>
+  </div>
+
+  <div class="col-md-5">
+    <form method="post" action="{{ url_for('cashier.settle_all', table_id=table['id']) }}"
+          data-origin="{{ '%.2f'|format(preview_origin) }}"
+          data-low="{{ low_ratio }}"
+          onsubmit="return confirmLow(this)">
+      <div class="card table-card shadow-sm mb-3"><div class="card-body">
+        <h6>支付方式</h6>
+        <div class="d-flex flex-wrap gap-2">
+          {% for m in pay_methods %}
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="pay_method" id="pm-{{ m }}"
+                   value="{{ m }}" {{ 'checked' if loop.first }}>
+            <label class="form-check-label" for="pm-{{ m }}">{{ pay_method_label[m] }}</label>
+          </div>
+          {% endfor %}
+        </div>
+      </div></div>
+
+      <div class="card table-card shadow-sm mb-3"><div class="card-body">
+        <h6>会员优惠（可选）</h6>
+        <div class="mb-2">
+          <select class="form-select" name="member_id" id="sel-member">
+            <option value="">不使用会员</option>
+            {% for m in members %}
+            <option value="{{ m['id'] }}">{{ m['name'] }} {{ m['phone'] }}（余额 {{ '%.2f'|format(m['balance']) }} / {{ m['points'] }}分）</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" name="use_member_discount" id="chk-discount" value="1">
+          <label class="form-check-label" for="chk-discount">
+            使用会员折扣（{{ '%.0f'|format((shop.member_discount | float) * 100) }} 折）</label>
+        </div>
+        <div class="mb-1">
+          <label class="form-label small mb-1">积分抵扣（100 分 = 1 元，当前会员可用积分见上方）</label>
+          <input type="number" class="form-control" name="points_use" min="0" value="0">
+        </div>
+        <p class="text-muted small mb-0">💡 余额支付将优先使用会员余额扣款；积分抵扣按整桌分摊到各单。</p>
+      </div></div>
+
+      {% if pending_total %}
+      <button class="btn btn-secondary btn-lg w-100" disabled>
+        🚫 请先补价（{{ pending_total }} 项时价待定）
+      </button>
+      {% else %}
+      <button class="btn btn-danger btn-lg w-100">💳 整桌结算（{{ orders|length }} 笔）</button>
+      {% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+/* 异常低价预警：实收低于原价合计的指定比例时二次确认 */
+function confirmLow(form) {
+  const origin = parseFloat(form.dataset.origin || "0");
+  const low = parseFloat(form.dataset.low || "0.6");
+  const shown = document.querySelector("tfoot .text-danger");
+  const est = parseFloat((shown ? shown.textContent : "0").replace(/[^0-9.]/g, "")) || 0;
+  if (origin > 0 && est < origin * low) {
+    return confirm("\u26a0\ufe0f 异常低价预警\n\n菜品原价合计：" + origin.toFixed(2) + " 元\n" +
+      "本次预估实收：" + est.toFixed(2) + " 元（仅 " + (est / origin * 100).toFixed(0) + "%）\n\n" +
+      "请核对后再确认结算。确认继续？");
+  }
+  return true;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,85 @@
+﻿{% extends "base.html" %}
+{% block title %}时价补价 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>💴 时价补价 · 订单 {{ order['order_no'] }}</h5>
+  <a class="btn btn-outline-secondary btn-sm"
+     href="{{ url_for('cashier.cashier_settle', table_id=order['table_id']) }}">← 返回结算</a>
+</div>
+
+<div class="alert alert-warning">
+  <b>为什么必须补价？</b>
+  本单含<b>时价菜</b>（如海鲜、河鲜按当日行情定价），下单时没有固定售价。
+  <b>逐项填入单价后才能结算</b>，否则这一单会按 0 元计入营收。
+</div>
+
+<div class="row g-3">
+  <div class="col-md-7">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>待定价菜品（{{ items|length }} 项）</h6>
+      <form method="post" id="price-form">
+        <table class="table align-middle">
+          <thead><tr><th>菜品</th><th>数量</th><th style="width:190px">单价（元）</th></tr></thead>
+          <tbody>
+          {% for i in items %}
+          <tr>
+            <td><b>{{ i['name'] }}</b>
+              {% if i['note'] %}<span class="badge bg-warning text-dark ms-1">{{ i['note'] }}</span>{% endif %}</td>
+            <td>× {{ i['qty'] }}</td>
+            <td><input type="number" step="0.01" min="0.01" class="form-control price-input"
+                       name="price_{{ i['id'] }}" data-qty="{{ i['qty'] }}" required
+                       placeholder="输入单价"></td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="text-muted small">
+            补价会记录<b>操作人与时间</b>，可在「操作日志」按类型「定价」查询
+          </div>
+          <div class="text-end">
+            <div class="mb-2">本单新增：<b class="text-danger" id="sum">0.00</b> 元</div>
+            <button class="btn btn-primary">保存补价</button>
+          </div>
+        </div>
+      </form>
+    </div></div>
+  </div>
+
+  <div class="col-md-5">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>订单信息</h6>
+      <table class="table table-sm mb-0">
+        <tr><td class="text-muted">桌台</td>
+            <td>{{ order['table_name'] }}{% if table_row %}（{{ table_row['type'] }}）{% endif %}</td></tr>
+        <tr><td class="text-muted">下单时间</td><td>{{ order['created_at'] }}</td></tr>
+        <tr><td class="text-muted">当前已计价金额</td>
+            <td>{{ '%.2f'|format(order['total_amount']) }} 元</td></tr>
+      </table>
+    </div></div>
+
+    {% if priced %}
+    <div class="card table-card shadow-sm mt-3"><div class="card-body">
+      <h6>本单其它菜品（已定价）</h6>
+      <table class="table table-sm mb-0">
+        {% for p in priced %}
+        <tr><td>{{ p['name'] }}</td><td class="text-end">{{ '%.2f'|format(p['price']) }} × {{ p['qty'] }}</td></tr>
+        {% endfor %}
+      </table>
+    </div></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const inputs = document.querySelectorAll(".price-input");
+function recalc() {
+  let s = 0;
+  inputs.forEach(i => { s += (parseFloat(i.value) || 0) * (parseInt(i.dataset.qty) || 1); });
+  document.getElementById("sum").textContent = s.toFixed(2);
+}
+inputs.forEach(i => i.addEventListener("input", recalc));
+recalc();
+</script>
+{% endblock %}

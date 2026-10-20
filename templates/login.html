@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>登录 - 春归燕茶餐厅</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body class="login-body">
+<div class="login-card card shadow">
+  <div class="card-body p-4">
+    <h4 class="text-center mb-1">🪿 春归燕茶餐厅</h4>
+    <p class="text-center text-muted small mb-4">餐饮管理系统 · 管理端</p>
+    {% if error %}<div class="alert alert-danger py-2">{{ error }}</div>{% endif %}
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label">账号</label>
+        <input type="text" class="form-control" name="username" value="{{ request.form.get('username', 'admin') }}" autofocus>
+      </div>
+      <div class="mb-4">
+        <label class="form-label">密码</label>
+        <input type="password" class="form-control" name="password" placeholder="请输入密码">
+      </div>
+      <button type="submit" class="btn btn-primary w-100">登 录</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

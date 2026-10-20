@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ '编辑预订' if reservation else '新增预订' }} - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<h5 class="mb-3">{{ '✏️ 编辑预订' if reservation else '＋ 新增预订' }}</h5>
+<div class="card table-card shadow-sm" style="max-width: 560px;"><div class="card-body">
+  <form method="post">
+    <div class="row">
+      <div class="col-md-6 mb-3"><label class="form-label required">预订人姓名</label>
+        <input class="form-control" name="name" required
+               value="{{ data.get('name', reservation['name'] if reservation else '') }}"></div>
+      <div class="col-md-6 mb-3"><label class="form-label">电话</label>
+        <input class="form-control" name="phone"
+               value="{{ data.get('phone', reservation['phone'] if reservation else '') }}"></div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 mb-3"><label class="form-label required">预订时间</label>
+        <input type="datetime-local" class="form-control" name="reserve_time" required
+               value="{{ (data.get('reserve_time', reservation['reserve_time'] if reservation else '')).replace(' ', 'T') }}"></div>
+      <div class="col-md-6 mb-3"><label class="form-label">人数</label>
+        <input type="number" min="1" max="100" class="form-control" name="persons"
+               value="{{ data.get('persons', reservation['persons'] if reservation else 1) }}"></div>
+    </div>
+    <div class="mb-3"><label class="form-label">预订桌台（可留空待安排）</label>
+      <select class="form-select" name="table_id">
+        <option value="">不指定</option>
+        {% for t in tables %}
+        <option value="{{ t['id'] }}" {{ 'selected' if reservation and reservation['table_id'] == t['id'] }}>{{ t['name'] }}（{{ t['type'] }}·{{ t['capacity'] }}人）</option>
+        {% endfor %}
+      </select></div>
+    <div class="mb-3"><label class="form-label">关联会员（可留空）</label>
+      <select class="form-select" name="member_id">
+        <option value="">不关联</option>
+        {% for m in members %}
+        <option value="{{ m['id'] }}"
+          {{ 'selected' if reservation and reservation['member_id'] == m['id'] }}>{{ m['name'] }} {{ m['phone'] }}</option>
+        {% endfor %}
+      </select>
+      <div class="form-text">关联后，到店核销时会显示该会员的消费画像与常点菜</div></div>
+    <div class="mb-3"><label class="form-label">备注</label>
+      <input class="form-control" name="remark"
+             value="{{ data.get('remark', reservation['remark'] if reservation else '') }}"
+             placeholder="如：生日聚会、要安静的位置"></div>
+    <button class="btn btn-primary">保存预订</button>
+    <a class="btn btn-secondary" href="{{ url_for('reservations.reservations') }}">返回</a>
+  </form>
+</div></div>
+{% endblock %}

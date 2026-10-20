@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}分类管理 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>🍱 分类管理</h5>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{{ url_for('dishes.dishes') }}">← 返回菜品</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('reports.banquet') }}">🍽️ 宴席排菜</a>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#catModal"
+            onclick="resetCatForm()">＋ 新增分类</button>
+  </div>
+</div>
+<div class="card table-card shadow-sm"><div class="card-body">
+  <table class="table align-middle">
+    <thead><tr><th>分类名称</th><th>宴席角色</th><th>菜品数</th><th>排序</th><th class="text-end">操作</th></tr></thead>
+    <tbody>
+    {% for c in cats %}
+    <tr>
+      <td><b>{{ c['name'] }}</b></td>
+      <td>{% if c['course_role'] %}<span class="badge bg-info text-dark">{{ c['course_role'] }}</span>
+          {% else %}<span class="text-muted small">未设</span>{% endif %}</td>
+      <td>{{ c['dish_count'] }} 道</td>
+      <td>{{ c['sort_order'] }}</td>
+      <td class="text-end">
+        <button class="btn btn-sm btn-outline-primary"
+                onclick="fillCatForm({{ c['id'] }}, '{{ c['name'] }}', '{{ c['course_role'] }}')">编辑</button>
+        <form class="d-inline" method="post" action="{{ url_for('dishes.category_delete', cid=c['id']) }}"
+              onsubmit="return confirm('确认删除分类 {{ c['name'] }} ？')">
+          <button class="btn btn-sm btn-outline-danger">删除</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="text-center text-muted py-4">暂无分类，点击右上角新增</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="text-muted small mb-0">💡 分类下有菜品时不可删除；菜品移动端菜单按分类排序展示。<br>
+     <b>宴席角色</b>用于「宴席排菜」自动配菜：按凉菜/热菜/主菜/汤/主食的宴席结构分配预算。</p>
+</div></div>
+
+<div class="modal fade" id="catModal" tabindex="-1">
+  <div class="modal-dialog modal-sm"><div class="modal-content">
+    <form method="post" action="{{ url_for('dishes.category_save') }}">
+      <div class="modal-header"><h6 class="modal-title" id="cat-modal-title">新增分类</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input type="hidden" name="id" id="cat-id">
+        <label class="form-label small">分类名称</label>
+        <input class="form-control mb-2" name="name" id="cat-name" required placeholder="如：甜点、酒水">
+        <label class="form-label small">宴席角色（用于自动排菜）</label>
+        <select class="form-select" name="course_role" id="cat-role">
+          <option value="">不参与排菜</option>
+          {% for r in roles %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button class="btn btn-primary">保存</button>
+      </div>
+    </form>
+  </div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function resetCatForm() {
+  document.getElementById('cat-id').value = '';
+  document.getElementById('cat-name').value = '';
+  document.getElementById('cat-role').value = '';
+  document.getElementById('cat-modal-title').textContent = '新增分类';
+}
+function fillCatForm(id, name, role) {
+  document.getElementById('cat-id').value = id;
+  document.getElementById('cat-name').value = name;
+  document.getElementById('cat-role').value = role || '';
+  document.getElementById('cat-modal-title').textContent = '编辑分类';
+  new bootstrap.Modal(document.getElementById('catModal')).show();
+}
+</script>
+{% endblock %}

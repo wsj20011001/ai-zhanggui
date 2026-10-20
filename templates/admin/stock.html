@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}库存管理 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>📦 食材库存
+    {% if warn_count %}<span class="badge bg-danger ms-2">⚠️ {{ warn_count }} 项低于预警值</span>{% endif %}
+  </h5>
+  <div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('reports.stock_movements') }}">📋 出入库流水</a>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ingModal">＋ 新增食材</button>
+  </div>
+</div>
+<div class="card table-card shadow-sm"><div class="card-body">
+  <div class="table-responsive">
+  <table class="table align-middle">
+    <thead><tr><th>食材</th><th>单位</th><th>当前库存</th><th>预警值</th><th>单位成本</th><th>保质期</th><th>用于菜品</th><th>状态</th><th class="text-end">操作</th></tr></thead>
+    <tbody>
+    {% for i in ingredients %}
+    <tr class="{{ 'table-danger' if i['stock'] < i['warn_threshold'] }}">
+      <td><b>{{ i['name'] }}</b></td>
+      <td>{{ i['unit'] }}</td>
+      <td class="fw-bold">{{ '%.1f'|format(i['stock']) }}</td>
+      <td>{{ '%.1f'|format(i['warn_threshold']) }}</td>
+      <td>{% if i['cost'] %}{{ '%.2f'|format(i['cost']) }} 元{% else %}<span class="text-muted small">未设</span>{% endif %}</td>
+      <td class="small">{{ i['expire_at'][:10] if i['expire_at'] else '-' }}</td>
+      <td class="small text-muted">{{ used.get(i['id'], [])|length }} 道</td>
+      <td>
+        {% if i['stock'] < i['warn_threshold'] %}<span class="badge bg-danger">🔴 库存紧张</span>
+        {% elif i['stock'] < 0 %}<span class="badge bg-dark">负数异常</span>
+        {% else %}<span class="badge bg-success">正常</span>{% endif %}
+      </td>
+      <td class="small">{{ i['updated_at'][:16] }}</td>
+      <td class="text-end">
+        <button class="btn btn-sm btn-outline-success"
+                onclick="openMove({{ i['id'] }}, '{{ i['name'] }}', 'in', '{{ i['unit'] }}')">入库</button>
+        <button class="btn btn-sm btn-outline-danger"
+                onclick="openMove({{ i['id'] }}, '{{ i['name'] }}', 'out', '{{ i['unit'] }}')">出库</button>
+        <button class="btn btn-sm btn-outline-secondary"
+                onclick="openEdit({{ i['id'] }}, '{{ i['name'] }}', '{{ i['unit'] }}',
+                         '{{ i['warn_threshold'] }}', '{{ i['cost'] }}', '{{ (i['expire_at'] or '')[:10] }}')">编辑</button>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="9" class="text-center text-muted py-4">暂无食材，点击右上角添加</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div></div>
+
+<div class="modal fade" id="ingModal" tabindex="-1">
+  <div class="modal-dialog modal-sm"><div class="modal-content">
+    <form method="post" action="{{ url_for('reports.stock_add') }}">
+      <div class="modal-header"><h6 class="modal-title">新增食材</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="mb-2"><label class="form-label small mb-1 required">名称</label>
+          <input class="form-control" name="name" required placeholder="如：五花肉"></div>
+        <div class="row">
+          <div class="col-6 mb-2"><label class="form-label small mb-1">单位</label>
+            <input class="form-control" name="unit" value="份" placeholder="斤/份/个"></div>
+          <div class="col-6 mb-2"><label class="form-label small mb-1">初始库存</label>
+            <input type="number" step="0.1" class="form-control" name="stock" value="0"></div>
+        </div>
+        <div class="mb-2"><label class="form-label small mb-1">预警值</label>
+          <input type="number" step="0.1" class="form-control" name="warn_threshold" value="0"></div>
+        <div class="mb-2"><label class="form-label small mb-1">单位成本（元/单位）</label>
+          <input type="number" step="0.01" min="0" class="form-control" name="cost" value="0"
+                 placeholder="用于计算菜品毛利"></div>
+        <div class="mb-2"><label class="form-label small mb-1">保质期（可留空）</label>
+          <input type="date" class="form-control" name="expire_at"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button class="btn btn-primary">添加</button>
+      </div>
+    </form>
+  </div></div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1">
+  <div class="modal-dialog modal-sm"><div class="modal-content">
+    <form method="post" id="edit-form" action="">
+      <div class="modal-header"><h6 class="modal-title">编辑食材</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="mb-2"><label class="form-label small mb-1">预警值</label>
+          <input type="number" step="0.1" class="form-control" name="warn_threshold" id="ed-warn"></div>
+        <div class="mb-2"><label class="form-label small mb-1">单位成本（元/<span id="ed-unit"></span>）</label>
+          <input type="number" step="0.01" min="0" class="form-control" name="cost" id="ed-cost"></div>
+        <div class="mb-2"><label class="form-label small mb-1">保质期（清空表示不设）</label>
+          <input type="date" class="form-control" name="expire_at" id="ed-expire"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button class="btn btn-primary">保存</button>
+      </div>
+    </form>
+  </div></div>
+</div>
+
+<div class="modal fade" id="moveModal" tabindex="-1">
+  <div class="modal-dialog modal-sm"><div class="modal-content">
+    <form method="post" id="move-form" action="">
+      <div class="modal-header"><h6 class="modal-title" id="move-title">入库</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input type="hidden" name="type" id="move-type">
+        <div class="mb-2"><label class="form-label small mb-1">数量（<span id="move-unit"></span>）</label>
+          <input type="number" step="0.1" min="0.1" class="form-control" name="qty" required></div>
+        <div class="mb-2"><label class="form-label small mb-1">单价（可选，成本参考）</label>
+          <input type="number" step="0.01" min="0" class="form-control" name="price" value="0"></div>
+        <div class="mb-2"><label class="form-label small mb-1">备注</label>
+          <input class="form-control" name="note" placeholder="如：采购进货"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button class="btn btn-primary" id="move-submit">确认</button>
+      </div>
+    </form>
+  </div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function openMove(id, name, type, unit) {
+  document.getElementById('move-form').action = '/admin/stock/' + id + '/move';
+  document.getElementById('move-type').value = type;
+  document.getElementById('move-title').textContent = (type === 'in' ? '入库' : '出库') + '：' + name;
+  document.getElementById('move-unit').textContent = unit;
+  document.getElementById('move-submit').className = 'btn ' + (type === 'in' ? 'btn-success' : 'btn-danger');
+  new bootstrap.Modal(document.getElementById('moveModal')).show();
+}
+function openEdit(id, name, unit, warn, cost, expire) {
+  document.getElementById('edit-form').action = '/admin/stock/' + id + '/edit';
+  document.getElementById('ed-unit').textContent = unit;
+  document.getElementById('ed-warn').value = warn;
+  document.getElementById('ed-cost').value = cost;
+  document.getElementById('ed-expire').value = expire;
+  new bootstrap.Modal(document.getElementById('editModal')).show();
+}
+</script>
+{% endblock %}

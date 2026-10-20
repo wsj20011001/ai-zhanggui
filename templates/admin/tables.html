@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}桌台管理 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>🪑 桌台管理</h5>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tableModal"
+          onclick="resetTableForm()">＋ 新增桌台</button>
+</div>
+<div class="card table-card shadow-sm"><div class="card-body">
+  <table class="table align-middle">
+    <thead><tr><th>桌台名</th><th>类型</th><th>可坐人数</th><th>当前状态</th><th class="text-end">操作</th></tr></thead>
+    <tbody>
+    {% for t in tables %}
+    <tr>
+      <td><b>{{ t['name'] }}</b></td>
+      <td>{{ t['type'] }}</td>
+      <td>{{ t['capacity'] }} 人</td>
+      <td>
+        <span class="badge {% if t['status'] == 'idle' %}bg-success{% elif t['status'] == 'ordering' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+          {{ table_status_label[t['status']] }}</span>
+      </td>
+      <td class="text-end">
+        <button class="btn btn-sm btn-outline-primary"
+          onclick="fillTableForm({{ t['id'] }}, '{{ t['name'] }}', '{{ t['type'] }}', {{ t['capacity'] }})">编辑</button>
+        <form class="d-inline" method="post" action="{{ url_for('settings.table_delete', tid=t['id']) }}"
+              onsubmit="return confirm('确认删除桌台 {{ t['name'] }} ？')">
+          <button class="btn btn-sm btn-outline-danger">删除</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+
+<div class="modal fade" id="tableModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <form method="post" action="{{ url_for('settings.table_save') }}">
+      <div class="modal-header"><h5 class="modal-title">桌台信息</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input type="hidden" name="id" id="t-id">
+        <div class="mb-3"><label class="form-label required">桌台名称</label>
+          <input class="form-control" name="name" id="t-name" required placeholder="如：包厢3 / 卡座5 / 大厅8"></div>
+        <div class="mb-3"><label class="form-label">类型</label>
+          <select class="form-select" name="type" id="t-type">
+            {% for ty in table_types %}<option value="{{ ty }}">{{ ty }}</option>{% endfor %}
+          </select></div>
+        <div class="mb-3"><label class="form-label">可坐人数</label>
+          <input type="number" class="form-control" name="capacity" id="t-capacity" min="1" max="50" value="4"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button type="submit" class="btn btn-primary">保存</button>
+      </div>
+    </form>
+  </div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function resetTableForm() {
+  document.getElementById('t-id').value = '';
+  document.getElementById('t-name').value = '';
+  document.getElementById('t-type').value = '大厅';
+  document.getElementById('t-capacity').value = 4;
+}
+function fillTableForm(id, name, type, cap) {
+  document.getElementById('t-id').value = id;
+  document.getElementById('t-name').value = name;
+  document.getElementById('t-type').value = type;
+  document.getElementById('t-capacity').value = cap;
+  new bootstrap.Modal(document.getElementById('tableModal')).show();
+}
+</script>
+{% endblock %}

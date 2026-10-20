@@ -1,0 +1,24 @@
+{% extends "mobile_base.html" %}
+{% block title %}员工登录 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="login-body">
+  <div class="login-card card shadow">
+    <div class="card-body p-4">
+      <h4 class="text-center mb-1">🪿 {{ shop.shop_name }}</h4>
+      <p class="text-center text-muted small mb-4">点餐端 · 员工登录</p>
+      {% if error %}<div class="alert alert-danger py-2">{{ error }}</div>{% endif %}
+      <form method="post">
+        <div class="mb-3">
+          <label class="form-label">工号</label>
+          <input type="text" class="form-control" name="employee_no" value="{{ request.form.get('employee_no', '') }}" autofocus>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">密码</label>
+          <input type="password" class="form-control" name="password" placeholder="请输入密码">
+        </div>
+        <button type="submit" class="btn btn-primary w-100">登 录</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

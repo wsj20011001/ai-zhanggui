@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}实时订单 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>📋 实时订单 <span class="text-muted small">（每 3 秒自动刷新）</span></h5>
+  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('orders.orders_history') }}">🕘 历史订单</a>
+</div>
+<ul class="nav nav-pills mb-3" id="orderTabs">
+  <li class="nav-item"><a class="nav-link {{ 'active' if tab == 'pending' }}" data-tab="pending" href="{{ url_for('orders.orders', tab='pending') }}">⏳ 待确认</a></li>
+  <li class="nav-item"><a class="nav-link {{ 'active' if tab == 'making' }}" data-tab="making" href="{{ url_for('orders.orders', tab='making') }}">👨‍🍳 制作中</a></li>
+  <li class="nav-item"><a class="nav-link {{ 'active' if tab == 'done' }}" data-tab="done" href="{{ url_for('orders.orders', tab='done') }}">✅ 已完成</a></li>
+  <li class="nav-item"><a class="nav-link {{ 'active' if tab == 'all' }}" data-tab="all" href="{{ url_for('orders.orders', tab='all') }}">📦 全部</a></li>
+</ul>
+<div class="card table-card shadow-sm"><div class="card-body">
+  <div class="table-responsive">
+  <table class="table align-middle">
+    <thead><tr><th>订单号</th><th>桌台</th><th>金额</th><th>下单时间</th><th>状态</th><th class="text-end">操作</th></tr></thead>
+    <tbody id="order-tbody">
+      {% include "partials/_order_rows.html" %}
+    </tbody>
+  </table>
+  </div>
+</div></div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/orders.js') }}"></script>
+<script>
+initOrderPolling('{{ tab }}');
+</script>
+{% endblock %}

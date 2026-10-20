@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}菜品销量 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<h5 class="mb-3">🍗 菜品销量排行</h5>
+<form method="get" class="row g-2 align-items-end mb-3">
+  <div class="col-auto"><label class="form-label small mb-1">开始日期</label>
+    <input type="date" class="form-control form-control-sm" name="d1" value="{{ d1 }}"></div>
+  <div class="col-auto"><label class="form-label small mb-1">结束日期</label>
+    <input type="date" class="form-control form-control-sm" name="d2" value="{{ d2 }}"></div>
+  <div class="col-auto"><button class="btn btn-sm btn-primary">查询</button></div>
+</form>
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-4"><div class="card stat-card shadow-sm"><div class="card-body">
+    <div class="text-muted small">总销量（份）</div><div class="num text-primary">{{ total_qty }}</div>
+  </div></div></div>
+  <div class="col-6 col-md-4"><div class="card stat-card shadow-sm"><div class="card-body">
+    <div class="text-muted small">销售额（元）</div><div class="num text-danger">{{ '%.2f'|format(total_amount) }}</div>
+  </div></div></div>
+</div>
+<div class="card table-card shadow-sm"><div class="card-body">
+  <table class="table align-middle">
+    <thead><tr><th style="width:50px">#</th><th>菜品</th><th>销量</th><th style="width:40%">占比</th><th class="text-end">销售额</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td><b>{{ r['name'] }}</b></td>
+      <td>{{ r['qty'] }} 份</td>
+      <td>
+        <div class="bar-cell">
+          <div class="bar-fill" style="width: {{ '%.1f'|format(r['qty'] / total_qty * 100) if total_qty else 0 }}%">
+            {{ '%.1f'|format(r['qty'] / total_qty * 100) if total_qty else 0 }}%
+          </div>
+        </div>
+      </td>
+      <td class="text-end text-danger fw-bold">{{ '%.2f'|format(r['amount']) }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="text-center text-muted py-4">该时段暂无销售数据</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+{% endblock %}

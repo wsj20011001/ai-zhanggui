@@ -1,0 +1,32 @@
+{% extends "mobile_base.html" %}
+{% block title %}选择桌台 - {{ shop.shop_name }}{% endblock %}
+{% block header_left %}🪿 {{ shop.shop_name }} · 点餐{% endblock %}
+{% block header_right %}<span class="small">{{ session.get('emp_name', '') }}</span> <a class="small text-white-50" href="{{ url_for('mobile.logout') }}">退出</a>{% endblock %}
+{% block content %}
+{% if error %}<div class="alert alert-danger m-3 mb-0">{{ error }}</div>{% endif %}
+<p class="text-center text-muted small mt-3 mb-0">请选择桌台开始点餐（状态自动刷新）</p>
+<div class="table-grid" id="table-grid">
+  {% include "partials/_table_list.html" %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const STATUS_LABEL = {{ table_status_label | tojson }};
+async function refreshTables() {
+  try {
+    const r = await mfetch("/api/tables", {cache: "no-store"});
+    const data = await r.json();
+    const grid = document.getElementById("table-grid");
+    if (!grid) return;
+    grid.innerHTML = data.tables.map(t => `
+      <a href="/order/${t.id}" class="table-card-m t-${t.status}" style="text-decoration:none">
+        <div class="t-name">${t.name}</div>
+        <div class="t-cap">${t.type} · ${t.capacity}人</div>
+        <div class="t-cap">${STATUS_LABEL[t.status] || t.status}</div>
+      </a>`).join("");
+  } catch (e) { /* 忽略，下轮重试 */ }
+  setTimeout(refreshTables, 5000);
+}
+setTimeout(refreshTables, 5000);
+</script>
+{% endblock %}

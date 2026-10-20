@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}营收报表 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<h5 class="mb-3">📊 营收报表</h5>
+<form method="get" class="row g-2 align-items-end mb-3">
+  <div class="col-auto">
+    <select class="form-select form-select-sm" name="mode" onchange="this.form.submit()">
+      <option value="day" {{ 'selected' if mode == 'day' }}>按日</option>
+      <option value="month" {{ 'selected' if mode == 'month' }}>按月</option>
+    </select>
+  </div>
+  <div class="col-auto">
+    {% if mode == 'month' %}
+    <input type="month" class="form-control form-control-sm" name="month" value="{{ month }}">
+    {% else %}
+    <input type="date" class="form-control form-control-sm" name="date" value="{{ date }}">
+    {% endif %}
+  </div>
+  <div class="col-auto"><button class="btn btn-sm btn-primary">查询</button></div>
+  <div class="col-auto">
+    <a class="btn btn-sm btn-success"
+       href="{{ url_for('reports.reports_daily_export', mode=mode, date=date, month=month) }}">📥 导出 CSV</a>
+  </div>
+</form>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3"><div class="card stat-card shadow-sm"><div class="card-body">
+    <div class="text-muted small">营收（元）</div><div class="num text-primary">{{ '%.2f'|format(total) }}</div>
+  </div></div></div>
+  <div class="col-6 col-md-3"><div class="card stat-card shadow-sm"><div class="card-body">
+    <div class="text-muted small">结算单数</div><div class="num text-success">{{ rows|length }}</div>
+  </div></div></div>
+  <div class="col-6 col-md-3"><div class="card stat-card shadow-sm"><div class="card-body">
+    <div class="text-muted small">优惠让利（元）</div><div class="num text-warning">{{ '%.2f'|format(discounts) }}</div>
+  </div></div></div>
+  <div class="col-6 col-md-3"><div class="card stat-card shadow-sm"><div class="card-body">
+    <div class="text-muted small">客单价（元）</div>
+    <div class="num text-danger">{{ '%.2f'|format(total / rows|length) if rows else '0.00' }}</div>
+  </div></div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>按支付方式</h6>
+      <table class="table table-sm mb-0">
+        {% for m, v in by_method.items() %}
+        <tr><td>{{ pay_label.get(m, m) }}</td>
+            <td class="text-end fw-bold">{{ '%.2f'|format(v) }}</td></tr>
+        {% endfor %}
+        <tr class="fw-bold"><td>合计</td><td class="text-end">{{ '%.2f'|format(total) }}</td></tr>
+      </table>
+    </div></div>
+  </div>
+  <div class="col-md-8">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>{{ '每日汇总' if mode == 'month' else '订单明细' }}</h6>
+      <div class="table-responsive">
+      {% if mode == 'month' %}
+      <table class="table table-sm">
+        <thead><tr><th>日期</th><th>单数</th><th class="text-end">营收</th></tr></thead>
+        <tbody>
+        {% for d, v in daily %}
+        <tr><td>{{ d }}</td><td>{{ v[0] }}</td><td class="text-end text-danger fw-bold">{{ '%.2f'|format(v[1]) }}</td></tr>
+        {% else %}<tr><td colspan="3" class="text-center text-muted py-4">无数据</td></tr>{% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <table class="table table-sm">
+        <thead><tr><th>订单号</th><th>桌台</th><th>时间</th><th class="text-end">实收</th></tr></thead>
+        <tbody>
+        {% for o in rows %}
+        <tr><td>{{ o['order_no'] }}</td><td>{{ o['table_name'] }}</td>
+            <td class="small">{{ o['settled_at'] or o['created_at'] }}</td>
+            <td class="text-end text-danger fw-bold">{{ '%.2f'|format(o['final_amount']) }}</td></tr>
+        {% else %}<tr><td colspan="4" class="text-center text-muted py-4">无数据</td></tr>{% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+      </div>
+    </div></div>
+  </div>
+</div>
+{% endblock %}

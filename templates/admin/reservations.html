@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}预订管理 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>📅 预订管理</h5>
+  <a class="btn btn-primary" href="{{ url_for('reservations.reservation_add') }}">＋ 新增预订</a>
+</div>
+<div class="mb-3">
+  <a class="btn btn-sm {{ 'btn-primary' if scope == 'today' else 'btn-outline-primary' }}"
+     href="{{ url_for('reservations.reservations', scope='today') }}">今日预订</a>
+  <a class="btn btn-sm {{ 'btn-primary' if scope == 'all' else 'btn-outline-primary' }}"
+     href="{{ url_for('reservations.reservations', scope='all') }}">全部预订</a>
+</div>
+<div class="card table-card shadow-sm"><div class="card-body">
+  <div class="table-responsive">
+  <table class="table align-middle">
+    <thead><tr><th>预订时间</th><th>姓名</th><th>电话</th><th>人数</th><th>桌台</th><th>状态</th><th>备注</th><th class="text-end">操作</th></tr></thead>
+    <tbody>
+    {% for r in reservations %}
+    <tr class="{{ 'table-warning' if r['id'] in remind_ids else (('table-secondary text-muted' if r['_expired'] and r['status'] == 'pending' else '')) }}">
+      <td><b>{{ r['reserve_time'][5:16] }}</b>
+        {% if r['id'] in remind_ids %}<span class="badge bg-danger ms-1">🔔 临近</span>
+        {% elif r['_expired'] and r['status'] == 'pending' %}<span class="badge bg-secondary">已过期未到店</span>{% endif %}
+      </td>
+      <td>{{ r['name'] }}</td>
+      <td>{{ r['phone'] }}</td>
+      <td>{{ r['persons'] }} 人</td>
+      <td>{{ r['table_name'] or '待安排' }}</td>
+      <td>
+        {% if r['status'] == 'pending' %}<span class="badge bg-warning text-dark">待核销</span>
+        {% elif r['status'] == 'arrived' %}<span class="badge bg-success">已到店</span>
+        {% else %}<span class="badge bg-secondary">已取消</span>{% endif %}
+      </td>
+      <td class="small">{{ r['remark'] }}</td>
+      <td class="text-end">
+        {% set card = cards.get(r['id'], {}) %}
+        <button class="btn btn-sm btn-outline-dark" onclick="showCard({{ r['id'] }})">
+          🪪 提醒卡{% if card.get('items') %} <span class="badge bg-primary">{{ card.get('items')|length }}</span>{% endif %}
+        </button>
+        {% if r['status'] == 'pending' %}
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('reservations.reservation_items', rid=r['id']) }}">预点菜</a>
+        {% if card.get('items') and r['table_id'] %}
+        <form class="d-inline" method="post" action="{{ url_for('reservations.reservation_to_order', rid=r['id']) }}"
+              onsubmit="return confirm('把预点菜转成正式订单？')">
+          <button class="btn btn-sm btn-primary">➡️ 转订单</button>
+        </form>
+        {% endif %}
+        <form class="d-inline" method="post" action="{{ url_for('reservations.reservation_arrive', rid=r['id']) }}"
+              onsubmit="return confirm('确认 {{ r['name'] }} 已到店？')">
+          <button class="btn btn-sm btn-success">✅ 到店核销</button>
+        </form>
+        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('reservations.reservation_edit', rid=r['id']) }}">编辑</a>
+        <form class="d-inline" method="post" action="{{ url_for('reservations.reservation_cancel', rid=r['id']) }}"
+              onsubmit="return confirm('确认取消此预订？')">
+          <button class="btn btn-sm btn-outline-danger">取消</button>
+        </form>
+        {% else %}
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('reservations.reservation_items', rid=r['id']) }}">预点菜</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('reservations.reservation_edit', rid=r['id']) }}">查看</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="8" class="text-center text-muted py-4">暂无预订</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div></div>
+
+<!-- 到店提醒卡 -->
+<div class="modal fade" id="cardModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h6 class="modal-title">🪪 到店提醒卡</h6>
+      <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body" id="cardBody"></div>
+    <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">关闭</button></div>
+  </div></div>
+</div>
+<script id="card-data" type="application/json">{{ cards|tojson }}</script>
+{% endblock %}
+{% block scripts %}
+<script>
+function showCard(rid) {
+  const all = JSON.parse(document.getElementById("card-data").textContent);
+  const c = all[String(rid)] || all[rid] || {};
+  const items = c.items || [];
+  const p = c.profile;
+  let html = "";
+  if (p) {
+    html += '<div class="alert alert-info py-2 mb-3"><b>👤 ' + p.name + '</b> · ' + p.phone +
+      '<br><span class="small">' + (p.level || '普通会员') + ' · 累计消费 ' +
+      Number(p.total_spend || 0).toFixed(2) + ' 元 · 余额 ' + Number(p.balance || 0).toFixed(2) +
+      ' · ' + (p.points || 0) + ' 积分' + (p.last ? ' · 上次到店 ' + p.last : '') + '</span>';
+    if (p.fav && p.fav.length) {
+      html += '<div class="small mt-1">⭐ 常点：' + p.fav.map(f => f.name + '×' + f.q).join('、') + '</div>';
+    }
+    html += '</div>';
+  } else {
+    html += '<p class="text-muted small">未关联会员（编辑预订可选择会员，到店时会显示消费画像）</p>';
+  }
+  if (items.length) {
+    html += '<h6>🍽️ 预点菜（' + items.length + ' 道）</h6><table class="table table-sm">';
+    items.forEach(i => {
+      html += '<tr><td>' + i.name + (i.spec_name ? ' <span class="badge bg-primary">' + i.spec_name + '</span>' : '') +
+        '</td><td class="text-end">× ' + i.qty + '</td><td class="text-end">' +
+        (Number(i.price || 0) * i.qty).toFixed(2) + ' 元</td></tr>';
+    });
+    html += '</table>';
+  } else {
+    html += '<p class="text-muted small">还没有预点菜。点「预点菜」提前点好，到店可一键转成订单。</p>';
+  }
+  document.getElementById("cardBody").innerHTML = html;
+  new bootstrap.Modal(document.getElementById("cardModal")).show();
+}
+</script>
+{% endblock %}

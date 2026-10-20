@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}出入库流水 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>📋 出入库流水</h5>
+  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('reports.stock') }}">← 返回库存</a>
+</div>
+<form method="get" class="mb-3">
+  <div class="input-group" style="max-width: 400px;">
+    <select class="form-select" name="ingredient_id">
+      <option value="">全部食材</option>
+      {% for i in ingredients %}
+      <option value="{{ i['id'] }}" {{ 'selected' if sel_iid == i['id']|string }}>{{ i['name'] }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-secondary">筛选</button>
+  </div>
+</form>
+<div class="card table-card shadow-sm"><div class="card-body">
+  <div class="table-responsive">
+  <table class="table table-sm align-middle">
+    <thead><tr><th>时间</th><th>食材</th><th>类型</th><th>数量</th><th>单价</th><th>备注</th></tr></thead>
+    <tbody>
+    {% for m in movements %}
+    <tr>
+      <td class="small">{{ m['created_at'] }}</td>
+      <td>{{ m['name'] }}</td>
+      <td>
+        {% if m['type'] == 'in' %}<span class="badge bg-success">入库</span>
+        {% else %}<span class="badge bg-danger">出库</span>{% endif %}
+      </td>
+      <td class="fw-bold">{{ '%.1f'|format(m['qty']) }} {{ m['unit'] }}</td>
+      <td>{{ '%.2f'|format(m['price']) if m['price'] else '—' }}</td>
+      <td class="small">{{ m['note'] }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" class="text-center text-muted py-4">暂无流水</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div></div>
+{% endblock %}

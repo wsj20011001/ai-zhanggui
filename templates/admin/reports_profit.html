@@ -1,0 +1,68 @@
+﻿{% extends "base.html" %}
+{% block title %}成本毛利 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>💹 菜品成本与毛利</h5>
+  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('dishes.recipes_import') }}">📥 配方管理</a>
+</div>
+
+<div class="alert alert-info">
+  已录配方 <b>{{ with_recipe }}</b> / {{ total }} 道菜。
+  {% if with_recipe == 0 %}
+  还没有任何配方 —— 请先到「配方管理」录入用料，成本与毛利才有意义。
+  {% else %}
+  未录配方的菜不参与成本统计。
+  {% endif %}
+</div>
+
+{% if est %}
+<div class="card table-card shadow-sm mb-3"><div class="card-body">
+  <h6>近 30 天毛利贡献 Top（按实际销量 × 单份毛利估算）</h6>
+  <div class="table-responsive">
+  <table class="table table-sm align-middle">
+    <thead><tr><th>菜品</th><th>销量</th><th>营业额</th><th>成本</th><th>毛利</th></tr></thead>
+    <tbody>
+    {% for e in est %}
+    <tr>
+      <td>{{ e['name'] }}</td><td>{{ e['qty'] }}</td>
+      <td>{{ '%.2f'|format(e['amount']) }}</td>
+      <td class="text-muted">{{ '%.2f'|format(e['cost']) }}</td>
+      <td class="fw-bold {{ 'text-danger' if e['profit'] > 0 else 'text-muted' }}">{{ '%.2f'|format(e['profit']) }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot><tr><td colspan="4" class="text-end fw-bold">合计毛利</td>
+      <td class="fw-bold text-danger">{{ '%.2f'|format(total_profit) }} 元</td></tr></tfoot>
+  </table>
+  </div>
+</div></div>
+{% endif %}
+
+<div class="card table-card shadow-sm"><div class="card-body">
+  <h6>全部菜品</h6>
+  <div class="table-responsive">
+  <table class="table table-sm align-middle">
+    <thead><tr><th>菜品</th><th>分类</th><th>售价</th><th>成本</th><th>毛利</th><th>毛利率</th><th>可做份数</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+    <tr class="{{ '' if r['on_sale'] else 'table-secondary' }}">
+      <td>{{ r['name'] }}
+        {% if r['mode'] == 'market' %}<span class="badge bg-warning text-dark">时价</span>{% endif %}</td>
+      <td class="small text-muted">{{ r['cat'] }}</td>
+      <td>{% if r['mode'] == 'market' %}-{% else %}{{ '%.2f'|format(r['price']) }}{% endif %}</td>
+      {% if r['cost'] is none %}
+      <td colspan="4" class="text-muted small">未录配方</td>
+      {% else %}
+      <td>{{ '%.2f'|format(r['cost']) }}</td>
+      <td class="{{ 'text-danger' if r['margin'] > 0 else 'text-muted' }}">{{ '%.2f'|format(r['margin']) }}</td>
+      <td>{{ '%.0f%%'|format((r['rate'] or 0) * 100) }}</td>
+      <td>{% if r['can_make'] == 0 %}<span class="badge bg-danger">原料不足</span>
+          {% else %}{{ r['can_make'] }} 份{% endif %}</td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div></div>
+{% endblock %}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>小票 {{ order['order_no'] }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body class="receipt-body">
+<div class="no-print text-center p-3">
+  <button class="btn btn-primary me-2" onclick="window.print()">🖨️ 打印</button>
+  <button class="btn btn-secondary" onclick="window.close()">关闭</button>
+</div>
+<div class="receipt-wrap">
+  <h4>{{ s.shop_name }}</h4>
+  {% if s.shop_phone %}<div class="r-line">电话：{{ s.shop_phone }}</div>{% endif %}
+  {% if s.shop_address %}<div class="r-line">{{ s.shop_address }}</div>{% endif %}
+  <div class="r-dashed"></div>
+  <div class="r-line">{{ '结账单' if rtype == 'settle' else '下单小票' }}</div>
+  <div class="r-line">单号：{{ order['order_no'] }}</div>
+  <div class="r-line">桌台：{{ order['table_name'] }}（{{ order['persons'] }}人）</div>
+  <div class="r-line">时间：{{ order['created_at'] }}</div>
+  <div class="r-dashed"></div>
+  <table>
+    {% for i in items if not i['is_combo_child'] %}
+    <tr>
+      <td>{{ i['name'] }}{% if i['note'] %}<br><small>〔{{ i['note'] }}〕</small>{% endif %}
+        {% set children = items | selectattr('combo_of', 'equalto', i['id']) | list %}
+        {% for ch in children %}<br><small>　└ {{ ch['name'] }}×{{ ch['qty'] }}</small>{% endfor %}
+      </td>
+      <td style="text-align:right">×{{ i['qty'] }}<br>{{ '%.2f'|format(i['price'] * i['qty']) }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <div class="r-dashed"></div>
+  <table>
+    <tr><td>合计</td><td style="text-align:right">{{ '%.2f'|format(order['total_amount']) }}</td></tr>
+    {% if rtype == 'settle' %}
+      {% if order['reduction'] %}<tr><td>满减优惠</td><td style="text-align:right">-{{ '%.2f'|format(order['reduction']) }}</td></tr>{% endif %}
+      {% if order['member_discount'] %}<tr><td>会员折扣</td><td style="text-align:right">-{{ '%.2f'|format(order['member_discount']) }}</td></tr>{% endif %}
+      {% if order['points_discount'] %}<tr><td>积分抵扣({{ order['points_used'] }}分)</td><td style="text-align:right">-{{ '%.2f'|format(order['points_discount']) }}</td></tr>{% endif %}
+      <tr><td class="r-total">实收</td><td class="r-total" style="text-align:right">{{ '%.2f'|format(order['final_amount']) }}</td></tr>
+      <tr><td>支付方式</td><td style="text-align:right">{{ pay_method_label.get(order['pay_method'], order['pay_method']) }}</td></tr>
+      {% if order['member_name'] %}<tr><td>会员</td><td style="text-align:right">{{ order['member_name'] }}（本单得 {{ order['points_earned'] }} 分）</td></tr>{% endif %}
+    {% endif %}
+  </table>
+  {% if order['remark'] %}<div class="r-line">备注：{{ order['remark'] }}</div>{% endif %}
+  <div class="r-dashed"></div>
+  <div class="receipt-footer">{{ s.receipt_footer }}</div>
+</div>
+<script>
+{% if autoprint %}window.onload = function () { setTimeout(function () { window.print(); }, 300); };{% endif %}
+</script>
+</body>
+</html>

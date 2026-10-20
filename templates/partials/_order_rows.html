@@ -1,0 +1,34 @@
+{% for o in orders %}
+<tr class="{{ 'hurry-row' if o['hurry'] and o['status'] == 'pending' }}">
+  <td>
+    <a href="{{ url_for('orders.order_detail', oid=o['id']) }}"><b>{{ o['order_no'] }}</b></a>
+    {% if o['hurry'] and o['status'] == 'pending' %}<span class="badge bg-danger ms-1">🔔 催菜</span>{% endif %}
+    {% if pending and pending.get(o['id']) %}<span class="badge bg-warning text-dark ms-1">⚠️ 时价待定</span>{% endif %}
+  </td>
+  <td>{{ o['table_name'] }}（{{ o['persons'] }}人）</td>
+  <td class="text-danger fw-bold">{{ '%.2f'|format(o['final_amount']) }}</td>
+  <td class="small">{{ o['created_at'][5:16] }}</td>
+  <td>
+    {% if o['status'] == 'pending' %}<span class="badge bg-warning text-dark">待确认</span>
+    {% elif o['status'] == 'making' %}<span class="badge bg-info text-dark">制作中</span>
+    {% elif o['status'] == 'done' %}<span class="badge bg-success">已完成</span>
+    {% endif %}
+  </td>
+  <td class="text-end">
+    <a class="btn btn-sm btn-outline-primary" href="{{ url_for('orders.order_detail', oid=o['id']) }}">详情</a>
+    {% if o['status'] == 'pending' %}
+    <form class="d-inline" method="post" action="{{ url_for('orders.order_confirm', oid=o['id']) }}">
+      <button class="btn btn-sm btn-success">✅ 确认</button>
+    </form>
+    {% elif o['status'] == 'making' %}
+    <form class="d-inline" method="post" action="{{ url_for('orders.order_done', oid=o['id']) }}">
+      <button class="btn btn-sm btn-warning">🍽️ 完成</button>
+    </form>
+    {% elif o['status'] == 'done' %}
+    <a class="btn btn-sm btn-danger" href="{{ url_for('cashier.cashier_settle', table_id=o['table_id']) }}">💰 结账</a>
+    {% endif %}
+  </td>
+</tr>
+{% else %}
+<tr><td colspan="6" class="text-center text-muted py-4">暂无订单</td></tr>
+{% endfor %}

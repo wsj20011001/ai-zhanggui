@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}员工管理 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>👥 员工管理 <span class="text-muted small">（点餐端登录账号）</span></h5>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#empModal"
+          onclick="resetEmpForm()">＋ 新增员工</button>
+</div>
+<div class="card table-card shadow-sm"><div class="card-body">
+  <table class="table align-middle">
+    <thead><tr><th>工号</th><th>姓名</th><th>角色</th><th>状态</th><th>备注</th><th>创建时间</th><th class="text-end">操作</th></tr></thead>
+    <tbody>
+    {% for e in emps %}
+    <tr class="{{ '' if e['active'] else 'table-secondary' }}">
+      <td><b>{{ e['employee_no'] }}</b></td>
+      <td>{{ e['name'] }}</td>
+      <td>{{ e['role'] }}</td>
+      <td>
+        {% if e['active'] %}<span class="badge bg-success">启用</span>
+        {% else %}<span class="badge bg-secondary">停用</span>{% endif %}
+      </td>
+      <td class="small">{{ e['remark'] }}</td>
+      <td class="small">{{ e['created_at'][:10] }}</td>
+      <td class="text-end">
+        <button class="btn btn-sm btn-outline-primary"
+                onclick="fillEmpForm({{ e['id'] }}, '{{ e['employee_no'] }}', '{{ e['name'] }}', '{{ e['role'] }}', '{{ e['remark'] }}')">编辑</button>
+        <form class="d-inline" method="post" action="{{ url_for('employees.employee_toggle', eid=e['id']) }}">
+          <button class="btn btn-sm {{ 'btn-outline-warning' if e['active'] else 'btn-outline-success' }}">
+            {{ '停用' if e['active'] else '启用' }}</button>
+        </form>
+        <form class="d-inline" method="post" action="{{ url_for('employees.employee_delete', eid=e['id']) }}"
+              onsubmit="return confirm('确认删除员工 {{ e['name'] }}（工号 {{ e['employee_no'] }}）？')">
+          <button class="btn btn-sm btn-outline-danger">删除</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="text-muted small mb-0">💡 员工用工号+密码在点餐端登录；停用后无法登录点餐端；至少保留一名启用员工。</p>
+</div></div>
+
+<div class="modal fade" id="empModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <form method="post" action="{{ url_for('employees.employee_save') }}">
+      <div class="modal-header"><h5 class="modal-title" id="emp-modal-title">新增员工</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input type="hidden" name="id" id="emp-id">
+        <div class="row">
+          <div class="col-6 mb-3"><label class="form-label required">工号</label>
+            <input class="form-control" name="employee_no" id="emp-no" required placeholder="如：1001"></div>
+          <div class="col-6 mb-3"><label class="form-label required">姓名</label>
+            <input class="form-control" name="name" id="emp-name" required></div>
+        </div>
+        <div class="mb-3"><label class="form-label">角色</label>
+          <select class="form-select" name="role" id="emp-role">
+            {% for r in roles %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
+          </select></div>
+        <div class="mb-3"><label class="form-label" id="emp-pwd-label">登录密码（至少 6 位）</label>
+          <input type="password" class="form-control" name="password" id="emp-pwd"
+                 placeholder="编辑时留空表示不修改密码"></div>
+        <div class="mb-3"><label class="form-label">备注</label>
+          <input class="form-control" name="remark" id="emp-remark"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button class="btn btn-primary">保存</button>
+      </div>
+    </form>
+  </div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function resetEmpForm() {
+  document.getElementById('emp-id').value = '';
+  document.getElementById('emp-no').value = '';
+  document.getElementById('emp-name').value = '';
+  document.getElementById('emp-role').value = '服务员';
+  document.getElementById('emp-pwd').value = '';
+  document.getElementById('emp-remark').value = '';
+  document.getElementById('emp-modal-title').textContent = '新增员工';
+  document.getElementById('emp-pwd-label').textContent = '登录密码（至少 6 位）';
+  document.getElementById('emp-pwd').required = true;
+}
+function fillEmpForm(id, no, name, role, remark) {
+  document.getElementById('emp-id').value = id;
+  document.getElementById('emp-no').value = no;
+  document.getElementById('emp-name').value = name;
+  document.getElementById('emp-role').value = role;
+  document.getElementById('emp-pwd').value = '';
+  document.getElementById('emp-remark').value = remark;
+  document.getElementById('emp-modal-title').textContent = '编辑员工';
+  document.getElementById('emp-pwd-label').textContent = '重置密码（留空则不修改）';
+  document.getElementById('emp-pwd').required = false;
+  new bootstrap.Modal(document.getElementById('empModal')).show();
+}
+</script>
+{% endblock %}

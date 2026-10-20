@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}首页 - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<h5 class="mb-3">📅 {{ today }} 经营概览</h5>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="card stat-card shadow-sm"><div class="card-body">
+      <div class="text-muted small">今日营收（元）</div>
+      <div class="num text-primary">{{ '%.2f'|format(today_amount) }}</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card shadow-sm"><div class="card-body">
+      <div class="text-muted small">今日结算单数</div>
+      <div class="num text-success">{{ today_count }}</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card shadow-sm"><div class="card-body">
+      <div class="text-muted small">进行中订单</div>
+      <div class="num text-warning">{{ open_orders }}</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card stat-card shadow-sm"><div class="card-body">
+      <div class="text-muted small">待确认催菜</div>
+      <div class="num {% if hurry %}text-danger{% endif %}">{{ hurry }}</div>
+    </div></div>
+  </div>
+</div>
+
+{% if remind %}
+<div class="alert alert-warning">
+  ⏰ <b>预订提醒：</b>
+  {% for r in remind %}{{ r['name'] }}（{{ r['reserve_time'][5:16] }}，{{ r['persons'] }}人{% if r['table_name'] %}，{{ r['table_name'] }}{% endif %}）{% if not loop.last %}；{% endif %}{% endfor %}
+  <a class="ms-2" href="{{ url_for('reservations.reservations') }}">去处理</a>
+</div>
+{% endif %}
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card table-card shadow-sm h-100"><div class="card-body">
+      <h6 class="mb-3">🪑 桌台状态（{{ tables|length }} 桌）</h6>
+      <div class="d-flex flex-wrap gap-2">
+        {% for t in tables %}
+        <span class="badge fs-6 p-2 {% if t['status'] == 'idle' %}bg-success{% elif t['status'] == 'ordering' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+          {{ t['name'] }} · {{ table_status_label[t['status']] }}
+        </span>
+        {% endfor %}
+      </div>
+      <div class="mt-3">
+        <a class="btn btn-sm btn-primary" href="{{ url_for('cashier.cashier') }}">去收银台</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('settings.tables') }}">管理桌台</a>
+      </div>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card table-card shadow-sm h-100"><div class="card-body">
+      <h6 class="mb-3">📦 库存预警（{{ warns|length }} 项）</h6>
+      {% if warns %}
+        <ul class="list-unstyled">
+        {% for w in warns %}
+          <li class="mb-1">🔴 {{ w['name'] }}：剩 {{ w['stock'] }} {{ w['unit'] }}（预警值 {{ w['warn_threshold'] }}）</li>
+        {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-muted">暂无库存预警 ✅</p>
+      {% endif %}
+      <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('reports.stock') }}">库存管理</a>
+    </div></div>
+  </div>
+</div>
+
+<div class="card table-card shadow-sm mt-3"><div class="card-body">
+  <h6>🧭 快捷入口</h6>
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-outline-primary" href="{{ url_for('orders.orders') }}">📋 实时订单</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('dishes.dishes') }}">🍽️ 菜品管理</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('members.members') }}">💳 会员管理</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('reservations.reservations') }}">📅 预订管理</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('reports.reports_daily') }}">📊 营收报表</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('settings.backup') }}">💾 数据备份</a>
+  </div>
+</div></div>
+{% endblock %}

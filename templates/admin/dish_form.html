@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}{{ '编辑菜品' if dish else '新增菜品' }} - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<h5 class="mb-3">{{ '✏️ 编辑菜品' if dish else '＋ 新增菜品' }}</h5>
+<form method="post" enctype="multipart/form-data" class="row g-3">
+  <div class="col-md-8">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3"><label class="form-label required">菜品名称</label>
+          <input class="form-control" name="name" required value="{{ dish['name'] if dish else '' }}"></div>
+        <div class="col-md-3 mb-3"><label class="form-label required">分类</label>
+          <select class="form-select" name="category_id" required>
+            {% for c in cats %}
+            <option value="{{ c['id'] }}" {{ 'selected' if dish and dish['category_id'] == c['id'] }}>{{ c['name'] }}</option>
+            {% endfor %}
+          </select></div>
+        <div class="col-md-3 mb-3"><label class="form-label">价格类型</label>
+          <div class="btn-group w-100" role="group">
+            <input type="radio" class="btn-check" name="price_mode" id="pm-fixed" value="fixed"
+                   {{ 'checked' if not dish or dish['price_mode'] != 'market' }}>
+            <label class="btn btn-outline-secondary" for="pm-fixed">固定价</label>
+            <input type="radio" class="btn-check" name="price_mode" id="pm-market" value="market"
+                   {{ 'checked' if dish and dish['price_mode'] == 'market' }}>
+            <label class="btn btn-outline-warning" for="pm-market">时价</label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 mb-3"><label class="form-label required" id="price-label">价格（元）</label>
+          <input type="number" step="0.01" min="0.01" class="form-control" name="price"
+                 id="price-input" required
+                 value="{{ dish['price'] if dish and dish['price_mode'] != 'market' else '' }}">
+          <div class="form-text text-warning" id="price-hint" style="display:none">
+            时价菜无需填价，由收银台结算前补价</div>
+        </div>
+        <div class="col-md-9 mb-3"><label class="form-label">描述</label>
+          <input class="form-control" name="description" value="{{ dish['description'] if dish else '' }}"
+                 placeholder="用料、口味、份量等"></div>
+      </div>
+      <div class="mb-3"><label class="form-label">菜品图片（jpg/png/gif/webp）</label>
+        {% if dish and dish['image'] %}
+        <div class="mb-2"><img class="dish-thumb" style="width:80px;height:80px"
+             src="{{ url_for('uploads', filename=dish['image'].replace('uploads/', '')) }}"></div>
+        {% endif %}
+        <input type="file" class="form-control" name="image" accept=".jpg,.jpeg,.png,.gif,.webp"></div>
+      <div class="d-flex flex-wrap gap-4 mb-3">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" name="is_recommend" id="chk-rec"
+                 {{ 'checked' if dish and dish['is_recommend'] }}>
+          <label class="form-check-label" for="chk-rec">⭐ 推荐菜</label>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" name="is_featured" id="chk-fea"
+                 {{ 'checked' if dish and dish['is_featured'] }}>
+          <label class="form-check-label" for="chk-fea">🪿 春归燕特色</label>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" name="is_combo" id="chk-combo"
+                 {{ 'checked' if dish and dish['is_combo'] }}>
+          <label class="form-check-label" for="chk-combo">🧺 套餐（由多道菜组成）</label>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" name="warn_flag" id="chk-warn"
+                 {{ 'checked' if dish and dish['warn_flag'] }}>
+          <label class="form-check-label" for="chk-warn">⚠️ 库存紧张标记（移动端显示）</label>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" name="is_seasonal" id="chk-season"
+                 {{ 'checked' if dish and dish['is_seasonal'] }}>
+          <label class="form-check-label" for="chk-season">🌿 时令菜（过季自动不可点）</label>
+        </div>
+        <div class="align-self-center">
+          <select class="form-select form-select-sm" name="season" id="sel-season" style="width:110px">
+            <option value="">四季供应</option>
+            {% for s in ['春','夏','秋','冬'] %}
+            <option value="{{ s }}" {{ 'selected' if dish and dish['season'] == s }}>{{ s }}季</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div id="combo-area" class="border rounded p-3 mb-3" style="display:none">
+        <h6>套餐包含的菜品</h6>
+        <p class="text-muted small">勾选子菜品并填数量；套餐价格即整份售价，子菜品不计价</p>
+        <div id="combo-list" class="row">
+          {% for c in candidates %}
+          <div class="col-md-4">
+            <div class="form-check">
+              <input class="form-check-input combo-check" type="checkbox"
+                     name="combo_dish_id" value="{{ c['id'] }}" id="cd{{ c['id'] }}"
+                     {% if c['id'] in combo_map %}checked{% endif %}>
+              <label class="form-check-label" for="cd{{ c['id'] }}">{{ c['name'] }}（{{ '%.2f'|format(c['price']) }} 元）</label>
+              <input type="number" class="form-control form-control-sm mt-1" style="width:90px"
+                     name="combo_qty_{{ c['id'] }}" min="1" value="{{ combo_map.get(c['id'], 1) }}">
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <p class="text-muted small mb-0">提示：子菜品必须处于上架状态，套餐才会完整展示。</p>
+      </div>
+      <button class="btn btn-primary">保存菜品</button>
+      <a class="btn btn-secondary" href="{{ url_for('dishes.dishes') }}">返回</a>
+    </div></div>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+/* 价格类型切换：时价菜隐藏必填价格 */
+const pmFixed = document.getElementById('pm-fixed');
+const pmMarket = document.getElementById('pm-market');
+const priceInput = document.getElementById('price-input');
+function syncPriceMode() {
+  const isMarket = pmMarket.checked;
+  priceInput.required = !isMarket;
+  priceInput.disabled = isMarket;
+  document.getElementById('price-hint').style.display = isMarket ? '' : 'none';
+  document.getElementById('price-label').classList.toggle('required', !isMarket);
+  if (isMarket) priceInput.value = '';
+}
+pmFixed.addEventListener('change', syncPriceMode);
+pmMarket.addEventListener('change', syncPriceMode);
+syncPriceMode();
+
+const comboChk = document.getElementById('chk-combo');
+const comboArea = document.getElementById('combo-area');
+function syncCombo() { comboArea.style.display = comboChk.checked ? '' : 'none'; }
+comboChk.addEventListener('change', syncCombo);
+syncCombo();
+
+/* 时令：勾选后必须选季节 */
+const seasonChk = document.getElementById('chk-season');
+const seasonSel = document.getElementById('sel-season');
+function syncSeason() {
+  seasonSel.disabled = !seasonChk.checked;
+  if (!seasonChk.checked) seasonSel.value = '';
+}
+seasonChk.addEventListener('change', syncSeason);
+syncSeason();
+</script>
+{% endblock %}

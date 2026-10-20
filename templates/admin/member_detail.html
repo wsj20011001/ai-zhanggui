@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}会员 {{ member['name'] }} - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>💳 {{ member['name'] }} <span class="badge bg-secondary">{{ member['level'] }}</span></h5>
+  <div>
+    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('members.member_edit', mid=member['id']) }}">编辑</a>
+    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('members.members') }}">← 返回列表</a>
+  </div>
+</div>
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3"><div class="card stat-card shadow-sm"><div class="card-body">
+    <div class="text-muted small">余额（元）</div><div class="num text-primary">{{ '%.2f'|format(member['balance']) }}</div>
+  </div></div></div>
+  <div class="col-6 col-md-3"><div class="card stat-card shadow-sm"><div class="card-body">
+    <div class="text-muted small">积分</div><div class="num text-warning">{{ member['points'] }}</div>
+  </div></div></div>
+  <div class="col-6 col-md-3"><div class="card stat-card shadow-sm"><div class="card-body">
+    <div class="text-muted small">累计消费（元）</div><div class="num text-danger">{{ '%.2f'|format(member['total_spend']) }}</div>
+  </div></div></div>
+  <div class="col-6 col-md-3"><div class="card stat-card shadow-sm"><div class="card-body">
+    <div class="text-muted small">消费次数</div><div class="num text-success">{{ stats['cnt'] }}</div>
+  </div></div></div>
+</div>
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card table-card shadow-sm mb-3"><div class="card-body">
+      <h6>💰 充值</h6>
+      <form method="post" action="{{ url_for('members.member_recharge', mid=member['id']) }}">
+        <div class="mb-2"><label class="form-label small mb-1">充值金额（元）</label>
+          <input type="number" step="0.01" min="0.01" class="form-control" name="amount" required></div>
+        <div class="mb-3"><label class="form-label small mb-1">赠送积分（可选）</label>
+          <input type="number" min="0" class="form-control" name="gift_points" value="0"></div>
+        <button class="btn btn-primary w-100">确认充值</button>
+      </form>
+    </div></div>
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>🔧 手动调整</h6>
+      <form method="post" action="{{ url_for('members.member_adjust', mid=member['id']) }}">
+        <div class="row">
+          <div class="col-6 mb-2"><label class="form-label small mb-1">余额增减（元，可负）</label>
+            <input type="number" step="0.01" class="form-control" name="d_balance" value="0"></div>
+          <div class="col-6 mb-2"><label class="form-label small mb-1">积分增减（可负）</label>
+            <input type="number" class="form-control" name="d_points" value="0"></div>
+        </div>
+        <div class="mb-3"><label class="form-label small mb-1">原因备注</label>
+          <input class="form-control" name="note" placeholder="如：投诉补偿"></div>
+        <button class="btn btn-outline-warning w-100">执行调整</button>
+      </form>
+    </div></div>
+  </div>
+  <div class="col-md-8">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>📒 流水记录（最近 200 条）</h6>
+      <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead><tr><th>时间</th><th>类型</th><th>金额变动</th><th>积分变动</th><th>备注</th></tr></thead>
+        <tbody>
+        {% for l in ledger %}
+        <tr>
+          <td class="small">{{ l['created_at'] }}</td>
+          <td>
+            {% if l['type'] == 'recharge' %}<span class="badge bg-success">充值</span>
+            {% elif l['type'] == 'consume' %}<span class="badge bg-danger">消费</span>
+            {% else %}<span class="badge bg-secondary">调整</span>{% endif %}
+          </td>
+          <td class="{{ 'text-danger' if l['amount'] < 0 else 'text-success' }}">
+            {{ '+' if l['amount'] >= 0 }}{{ '%.2f'|format(l['amount']) }}</td>
+          <td>{{ ('+' if l['points_change'] > 0) }}{{ l['points_change'] if l['points_change'] else '—' }}</td>
+          <td class="small">{{ l['note'] }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center text-muted py-4">暂无流水</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div></div>
+  </div>
+</div>
+{% endblock %}

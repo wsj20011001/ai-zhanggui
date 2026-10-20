@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}订单 {{ order['order_no'] }} - {{ shop.shop_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5>🧾 订单 {{ order['order_no'] }}</h5>
+  <a class="btn btn-outline-secondary btn-sm" href="javascript:history.back()">← 返回</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-7">
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>订单明细</h6>
+      <table class="table table-sm align-middle">
+        <thead><tr><th>菜品</th><th>单价</th><th>数量</th><th>小计</th></tr></thead>
+        <tbody>
+        {% for i in items if not i['is_combo_child'] %}
+        <tr>
+          <td><b>{{ i['name'] }}</b>
+            {% if i['note'] %}<span class="badge bg-warning text-dark ms-1">{{ i['note'] }}</span>{% endif %}
+            {% set children = items | selectattr('combo_of', 'equalto', i['id']) | list %}
+            {% if children %}
+              <div class="small text-muted ms-2">
+                {% for ch in children %}└ {{ ch['name'] }} × {{ ch['qty'] }}{% if not loop.last %}<br>{% endif %}{% endfor %}
+              </div>
+            {% endif %}
+          </td>
+          <td>{% if i['price_pending'] %}<span class="badge bg-warning text-dark">时价·待定</span>
+              {% else %}{{ '%.2f'|format(i['price']) }}{% endif %}</td>
+          <td>× {{ i['qty'] }}</td>
+          <td class="text-danger fw-bold">{{ '%.2f'|format(i['price'] * i['qty']) }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% if order['remark'] %}<p class="mb-0">📝 整单备注：{{ order['remark'] }}</p>{% endif %}
+      {% if pending %}
+      <div class="alert alert-warning mt-3 mb-0">
+        ⚠️ 本单有 <b>{{ pending|length }}</b> 项时价菜尚未定价，<b>结算前必须先补价</b>：
+        {% for p in pending %}<div class="small">· {{ p['name'] }} × {{ p['qty'] }}{% if p['price_set_by'] %}（{{ p['price_set_by'] }}）{% endif %}</div>{% endfor %}
+        <a class="btn btn-sm btn-warning mt-2" href="{{ url_for('cashier.order_price', oid=order['id']) }}">💴 去补价</a>
+      </div>
+      {% endif %}
+    </div></div>
+  </div>
+  <div class="col-md-5">
+    <div class="card table-card shadow-sm mb-3"><div class="card-body">
+      <h6>订单信息</h6>
+      <table class="table table-sm mb-0">
+        <tr><td class="text-muted">桌台</td><td>{{ order['table_name'] }}（{{ order['persons'] }} 人）</td></tr>
+        <tr><td class="text-muted">下单时间</td><td>{{ order['created_at'] }}</td></tr>
+        <tr><td class="text-muted">状态</td><td><b>{{ order_status_label[order['status']] }}</b></td></tr>
+        <tr><td class="text-muted">合计</td><td class="text-danger fw-bold">{{ '%.2f'|format(order['total_amount']) }} 元</td></tr>
+        {% if order['status'] == 'settled' %}
+        <tr><td class="text-muted">折扣</td><td>-{{ '%.2f'|format(order['discount_total']) }} 元</td></tr>
+        <tr><td class="text-muted">实收</td><td class="text-danger fw-bold">{{ '%.2f'|format(order['final_amount']) }} 元</td></tr>
+        <tr><td class="text-muted">支付方式</td><td>{{ pay_method_label.get(order['pay_method'], order['pay_method']) }}</td></tr>
+        {% if order['member_name'] %}<tr><td class="text-muted">会员</td><td>{{ order['member_name'] }}</td></tr>{% endif %}
+        {% endif %}
+      </table>
+    </div></div>
+    <div class="card table-card shadow-sm"><div class="card-body">
+      <h6>状态流转</h6>
+      {% if order['status'] == 'pending' %}
+      <form class="d-inline" method="post" action="{{ url_for('orders.order_confirm', oid=order['id']) }}">
+        <button class="btn btn-success w-100 mb-2">✅ 确认订单，开始制作</button>
+      </form>
+      <form class="d-inline" method="post" action="{{ url_for('orders.order_cancel', oid=order['id']) }}"
+            onsubmit="return confirm('确认作废此订单？')">
+        <button class="btn btn-outline-danger w-100 mb-2">⛔ 作废订单</button>
+      </form>
+      {% elif order['status'] == 'making' %}
+      <form method="post" action="{{ url_for('orders.order_done', oid=order['id']) }}">
+        <button class="btn btn-warning w-100 mb-2">🍽️ 出餐完成</button>
+      </form>
+      {% elif order['status'] == 'done' %}
+      {% if pending %}
+      <a class="btn btn-warning w-100 mb-2" href="{{ url_for('cashier.order_price', oid=order['id']) }}">💴 先补价（{{ pending|length }} 项）</a>
+      {% else %}
+      <a class="btn btn-danger w-100 mb-2" href="{{ url_for('cashier.cashier_settle', table_id=order['table_id']) }}">💰 去结算</a>
+      {% endif %}
+      {% endif %}
+      <a class="btn btn-outline-primary w-100" target="_blank"
+         href="{{ url_for('orders.order_receipt', oid=order['id'], type='settle' if order['status'] == 'settled' else 'order') }}">
+        🖨️ 打印小票</a>
+    </div></div>
+  </div>
+</div>
+{% endblock %}
