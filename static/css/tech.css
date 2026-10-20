@@ -39,11 +39,12 @@
 
 /* ---------- 侧边栏 ---------- */
 .sidebar {
-  background: linear-gradient(180deg, #070c17 0%, #0c1428 55%, #0a1122 100%);
+  background: linear-gradient(180deg, #0b1424 0%, #101b34 55%, #0b1424 100%);
   border-right: 1px solid rgba(120, 170, 255, .10);
   box-shadow: 6px 0 28px -20px rgba(4, 10, 22, .8);
   position: sticky;
 }
+.sidebar { width: 216px; }
 .sidebar::after {                       /* 右侧一道极细的光边 */
   content: "";
   position: absolute;
@@ -57,11 +58,13 @@
   letter-spacing: .2px;
   text-shadow: 0 0 18px rgba(92, 130, 255, .35);
 }
-.brand-sub { color: #9daecc; }
+.brand-sub { color: #a6b6d4; font-size: .7rem; }
 
 .sidebar .nav-link {
-  color: #c9d4ea;
-  font-size: .92rem;
+  color: #e8eefc;
+  font-size: .98rem;
+  font-weight: 500;
+  padding: 9px 12px;
   border-radius: 9px;
   margin-bottom: 1px;
   position: relative;
@@ -87,7 +90,7 @@
   box-shadow: 0 0 10px rgba(95, 230, 247, .8);
 }
 .sidebar .nav-label {
-  color: #8fa1c4;
+  color: #aabbdb;
   text-transform: uppercase;
   letter-spacing: .12em;
   font-size: .7rem;
