@@ -4,6 +4,8 @@
 
 **不只告诉你哪里亏，还替你把账算平、把货备好、把菜单改对。**
 
+代码仓库：<https://github.com/wsj20011001/ai-zhanggui>
+
 中小餐饮老板每天面对的是同一组问题：今天到底赚没赚、明天该买多少、哪道菜在赔钱。
 市面上的工具给他更多报表，AI 掌柜给他**三个动作**——而且每个动作都能一键执行、可撤销、可追溯。
 
@@ -50,6 +52,9 @@
 ## 3. 快速开始
 
 ```bash
+git clone https://github.com/wsj20011001/ai-zhanggui.git
+cd ai-zhanggui
+
 # 1. 依赖（只有 Flask + waitress，无 numpy/pandas/torch）
 python -m venv venv
 venv\Scripts\pip install -r requirements.txt

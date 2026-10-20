@@ -15,7 +15,8 @@
   <Box style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
     <Box style={{ flexDirection: 'column', gap: 5 }}>
       <Text style={{ fontSize: 14, color: '#F2F4FF' }}>AI 掌柜 · 中小餐饮经营 Agent</Text>
-      <Text style={{ fontSize: 13, color: '#8A90A6' }}>代码仓库与演示入口见提交材料 · 演示账号 admin / admin123</Text>
+      <Text style={{ fontSize: 13, color: '#6C6CF5', fontWeight: 'bold' }}>github.com/wsj20011001/ai-zhanggui</Text>
+      <Text style={{ fontSize: 12, color: '#8A90A6' }}>管理端 admin / admin123 · 点餐端工号 1001 / 123456</Text>
     </Box>
     <Text style={{ fontSize: 13, color: '#4A5064' }}>12 / 12</Text>
   </Box>
