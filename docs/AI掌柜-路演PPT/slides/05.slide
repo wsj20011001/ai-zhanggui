@@ -29,16 +29,16 @@
       </Box>
     </Box>
     <Box style={{ marginTop: 20, background: '#EEF1FE', border: '1px solid #C9CDF6', borderRadius: 14, padding: '20px 24px', flexDirection: 'row', alignItems: 'center', gap: 24 }}>
-      <Text style={{ fontSize: 13, color: '#4C4DDC', letterSpacing: 2, width: 132 }}>加演 · 一句话</Text>
+      <Text style={{ fontSize: 13, color: '#4C4DDC', letterSpacing: 2, width: 132 }}>加演 · 宴席排菜</Text>
       <Box style={{ flexDirection: 'column', gap: 6 }}>
-        <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#0C1222' }}>「明天 8 人宴席，人均 150」</Text>
-        <Text style={{ fontSize: 13, color: '#5C6780' }}>按中餐宴席结构排 10 道菜 → 一键成单 → 后厨立刻看到，可人工增减。</Text>
+        <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#0C1222' }}>「8 人 / 人均 150」</Text>
+        <Text style={{ fontSize: 13, color: '#5C6780' }}>按中餐宴席结构自动配一桌菜 → 一键成单 → 后厨立刻看到，可人工增减。</Text>
       </Box>
     </Box>
     <Box style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #E3E8F5', flexDirection: 'row', gap: 0 }}>
       <Box style={{ flex: 1, flexDirection: 'column', gap: 3 }}>
         <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0C1222' }}>1 张</Text>
-        <Text style={{ fontSize: 12, color: '#5C6780' }}>采购单（7 项 / 2,757 元）</Text>
+        <Text style={{ fontSize: 12, color: '#5C6780' }}>采购单，人工确认后才入库</Text>
       </Box>
       <Box style={{ flex: 1, flexDirection: 'column', gap: 3 }}>
         <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0C1222' }}>7 种</Text>
@@ -46,7 +46,7 @@
       </Box>
       <Box style={{ flex: 1, flexDirection: 'column', gap: 3 }}>
         <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0C1222' }}>3 条</Text>
-        <Text style={{ fontSize: 12, color: '#5C6780' }}>操作留痕，任何一条可回滚</Text>
+        <Text style={{ fontSize: 12, color: '#5C6780' }}>操作留痕，调价与主推可回滚</Text>
       </Box>
       <Box style={{ flex: 1.2, flexDirection: 'column', gap: 3 }}>
         <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#4C4DDC' }}>0 次</Text>
