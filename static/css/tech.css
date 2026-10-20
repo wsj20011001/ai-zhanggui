@@ -10,9 +10,9 @@
   --ink: #0c1222;
   --ink-2: #414a63;
   --muted: #7d879f;
-  --line: #e4e9f5;
+  --line: #e0e7f4;
   --line-2: #eef1f9;
-  --bg: #f3f6fc;
+  --bg: #eff3fb;
   --accent: #4c4ddc;
   --accent-soft: #eceefe;
   --cyan: #00b8cc;
@@ -37,31 +37,43 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* ---------- 侧边栏 ---------- */
+/* ---------- 侧边栏：浅色科技感 ---------- */
 .sidebar {
-  background: linear-gradient(180deg, #0b1424 0%, #101b34 55%, #0b1424 100%);
-  border-right: 1px solid rgba(120, 170, 255, .10);
-  box-shadow: 6px 0 28px -20px rgba(4, 10, 22, .8);
+  width: 216px;
+  background:
+    radial-gradient(520px 180px at 50% 0%, rgba(76, 77, 220, .07), transparent 70%),
+    linear-gradient(180deg, #f8faff 0%, #fdfeff 58%, #f8faff 100%);
+  border-right: 1px solid #dde4f5;
+  box-shadow: 10px 0 30px -26px rgba(12, 18, 34, .55);
   position: sticky;
 }
-.sidebar { width: 216px; }
-.sidebar::after {                       /* 右侧一道极细的光边 */
+.sidebar::after {                       /* 右侧一道极细的靛蓝光边 */
   content: "";
   position: absolute;
   top: 0; right: 0; bottom: 0;
   width: 1px;
-  background: linear-gradient(180deg, transparent, rgba(0, 200, 220, .35), transparent);
+  background: linear-gradient(180deg, transparent, rgba(76, 77, 220, .35), transparent);
 }
 .sidebar-brand {
-  color: #eaf1ff;
-  border-bottom: 1px solid rgba(120, 170, 255, .14);
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
   letter-spacing: .2px;
-  text-shadow: 0 0 18px rgba(92, 130, 255, .35);
+  font-weight: 700;
+  padding-bottom: 14px;
 }
-.brand-sub { color: #a6b6d4; font-size: .7rem; }
+.sidebar-brand::before {                /* 品牌上方一道渐变短线，科技刻度 */
+  content: "";
+  display: block;
+  width: 32px;
+  height: 3px;
+  border-radius: 2px;
+  margin: 0 auto 8px;
+  background: linear-gradient(90deg, #4c4ddc, #00b8cc);
+}
+.brand-sub { color: var(--muted); font-weight: 400; }
 
 .sidebar .nav-link {
-  color: #e8eefc;
+  color: #3b4560;
   font-size: .98rem;
   font-weight: 500;
   padding: 9px 12px;
@@ -71,26 +83,26 @@
   transition: color .16s, background .16s, transform .16s;
 }
 .sidebar .nav-link:hover {
-  color: #ffffff;
-  background: rgba(130, 180, 255, .16);
+  color: var(--accent);
+  background: #eef1fe;
   transform: translateX(1px);
 }
 .sidebar .nav-link.active {
   color: #fff;
-  background: linear-gradient(90deg, rgba(86, 88, 235, .85) 0%, rgba(0, 184, 204, .30) 100%);
-  box-shadow: inset 0 0 0 1px rgba(150, 215, 255, .30), 0 8px 22px -12px rgba(0, 184, 204, .95);
   font-weight: 600;
+  background: linear-gradient(90deg, #5557e6 0%, #4344d6 100%);
+  box-shadow: 0 10px 22px -14px rgba(67, 68, 214, .95);
 }
 .sidebar .nav-link.active::before {
   content: "";
   position: absolute;
-  left: 0; top: 7px; bottom: 7px;
+  left: 0; top: 8px; bottom: 8px;
   width: 2px; border-radius: 2px;
-  background: linear-gradient(180deg, #5fe6f7, #5a5cf0);
-  box-shadow: 0 0 10px rgba(95, 230, 247, .8);
+  background: #5fe6f7;
+  box-shadow: 0 0 10px rgba(95, 230, 247, .9);
 }
 .sidebar .nav-label {
-  color: #aabbdb;
+  color: #98a2b8;
   text-transform: uppercase;
   letter-spacing: .12em;
   font-size: .7rem;
@@ -268,64 +280,55 @@ hr { border-color: var(--line); }
 }
 
 /* ==========================================================================
-   登录页：整页深色科技感
+   登录页：明亮科技感
    ========================================================================== */
 .login-body {
   background:
-    radial-gradient(900px 520px at 18% 8%, rgba(76, 77, 220, .40), transparent 60%),
-    radial-gradient(760px 460px at 84% 92%, rgba(0, 184, 204, .28), transparent 62%),
-    linear-gradient(160deg, #070b16 0%, #0a1224 58%, #070d19 100%);
+    radial-gradient(900px 520px at 16% 6%, rgba(76, 77, 220, .16), transparent 62%),
+    radial-gradient(760px 460px at 86% 94%, rgba(0, 184, 204, .14), transparent 62%),
+    linear-gradient(160deg, #f7f9ff 0%, #eef2fe 55%, #f8faff 100%);
   position: relative;
   overflow: hidden;
 }
-.login-body::before {                   /* 网格 */
+.login-body::before {                   /* 细网格 */
   content: "";
   position: absolute; inset: 0;
   background-image:
-    linear-gradient(rgba(140, 170, 255, .07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(140, 170, 255, .07) 1px, transparent 1px);
+    linear-gradient(rgba(76, 77, 220, .06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(76, 77, 220, .06) 1px, transparent 1px);
   background-size: 44px 44px;
-  mask-image: radial-gradient(circle at 50% 45%, #000 32%, transparent 78%);
-  -webkit-mask-image: radial-gradient(circle at 50% 45%, #000 32%, transparent 78%);
+  mask-image: radial-gradient(circle at 50% 45%, #000 30%, transparent 76%);
+  -webkit-mask-image: radial-gradient(circle at 50% 45%, #000 30%, transparent 76%);
   pointer-events: none;
 }
 .login-card {
   position: relative;
-  background: rgba(14, 20, 38, .72) !important;
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-  border: 1px solid rgba(130, 165, 255, .22) !important;
+  background: rgba(255, 255, 255, .92) !important;
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid var(--line) !important;
   border-radius: 18px !important;
-  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .9), inset 0 1px 0 rgba(255, 255, 255, .06);
-  color: #dbe4fb;
+  box-shadow: 0 30px 70px -34px rgba(12, 18, 34, .35), 0 1px 0 rgba(255, 255, 255, .9) inset;
+  color: var(--ink);
 }
-.login-card h4 { color: #f2f6ff; letter-spacing: .5px; }
-.login-card .text-muted { color: #8b9ac0 !important; }
-.login-card .form-label { color: #a9b7d8; }
+.login-card h4 { color: var(--ink); letter-spacing: .5px; }
+.login-card .text-muted { color: var(--muted) !important; }
+.login-card .form-label { color: var(--ink-2); }
 .login-card .form-control {
-  background: rgba(255, 255, 255, .05);
-  border-color: rgba(130, 165, 255, .22);
-  color: #eef3ff;
+  background: #fff;
+  border-color: #dde3f1;
+  color: var(--ink);
 }
-.login-card .form-control::placeholder { color: #6f7fa6; }
 .login-card .form-control:focus {
-  background: rgba(255, 255, 255, .08);
-  border-color: rgba(95, 230, 247, .55);
-  box-shadow: 0 0 0 4px rgba(0, 184, 204, .14);
-  color: #fff;
+  border-color: #9ea2f2;
+  box-shadow: 0 0 0 4px rgba(76, 77, 220, .12);
 }
-.login-card .btn-primary {
-  background: linear-gradient(135deg, #5a5cf0, #00b8cc);
-  border: none;
-  box-shadow: 0 10px 26px -12px rgba(0, 184, 204, .9);
-}
-.login-card .btn-primary:hover { filter: brightness(1.06); }
 .login-card .alert-danger {
-  background: rgba(210, 69, 69, .14);
-  border-color: rgba(210, 69, 69, .35);
-  color: #ffb3b3;
+  background: #fdeeee;
+  border-color: #f3c9c9;
+  color: #a83232;
 }
-.login-body .small, .login-body .text-muted { color: #8b9ac0 !important; }
+.login-body .small { color: var(--muted) !important; }
 
 /* ---------- 收银台桌台卡：去掉整块马卡龙底色，改左侧状态条 ---------- */
 .desk-card {
