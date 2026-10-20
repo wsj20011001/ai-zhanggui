@@ -1,39 +1,43 @@
-<Slide style={{ width: 1280, height: 720, background: '#0B0D14', padding: '56px 72px', flexDirection: 'column' }}>
+<Slide style={{ width: 1280, height: 720, background: '#F6F8FD', padding: '56px 72px', flexDirection: 'column' }}>
   <Box style={{ height: 96, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
     <Box style={{ flexDirection: 'column', gap: 8 }}>
-      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#F2F4FF' }}>一家店跑通，才敢谈复制</Text>
-      <Text style={{ fontSize: 15, color: '#8A90A6' }}>单店 → 连锁 → 产业带，每一步都靠同一套指标与工具</Text>
+      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0C1222' }}>一家店跑通，才敢谈复制</Text>
+      <Text style={{ fontSize: 15, color: '#5C6780' }}>单店 → 连锁 → 产业带，每一步都靠同一套指标与工具</Text>
     </Box>
-    <Text style={{ fontSize: 13, color: '#4A5064', letterSpacing: 2 }}>AI 掌柜</Text>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: '5px 12px', background: '#EEF1FE', border: '1px solid #DDE2F5', borderRadius: 999 }}>
+      <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#4C4DDC' }} />
+      <Text style={{ fontSize: 12, color: '#4C4DDC', fontWeight: 'bold', letterSpacing: 1 }}>AI 掌柜</Text>
+    </Box>
   </Box>
+  <Box style={{ width: 72, height: 3, background: '#4C4DDC', borderRadius: 2, marginTop: 2, marginBottom: 12 }} />
   <Box style={{ flex: 1, paddingTop: 8 }}>
     <Box style={{ flexDirection: 'row', gap: 16, height: 210 }}>
-      <Box style={{ flex: 1, background: '#171A2E', border: '1px solid #6C6CF5', borderRadius: 14, padding: 24 }}>
-        <Text style={{ fontSize: 12, color: '#6C6CF5', letterSpacing: 2 }}>现在 · 单店</Text>
-        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#F2F4FF', marginTop: 10 }}>跑通闭环</Text>
-        <Text style={{ fontSize: 14, color: '#8A90A6', marginTop: 10, lineHeight: 1.75 }}>180 天数据 · 6,803 单<br />AI 建议 → 执行 → 效果回流</Text>
+      <Box style={{ flex: 1, background: '#EEF1FE', border: '1px solid #C9CDF6', borderRadius: 14, padding: 24 }}>
+        <Text style={{ fontSize: 12, color: '#4C4DDC', letterSpacing: 2 }}>现在 · 单店</Text>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0C1222', marginTop: 10 }}>跑通闭环</Text>
+        <Text style={{ fontSize: 14, color: '#5C6780', marginTop: 10, lineHeight: 1.75 }}>180 天数据 · 6,803 单<br />AI 建议 → 执行 → 效果回流</Text>
       </Box>
-      <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 14, padding: 24 }}>
-        <Text style={{ fontSize: 12, color: '#8A90A6', letterSpacing: 2 }}>下一步 · 连锁</Text>
-        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#F2F4FF', marginTop: 10 }}>门店对比</Text>
-        <Text style={{ fontSize: 14, color: '#8A90A6', marginTop: 10, lineHeight: 1.75 }}>同一指标跨店比较<br />找出「哪家店哪道菜不对」</Text>
+      <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 24 }}>
+        <Text style={{ fontSize: 12, color: '#5C6780', letterSpacing: 2 }}>下一步 · 连锁</Text>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0C1222', marginTop: 10 }}>门店对比</Text>
+        <Text style={{ fontSize: 14, color: '#5C6780', marginTop: 10, lineHeight: 1.75 }}>同一指标跨店比较<br />找出「哪家店哪道菜不对」</Text>
       </Box>
-      <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 14, padding: 24 }}>
-        <Text style={{ fontSize: 12, color: '#8A90A6', letterSpacing: 2 }}>更远 · 产业带</Text>
-        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#F2F4FF', marginTop: 10 }}>供应链协同</Text>
-        <Text style={{ fontSize: 14, color: '#8A90A6', marginTop: 10, lineHeight: 1.75 }}>聚合采购需求<br />用数据换议价权</Text>
+      <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 24 }}>
+        <Text style={{ fontSize: 12, color: '#5C6780', letterSpacing: 2 }}>更远 · 产业带</Text>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0C1222', marginTop: 10 }}>供应链协同</Text>
+        <Text style={{ fontSize: 14, color: '#5C6780', marginTop: 10, lineHeight: 1.75 }}>聚合采购需求<br />用数据换议价权</Text>
       </Box>
     </Box>
-    <Box style={{ marginTop: 26, background: '#12141F', border: '1px solid #242A3D', borderRadius: 12, padding: '22px 26px', flexDirection: 'row', alignItems: 'center', gap: 18 }}>
-      <Text style={{ fontSize: 13, color: '#8A90A6', width: 96 }}>数据飞轮</Text>
-      <Text style={{ fontSize: 16, color: '#F2F4FF' }}>更多门店 → 更多真实经营样本 → 预测与阈值更准 → 建议更敢执行 → 更多门店愿意接入</Text>
+    <Box style={{ marginTop: 26, background: '#FBFCFE', border: '1px solid #E3E8F5', borderRadius: 12, padding: '22px 26px', flexDirection: 'row', alignItems: 'center', gap: 18 }}>
+      <Text style={{ fontSize: 13, color: '#5C6780', width: 96 }}>数据飞轮</Text>
+      <Text style={{ fontSize: 16, color: '#0C1222' }}>更多门店 → 更多真实经营样本 → 预测与阈值更准 → 建议更敢执行 → 更多门店愿意接入</Text>
     </Box>
     <Box style={{ marginTop: 16, flexDirection: 'row', gap: 24 }}>
-      <Text style={{ fontSize: 13, color: '#4A5064' }}>可复制性：换一套菜单与配方即可用于茶餐厅 / 快餐 / 火锅 / 烘焙，指标层与工具层不用改。</Text>
+      <Text style={{ fontSize: 13, color: '#8A93A8' }}>可复制性：换一套菜单与配方即可用于茶餐厅 / 快餐 / 火锅 / 烘焙，指标层与工具层不用改。</Text>
     </Box>
   </Box>
   <Box style={{ height: 36, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-    <Text style={{ fontSize: 12, color: '#4A5064' }}>2026 武汉 1024 · 产业应用赛道</Text>
-    <Text style={{ fontSize: 12, color: '#4A5064' }}>10 / 12</Text>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>2026 武汉 1024 · 产业应用赛道</Text>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>10 / 12</Text>
   </Box>
 </Slide>

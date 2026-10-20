@@ -1,18 +1,49 @@
-<Slide style={{ width: 1280, height: 720, background: '#0B0D14', padding: '56px 72px', flexDirection: 'column', justifyContent: 'space-between' }}>
+<Slide style={{ width: 1280, height: 720, background: '#F6F8FD', padding: '56px 72px', flexDirection: 'column', justifyContent: 'space-between' }}>
   <Box style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-    <Text style={{ fontSize: 13, color: '#8A90A6', letterSpacing: 1 }}>2026 武汉 1024 · 人工智能创新应用黑客松</Text>
-    <Text style={{ fontSize: 13, color: '#6C6CF5', fontWeight: 'bold', letterSpacing: 2 }}>产业应用赛道</Text>
+    <Text style={{ fontSize: 13, color: '#5C6780', letterSpacing: 1 }}>2026 武汉 1024 · 人工智能创新应用黑客松</Text>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: '5px 12px', background: '#EEF1FE', border: '1px solid #DDE2F5', borderRadius: 999 }}>
+      <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#4C4DDC' }} />
+      <Text style={{ fontSize: 12, color: '#4C4DDC', fontWeight: 'bold', letterSpacing: 1 }}>产业应用赛道</Text>
+    </Box>
   </Box>
-  <Box style={{ flexDirection: 'column' }}>
-    <Text style={{ fontSize: 96, fontWeight: 'bold', color: '#F2F4FF', letterSpacing: -3 }}>AI 掌柜</Text>
-    <Text style={{ fontSize: 30, color: '#F2F4FF', opacity: 0.82, marginTop: 6 }}>中小餐饮经营 Agent</Text>
-    <Box style={{ width: 88, height: 4, background: '#6C6CF5', borderRadius: 2, marginTop: 20, marginBottom: 20 }} />
-    <Text style={{ fontSize: 21, color: '#8A90A6', width: 820, lineHeight: 1.75 }}>
-      不只告诉你哪里亏，还替你把账算平、把货备好、把菜单改对。
-    </Text>
+
+  <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 40 }}>
+    <Box style={{ flex: 1, flexDirection: 'column' }}>
+      <Text style={{ fontSize: 92, fontWeight: 'bold', color: '#0C1222', letterSpacing: -3 }}>AI 掌柜</Text>
+      <Text style={{ fontSize: 28, color: '#3A4360', marginTop: 6 }}>中小餐饮经营 Agent</Text>
+      <Box style={{ width: 88, height: 4, background: '#4C4DDC', borderRadius: 2, marginTop: 20, marginBottom: 20 }} />
+      <Text style={{ fontSize: 20, color: '#5C6780', lineHeight: 1.75, width: 620 }}>
+        不只告诉你哪里亏，还替你把账算平、把货备好、把菜单改对。
+      </Text>
+    </Box>
+
+    <Box style={{ width: 360, background: '#EEF1FE', border: '1px solid #DDE2F5', borderRadius: 18, padding: 26, flexDirection: 'column', gap: 16 }}>
+      <Text style={{ fontSize: 11, color: '#4C4DDC', fontWeight: 'bold', letterSpacing: 2 }}>DAILY LOOP</Text>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <Box style={{ width: 26, height: 26, borderRadius: 8, background: '#4C4DDC', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 12, color: '#FFFFFF', fontWeight: 'bold' }}>1</Text>
+        </Box>
+        <Text style={{ fontSize: 15, color: '#0C1222' }}>发现异常 · 3 件事</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <Box style={{ width: 26, height: 26, borderRadius: 8, background: '#4C4DDC', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 12, color: '#FFFFFF', fontWeight: 'bold' }}>2</Text>
+        </Box>
+        <Text style={{ fontSize: 15, color: '#0C1222' }}>算清原因 · 客流 / 客单价</Text>
+      </Box>
+      <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <Box style={{ width: 26, height: 26, borderRadius: 8, background: '#4C4DDC', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 12, color: '#FFFFFF', fontWeight: 'bold' }}>3</Text>
+        </Box>
+        <Text style={{ fontSize: 15, color: '#0C1222' }}>动手执行 · 可撤销</Text>
+      </Box>
+      <Box style={{ height: 1, background: '#D8DEF2', marginTop: 4 }} />
+      <Text style={{ fontSize: 12, color: '#5C6780' }}>180 天 · 6,803 单 · 断网可跑</Text>
+    </Box>
   </Box>
+
   <Box style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-    <Text style={{ fontSize: 14, color: '#8A90A6' }}>演示门店 · 春归燕茶餐厅</Text>
-    <Text style={{ fontSize: 13, color: '#4A5064' }}>01 / 12</Text>
+    <Text style={{ fontSize: 14, color: '#5C6780' }}>演示门店 · 春归燕茶餐厅</Text>
+    <Text style={{ fontSize: 13, color: '#8A93A8' }}>01 / 12</Text>
   </Box>
 </Slide>

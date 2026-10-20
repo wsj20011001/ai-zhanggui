@@ -1,23 +1,23 @@
-<Slide style={{ width: 1280, height: 720, background: '#0B0D14', padding: '56px 72px', flexDirection: 'column', justifyContent: 'space-between' }}>
+<Slide style={{ width: 1280, height: 720, background: '#F6F8FD', padding: '56px 72px', flexDirection: 'column', justifyContent: 'space-between' }}>
   <Box style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-    <Text style={{ fontSize: 13, color: '#8A90A6', letterSpacing: 1 }}>2026 武汉 1024 · 人工智能创新应用黑客松</Text>
-    <Text style={{ fontSize: 13, color: '#6C6CF5', fontWeight: 'bold', letterSpacing: 2 }}>产业应用赛道</Text>
+    <Text style={{ fontSize: 13, color: '#5C6780', letterSpacing: 1 }}>2026 武汉 1024 · 人工智能创新应用黑客松</Text>
+    <Text style={{ fontSize: 13, color: '#4C4DDC', fontWeight: 'bold', letterSpacing: 2 }}>产业应用赛道</Text>
   </Box>
   <Box style={{ flexDirection: 'column' }}>
-    <Text style={{ fontSize: 52, fontWeight: 'bold', color: '#F2F4FF', lineHeight: 1.35, width: 960 }}>
+    <Text style={{ fontSize: 52, fontWeight: 'bold', color: '#0C1222', lineHeight: 1.35, width: 960 }}>
       让每个小店，<br />都有一个不用发工资的掌柜。
     </Text>
-    <Box style={{ width: 88, height: 4, background: '#6C6CF5', borderRadius: 2, marginTop: 26, marginBottom: 22 }} />
-    <Text style={{ fontSize: 17, color: '#8A90A6', lineHeight: 1.8 }}>
+    <Box style={{ width: 88, height: 4, background: '#4C4DDC', borderRadius: 2, marginTop: 26, marginBottom: 22 }} />
+    <Text style={{ fontSize: 17, color: '#5C6780', lineHeight: 1.8 }}>
       可执行 · 可追溯 · 可撤销 · 断网可用
     </Text>
   </Box>
   <Box style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
     <Box style={{ flexDirection: 'column', gap: 5 }}>
-      <Text style={{ fontSize: 14, color: '#F2F4FF' }}>AI 掌柜 · 中小餐饮经营 Agent</Text>
-      <Text style={{ fontSize: 13, color: '#6C6CF5', fontWeight: 'bold' }}>github.com/wsj20011001/ai-zhanggui</Text>
-      <Text style={{ fontSize: 12, color: '#8A90A6' }}>管理端 admin / admin123 · 点餐端工号 1001 / 123456</Text>
+      <Text style={{ fontSize: 14, color: '#0C1222' }}>AI 掌柜 · 中小餐饮经营 Agent</Text>
+      <Text style={{ fontSize: 13, color: '#4C4DDC', fontWeight: 'bold' }}>github.com/wsj20011001/ai-zhanggui</Text>
+      <Text style={{ fontSize: 12, color: '#5C6780' }}>管理端 admin / admin123 · 点餐端工号 1001 / 123456</Text>
     </Box>
-    <Text style={{ fontSize: 13, color: '#4A5064' }}>12 / 12</Text>
+    <Text style={{ fontSize: 13, color: '#8A93A8' }}>12 / 12</Text>
   </Box>
 </Slide>

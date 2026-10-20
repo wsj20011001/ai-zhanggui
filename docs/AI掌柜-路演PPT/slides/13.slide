@@ -1,36 +1,39 @@
-<Slide style={{ width: 1280, height: 720, background: '#0B0D14', padding: '56px 72px', flexDirection: 'column' }}>
+<Slide style={{ width: 1280, height: 720, background: '#F6F8FD', padding: '56px 72px', flexDirection: 'column' }}>
   <Box style={{ height: 96, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
     <Box style={{ flexDirection: 'column', gap: 8 }}>
-      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#F2F4FF' }}>附录 A · 界面实拍（无美化）</Text>
-      <Text style={{ fontSize: 15, color: '#8A90A6' }}>这是 1920 宽屏下直接截的图，不是设计稿</Text>
+      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0C1222' }}>附录 A · 界面实拍（无美化）</Text>
+      <Text style={{ fontSize: 15, color: '#5C6780' }}>这是 1920 宽屏下直接截的图，不是设计稿</Text>
     </Box>
-    <Text style={{ fontSize: 13, color: '#4A5064', letterSpacing: 2 }}>AI 掌柜</Text>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: '5px 12px', background: '#EEF1FE', border: '1px solid #DDE2F5', borderRadius: 999 }}>
+      <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#4C4DDC' }} />
+      <Text style={{ fontSize: 12, color: '#4C4DDC', fontWeight: 'bold', letterSpacing: 1 }}>AI 掌柜</Text>
+    </Box>
   </Box>
   <Box style={{ flex: 1, paddingTop: 8, flexDirection: 'row', gap: 26 }}>
-    <Box style={{ flex: 1.75, background: '#141826', border: '1px solid #242A3D', borderRadius: 12, padding: 10, overflow: 'hidden' }}>
+    <Box style={{ flex: 1.75, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 12, padding: 10, overflow: 'hidden' }}>
       <Image src="assets/ui_dashboard.png" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'left top', borderRadius: 8 }} />
     </Box>
     <Box style={{ flex: 1, flexDirection: 'column', gap: 18, paddingTop: 4 }}>
       <Box style={{ flexDirection: 'column', gap: 6 }}>
-        <Text style={{ fontSize: 13, color: '#6C6CF5', letterSpacing: 1 }}>01 首屏只有三件事</Text>
-        <Text style={{ fontSize: 14, color: '#8A90A6', lineHeight: 1.7 }}>按影响金额排序，不是按模块罗列。老板看完就知道先干哪件。</Text>
+        <Text style={{ fontSize: 13, color: '#4C4DDC', letterSpacing: 1 }}>01 首屏只有三件事</Text>
+        <Text style={{ fontSize: 14, color: '#5C6780', lineHeight: 1.7 }}>按影响金额排序，不是按模块罗列。老板看完就知道先干哪件。</Text>
       </Box>
       <Box style={{ flexDirection: 'column', gap: 6 }}>
-        <Text style={{ fontSize: 13, color: '#6C6CF5', letterSpacing: 1 }}>02 每条都带证据</Text>
-        <Text style={{ fontSize: 14, color: '#8A90A6', lineHeight: 1.7 }}>灰底那行是指标、当前值、基线、阈值，机器可读，人也看得懂。</Text>
+        <Text style={{ fontSize: 13, color: '#4C4DDC', letterSpacing: 1 }}>02 每条都带证据</Text>
+        <Text style={{ fontSize: 14, color: '#5C6780', lineHeight: 1.7 }}>灰底那行是指标、当前值、基线、阈值，机器可读，人也看得懂。</Text>
       </Box>
       <Box style={{ flexDirection: 'column', gap: 6 }}>
-        <Text style={{ fontSize: 13, color: '#6C6CF5', letterSpacing: 1 }}>03 右边是实时状态</Text>
-        <Text style={{ fontSize: 14, color: '#8A90A6', lineHeight: 1.7 }}>模型通道（本地/云端/规则）、7 天预测与回测误差、待处理动作。</Text>
+        <Text style={{ fontSize: 13, color: '#4C4DDC', letterSpacing: 1 }}>03 右边是实时状态</Text>
+        <Text style={{ fontSize: 14, color: '#5C6780', lineHeight: 1.7 }}>模型通道（本地/云端/规则）、7 天预测与回测误差、待处理动作。</Text>
       </Box>
       <Box style={{ flexDirection: 'column', gap: 6 }}>
-        <Text style={{ fontSize: 13, color: '#6C6CF5', letterSpacing: 1 }}>04 按钮就是动作</Text>
-        <Text style={{ fontSize: 14, color: '#8A90A6', lineHeight: 1.7 }}>「生成采购单」「执行调价」都不是跳转，点完当场改数据，可撤销。</Text>
+        <Text style={{ fontSize: 13, color: '#4C4DDC', letterSpacing: 1 }}>04 按钮就是动作</Text>
+        <Text style={{ fontSize: 14, color: '#5C6780', lineHeight: 1.7 }}>「生成采购单」「执行调价」都不是跳转，点完当场改数据，可撤销。</Text>
       </Box>
     </Box>
   </Box>
   <Box style={{ height: 36, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-    <Text style={{ fontSize: 12, color: '#4A5064' }}>演示数据：180 天 / 6,803 单（seed_demo.py 生成）</Text>
-    <Text style={{ fontSize: 12, color: '#4A5064' }}>附录 A</Text>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>演示数据：180 天 / 6,803 单（seed_demo.py 生成）</Text>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>附录 A</Text>
   </Box>
 </Slide>

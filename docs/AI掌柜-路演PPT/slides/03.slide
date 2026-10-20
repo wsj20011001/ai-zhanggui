@@ -1,41 +1,45 @@
-<Slide style={{ width: 1280, height: 720, background: '#0B0D14', padding: '56px 72px', flexDirection: 'column' }}>
+<Slide style={{ width: 1280, height: 720, background: '#F6F8FD', padding: '56px 72px', flexDirection: 'column' }}>
   <Box style={{ height: 96, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
     <Box style={{ flexDirection: 'column', gap: 8 }}>
-      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#F2F4FF' }}>分水岭不在图表，在「能不能动手」</Text>
-      <Text style={{ fontSize: 15, color: '#8A90A6' }}>同样一份营收下滑，两条完全不同的处理路径</Text>
+      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0C1222' }}>分水岭不在图表，在「能不能动手」</Text>
+      <Text style={{ fontSize: 15, color: '#5C6780' }}>同样一份营收下滑，两条完全不同的处理路径</Text>
     </Box>
-    <Text style={{ fontSize: 13, color: '#4A5064', letterSpacing: 2 }}>AI 掌柜</Text>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: '5px 12px', background: '#EEF1FE', border: '1px solid #DDE2F5', borderRadius: 999 }}>
+      <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#4C4DDC' }} />
+      <Text style={{ fontSize: 12, color: '#4C4DDC', fontWeight: 'bold', letterSpacing: 1 }}>AI 掌柜</Text>
+    </Box>
   </Box>
+  <Box style={{ width: 72, height: 3, background: '#4C4DDC', borderRadius: 2, marginTop: 2, marginBottom: 12 }} />
   <Box style={{ flex: 1, paddingTop: 8 }}>
     <Box style={{ flexDirection: 'row', gap: 24, height: 330 }}>
-      <Box style={{ flex: 1, background: '#12141F', border: '1px solid #242A3D', borderRadius: 14, padding: 26 }}>
-        <Text style={{ fontSize: 13, color: '#4A5064', letterSpacing: 2 }}>传统 BI / 经营看板</Text>
-        <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#8A90A6', marginTop: 10 }}>价值停在「知道」</Text>
+      <Box style={{ flex: 1, background: '#FBFCFE', border: '1px solid #E3E8F5', borderRadius: 14, padding: 26 }}>
+        <Text style={{ fontSize: 13, color: '#8A93A8', letterSpacing: 2 }}>传统 BI / 经营看板</Text>
+        <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#5C6780', marginTop: 10 }}>价值停在「知道」</Text>
         <Box style={{ marginTop: 22, flexDirection: 'column', gap: 14 }}>
-          <Text style={{ fontSize: 16, color: '#8A90A6' }}>看板 → 发现跌了</Text>
-          <Text style={{ fontSize: 16, color: '#8A90A6' }}>→ 自己判断原因</Text>
-          <Text style={{ fontSize: 16, color: '#8A90A6' }}>→ 自己打电话订货</Text>
-          <Text style={{ fontSize: 16, color: '#8A90A6' }}>→ 一周后忘了复盘</Text>
+          <Text style={{ fontSize: 16, color: '#5C6780' }}>看板 → 发现跌了</Text>
+          <Text style={{ fontSize: 16, color: '#5C6780' }}>→ 自己判断原因</Text>
+          <Text style={{ fontSize: 16, color: '#5C6780' }}>→ 自己打电话订货</Text>
+          <Text style={{ fontSize: 16, color: '#5C6780' }}>→ 一周后忘了复盘</Text>
         </Box>
       </Box>
-      <Box style={{ flex: 1, background: '#171A2E', border: '1px solid #6C6CF5', borderRadius: 14, padding: 26 }}>
-        <Text style={{ fontSize: 13, color: '#6C6CF5', letterSpacing: 2 }}>AI 掌柜</Text>
-        <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#F2F4FF', marginTop: 10 }}>价值走到「改变」</Text>
+      <Box style={{ flex: 1, background: '#EEF1FE', border: '1px solid #C9CDF6', borderRadius: 14, padding: 26 }}>
+        <Text style={{ fontSize: 13, color: '#4C4DDC', letterSpacing: 2 }}>AI 掌柜</Text>
+        <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#0C1222', marginTop: 10 }}>价值走到「改变」</Text>
         <Box style={{ marginTop: 22, flexDirection: 'column', gap: 14 }}>
-          <Text style={{ fontSize: 16, color: '#F2F4FF' }}>驾驶舱 → 3 件事 + 证据</Text>
-          <Text style={{ fontSize: 16, color: '#F2F4FF' }}>→ 拆解成客流 / 客单价</Text>
-          <Text style={{ fontSize: 16, color: '#F2F4FF' }}>→ 一键生成采购单并入库</Text>
-          <Text style={{ fontSize: 16, color: '#F2F4FF' }}>→ 7 天后自动回填效果</Text>
+          <Text style={{ fontSize: 16, color: '#0C1222' }}>驾驶舱 → 3 件事 + 证据</Text>
+          <Text style={{ fontSize: 16, color: '#0C1222' }}>→ 拆解成客流 / 客单价</Text>
+          <Text style={{ fontSize: 16, color: '#0C1222' }}>→ 一键生成采购单并入库</Text>
+          <Text style={{ fontSize: 16, color: '#0C1222' }}>→ 7 天后自动回填效果</Text>
         </Box>
       </Box>
     </Box>
     <Box style={{ marginTop: 30, flexDirection: 'row', gap: 14 }}>
-      <Text style={{ fontSize: 15, color: '#8A90A6' }}>三个关键词</Text>
-      <Text style={{ fontSize: 15, color: '#6C6CF5', fontWeight: 'bold' }}>可执行 · 可追溯 · 可撤销</Text>
+      <Text style={{ fontSize: 15, color: '#5C6780' }}>三个关键词</Text>
+      <Text style={{ fontSize: 15, color: '#4C4DDC', fontWeight: 'bold' }}>可执行 · 可追溯 · 可撤销</Text>
     </Box>
   </Box>
   <Box style={{ height: 36, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-    <Text style={{ fontSize: 12, color: '#4A5064' }}>2026 武汉 1024 · 产业应用赛道</Text>
-    <Text style={{ fontSize: 12, color: '#4A5064' }}>03 / 12</Text>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>2026 武汉 1024 · 产业应用赛道</Text>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>03 / 12</Text>
   </Box>
 </Slide>

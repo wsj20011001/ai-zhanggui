@@ -1,41 +1,45 @@
-<Slide style={{ width: 1280, height: 720, background: '#0B0D14', padding: '56px 72px', flexDirection: 'column' }}>
+<Slide style={{ width: 1280, height: 720, background: '#F6F8FD', padding: '56px 72px', flexDirection: 'column' }}>
   <Box style={{ height: 96, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
     <Box style={{ flexDirection: 'column', gap: 8 }}>
-      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#F2F4FF' }}>四块能力，缺一块都落不了地</Text>
-      <Text style={{ fontSize: 15, color: '#8A90A6' }}>看得懂、算得准、动得了、说得清</Text>
+      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0C1222' }}>四块能力，缺一块都落不了地</Text>
+      <Text style={{ fontSize: 15, color: '#5C6780' }}>看得懂、算得准、动得了、说得清</Text>
     </Box>
-    <Text style={{ fontSize: 13, color: '#4A5064', letterSpacing: 2 }}>AI 掌柜</Text>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: '5px 12px', background: '#EEF1FE', border: '1px solid #DDE2F5', borderRadius: 999 }}>
+      <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#4C4DDC' }} />
+      <Text style={{ fontSize: 12, color: '#4C4DDC', fontWeight: 'bold', letterSpacing: 1 }}>AI 掌柜</Text>
+    </Box>
   </Box>
+  <Box style={{ width: 72, height: 3, background: '#4C4DDC', borderRadius: 2, marginTop: 2, marginBottom: 12 }} />
   <Box style={{ flex: 1, paddingTop: 8 }}>
     <Box style={{ flexDirection: 'row', gap: 18, height: 250 }}>
-      <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 14, padding: 24 }}>
-        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#6C6CF5' }}>看得懂</Text>
-        <Text style={{ fontSize: 15, color: '#F2F4FF', marginTop: 12, lineHeight: 1.75 }}>营收 · 客流 · 毛利<br />时段 · 翻台 · 会员结构</Text>
-        <Text style={{ fontSize: 13, color: '#8A90A6', marginTop: 16 }}>180 天 / 6,803 单</Text>
+      <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 24 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#4C4DDC' }}>看得懂</Text>
+        <Text style={{ fontSize: 15, color: '#0C1222', marginTop: 12, lineHeight: 1.75 }}>营收 · 客流 · 毛利<br />时段 · 翻台 · 会员结构</Text>
+        <Text style={{ fontSize: 13, color: '#5C6780', marginTop: 16 }}>180 天 / 6,803 单</Text>
       </Box>
-      <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 14, padding: 24 }}>
-        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#6C6CF5' }}>算得准</Text>
-        <Text style={{ fontSize: 15, color: '#F2F4FF', marginTop: 12, lineHeight: 1.75 }}>指标唯一口径<br />BOM 成本 · 三层预测 · 经营推演</Text>
-        <Text style={{ fontSize: 13, color: '#8A90A6', marginTop: 16 }}>回测误差 22%（含异常周）</Text>
+      <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 24 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#4C4DDC' }}>算得准</Text>
+        <Text style={{ fontSize: 15, color: '#0C1222', marginTop: 12, lineHeight: 1.75 }}>指标唯一口径<br />BOM 成本 · 三层预测 · 经营推演</Text>
+        <Text style={{ fontSize: 13, color: '#5C6780', marginTop: 16 }}>回测误差 22%（含异常周）</Text>
       </Box>
-      <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 14, padding: 24 }}>
-        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#6C6CF5' }}>动得了</Text>
-        <Text style={{ fontSize: 15, color: '#F2F4FF', marginTop: 12, lineHeight: 1.75 }}>生成采购单 · 按毛利调价<br />滞销菜设为主推</Text>
-        <Text style={{ fontSize: 13, color: '#8A90A6', marginTop: 16 }}>3 类动作 · 全部可撤销</Text>
+      <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 24 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#4C4DDC' }}>动得了</Text>
+        <Text style={{ fontSize: 15, color: '#0C1222', marginTop: 12, lineHeight: 1.75 }}>生成采购单 · 按毛利调价<br />滞销菜设为主推</Text>
+        <Text style={{ fontSize: 13, color: '#5C6780', marginTop: 16 }}>3 类动作 · 全部可撤销</Text>
       </Box>
-      <Box style={{ flex: 1, background: '#141826', border: '1px solid #242A3D', borderRadius: 14, padding: 24 }}>
-        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#6C6CF5' }}>说得清</Text>
-        <Text style={{ fontSize: 15, color: '#F2F4FF', marginTop: 12, lineHeight: 1.75 }}>每条结论附证据 SQL<br />操作留痕 · 一键回滚</Text>
-        <Text style={{ fontSize: 13, color: '#8A90A6', marginTop: 16 }}>8 条越界语句 100% 拦截</Text>
+      <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 24 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#4C4DDC' }}>说得清</Text>
+        <Text style={{ fontSize: 15, color: '#0C1222', marginTop: 12, lineHeight: 1.75 }}>每条结论附证据 SQL<br />操作留痕 · 一键回滚</Text>
+        <Text style={{ fontSize: 13, color: '#5C6780', marginTop: 16 }}>8 条越界语句 100% 拦截</Text>
       </Box>
     </Box>
-    <Box style={{ marginTop: 28, background: '#12141F', border: '1px solid #242A3D', borderRadius: 12, padding: '20px 24px', flexDirection: 'row', alignItems: 'center', gap: 18 }}>
-      <Text style={{ fontSize: 15, color: '#8A90A6', width: 110 }}>串联起来</Text>
-      <Text style={{ fontSize: 17, color: '#F2F4FF' }}>看到异常 → 算清原因 → 直接处理 → 留下证据，四步在同一屏里完成。</Text>
+    <Box style={{ marginTop: 28, background: '#FBFCFE', border: '1px solid #E3E8F5', borderRadius: 12, padding: '20px 24px', flexDirection: 'row', alignItems: 'center', gap: 18 }}>
+      <Text style={{ fontSize: 15, color: '#5C6780', width: 110 }}>串联起来</Text>
+      <Text style={{ fontSize: 17, color: '#0C1222' }}>看到异常 → 算清原因 → 直接处理 → 留下证据，四步在同一屏里完成。</Text>
     </Box>
   </Box>
   <Box style={{ height: 36, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-    <Text style={{ fontSize: 12, color: '#4A5064' }}>2026 武汉 1024 · 产业应用赛道</Text>
-    <Text style={{ fontSize: 12, color: '#4A5064' }}>04 / 12</Text>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>2026 武汉 1024 · 产业应用赛道</Text>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>04 / 12</Text>
   </Box>
 </Slide>

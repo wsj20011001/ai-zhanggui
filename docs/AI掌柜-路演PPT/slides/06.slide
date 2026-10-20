@@ -1,54 +1,58 @@
-<Slide style={{ width: 1280, height: 720, background: '#0B0D14', padding: '56px 72px', flexDirection: 'column' }}>
+<Slide style={{ width: 1280, height: 720, background: '#F6F8FD', padding: '56px 72px', flexDirection: 'column' }}>
   <Box style={{ height: 96, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
     <Box style={{ flexDirection: 'column', gap: 8 }}>
-      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#F2F4FF' }}>四层架构：交易底座不动，决策层新建</Text>
-      <Text style={{ fontSize: 15, color: '#8A90A6' }}>原有 4,294 行代码、42 个模板、190 项测试，全部作为底座继续跑</Text>
+      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0C1222' }}>四层架构：交易底座不动，决策层新建</Text>
+      <Text style={{ fontSize: 15, color: '#5C6780' }}>原有 4,294 行代码、42 个模板、190 项测试，全部作为底座继续跑</Text>
     </Box>
-    <Text style={{ fontSize: 13, color: '#4A5064', letterSpacing: 2 }}>AI 掌柜</Text>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: '5px 12px', background: '#EEF1FE', border: '1px solid #DDE2F5', borderRadius: 999 }}>
+      <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#4C4DDC' }} />
+      <Text style={{ fontSize: 12, color: '#4C4DDC', fontWeight: 'bold', letterSpacing: 1 }}>AI 掌柜</Text>
+    </Box>
   </Box>
+  <Box style={{ width: 72, height: 3, background: '#4C4DDC', borderRadius: 2, marginTop: 2, marginBottom: 12 }} />
   <Box style={{ flex: 1, paddingTop: 8 }}>
     <Box style={{ flexDirection: 'column', gap: 14 }}>
-      <Box style={{ background: '#171A2E', border: '1px solid #6C6CF5', borderRadius: 10, padding: '22px 24px', flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={{ fontSize: 13, color: '#6C6CF5', width: 100, letterSpacing: 1 }}>决策界面</Text>
-        <Text style={{ fontSize: 16, color: '#F2F4FF' }}>AI 驾驶舱 · 经营问答 · 洞察中心 · 采购单 · 四象限 · 预测备货</Text>
+      <Box style={{ background: '#EEF1FE', border: '1px solid #C9CDF6', borderRadius: 10, padding: '22px 24px', flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={{ fontSize: 13, color: '#4C4DDC', width: 100, letterSpacing: 1 }}>决策界面</Text>
+        <Text style={{ fontSize: 16, color: '#0C1222' }}>AI 驾驶舱 · 经营问答 · 洞察中心 · 采购单 · 四象限 · 预测备货</Text>
       </Box>
-      <Box style={{ background: '#141826', border: '1px solid #242A3D', borderRadius: 10, padding: '22px 24px', flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={{ fontSize: 13, color: '#8A90A6', width: 100, letterSpacing: 1 }}>AI 引擎</Text>
-        <Text style={{ fontSize: 16, color: '#F2F4FF' }}>受控 NL2SQL · 6 类规则检测 · 三层分解预测 · 可执行工具</Text>
+      <Box style={{ background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 10, padding: '22px 24px', flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={{ fontSize: 13, color: '#5C6780', width: 100, letterSpacing: 1 }}>AI 引擎</Text>
+        <Text style={{ fontSize: 16, color: '#0C1222' }}>受控 NL2SQL · 6 类规则检测 · 三层分解预测 · 可执行工具</Text>
       </Box>
-      <Box style={{ background: '#141826', border: '1px solid #242A3D', borderRadius: 10, padding: '22px 24px', flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={{ fontSize: 13, color: '#8A90A6', width: 100, letterSpacing: 1 }}>指标层</Text>
-        <Text style={{ fontSize: 16, color: '#F2F4FF' }}>唯一口径 metrics.py · 日粒度预聚合 ETL · 8 个只读语义视图</Text>
+      <Box style={{ background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 10, padding: '22px 24px', flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={{ fontSize: 13, color: '#5C6780', width: 100, letterSpacing: 1 }}>指标层</Text>
+        <Text style={{ fontSize: 16, color: '#0C1222' }}>唯一口径 metrics.py · 日粒度预聚合 ETL · 8 个只读语义视图</Text>
       </Box>
-      <Box style={{ background: '#12141F', border: '1px solid #242A3D', borderRadius: 10, padding: '22px 24px', flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={{ fontSize: 13, color: '#4A5064', width: 100, letterSpacing: 1 }}>交易底座</Text>
-        <Text style={{ fontSize: 16, color: '#8A90A6' }}>点单 · 收银 · 会员 · BOM 配方 · 库存流水 · 预订（Flask + SQLite）</Text>
+      <Box style={{ background: '#FBFCFE', border: '1px solid #E3E8F5', borderRadius: 10, padding: '22px 24px', flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={{ fontSize: 13, color: '#8A93A8', width: 100, letterSpacing: 1 }}>交易底座</Text>
+        <Text style={{ fontSize: 16, color: '#5C6780' }}>点单 · 收银 · 会员 · BOM 配方 · 库存流水 · 预订（Flask + SQLite）</Text>
       </Box>
     </Box>
     <Box style={{ marginTop: 24, flexDirection: 'row', gap: 18 }}>
-      <Box style={{ flex: 1, paddingTop: 14, borderTop: '1px solid #242A3D' }}>
-        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#6C6CF5' }}>0</Text>
-        <Text style={{ fontSize: 13, color: '#8A90A6', marginTop: 4 }}>新增第三方运行时依赖<br />仅 Flask + waitress</Text>
+      <Box style={{ flex: 1, paddingTop: 14, borderTop: '1px solid #E3E8F5' }}>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#4C4DDC' }}>0</Text>
+        <Text style={{ fontSize: 13, color: '#5C6780', marginTop: 4 }}>新增第三方运行时依赖<br />仅 Flask + waitress</Text>
       </Box>
-      <Box style={{ flex: 1, paddingTop: 14, borderTop: '1px solid #242A3D' }}>
-        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#6C6CF5' }}>1.0s</Text>
-        <Text style={{ fontSize: 13, color: '#8A90A6', marginTop: 4 }}>看板首屏<br />180 天预聚合</Text>
+      <Box style={{ flex: 1, paddingTop: 14, borderTop: '1px solid #E3E8F5' }}>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#4C4DDC' }}>1.0s</Text>
+        <Text style={{ fontSize: 13, color: '#5C6780', marginTop: 4 }}>看板首屏<br />180 天预聚合</Text>
       </Box>
-      <Box style={{ flex: 1, paddingTop: 14, borderTop: '1px solid #242A3D' }}>
-        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#6C6CF5' }}>离线</Text>
-        <Text style={{ fontSize: 13, color: '#8A90A6', marginTop: 4 }}>可跑：本地模型 / 规则降级<br />不依赖 CDN 与外网</Text>
+      <Box style={{ flex: 1, paddingTop: 14, borderTop: '1px solid #E3E8F5' }}>
+        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#4C4DDC' }}>离线</Text>
+        <Text style={{ fontSize: 13, color: '#5C6780', marginTop: 4 }}>可跑：本地模型 / 规则降级<br />不依赖 CDN 与外网</Text>
       </Box>
     </Box>
-    <Box style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #242A3D', flexDirection: 'row', gap: 14 }}>
-      <Text style={{ fontSize: 13, color: '#6C6CF5', width: 76 }}>选型取舍</Text>
-      <Text style={{ fontSize: 14, color: '#8A90A6', lineHeight: 1.7, flex: 1 }}>
+    <Box style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #E3E8F5', flexDirection: 'row', gap: 14 }}>
+      <Text style={{ fontSize: 13, color: '#4C4DDC', width: 76 }}>选型取舍</Text>
+      <Text style={{ fontSize: 14, color: '#5C6780', lineHeight: 1.7, flex: 1 }}>
         不引入 numpy / pandas / torch：门店电脑不是服务器，打包体积与启动速度比模型炫技重要；
         SQLite 开启 WAL 后足以支撑店内 20 路并发点餐。
       </Text>
     </Box>
   </Box>
   <Box style={{ height: 36, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-    <Text style={{ fontSize: 12, color: '#4A5064' }}>2026 武汉 1024 · 产业应用赛道</Text>
-    <Text style={{ fontSize: 12, color: '#4A5064' }}>06 / 12</Text>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>2026 武汉 1024 · 产业应用赛道</Text>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>06 / 12</Text>
   </Box>
 </Slide>

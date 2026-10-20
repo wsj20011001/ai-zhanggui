@@ -1,51 +1,55 @@
-<Slide style={{ width: 1280, height: 720, background: '#0B0D14', padding: '56px 72px', flexDirection: 'column' }}>
+<Slide style={{ width: 1280, height: 720, background: '#F6F8FD', padding: '56px 72px', flexDirection: 'column' }}>
   <Box style={{ height: 96, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
     <Box style={{ flexDirection: 'column', gap: 8 }}>
-      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#F2F4FF' }}>主动说清楚：它现在还不能做什么</Text>
-      <Text style={{ fontSize: 15, color: '#8A90A6' }}>边界写得越清楚，越敢把店交给它</Text>
+      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0C1222' }}>主动说清楚：它现在还不能做什么</Text>
+      <Text style={{ fontSize: 15, color: '#5C6780' }}>边界写得越清楚，越敢把店交给它</Text>
     </Box>
-    <Text style={{ fontSize: 13, color: '#4A5064', letterSpacing: 2 }}>AI 掌柜</Text>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: '5px 12px', background: '#EEF1FE', border: '1px solid #DDE2F5', borderRadius: 999 }}>
+      <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#4C4DDC' }} />
+      <Text style={{ fontSize: 12, color: '#4C4DDC', fontWeight: 'bold', letterSpacing: 1 }}>AI 掌柜</Text>
+    </Box>
   </Box>
+  <Box style={{ width: 72, height: 3, background: '#4C4DDC', borderRadius: 2, marginTop: 2, marginBottom: 12 }} />
   <Box style={{ flex: 1, paddingTop: 8 }}>
     <Box style={{ flexDirection: 'column', gap: 14 }}>
       <Box style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
-        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#6C6CF5', width: 30 }}>01</Text>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#4C4DDC', width: 30 }}>01</Text>
         <Box style={{ flexDirection: 'column', gap: 4 }}>
-          <Text style={{ fontSize: 18, color: '#F2F4FF' }}>预测不是深度学习</Text>
-          <Text style={{ fontSize: 14, color: '#8A90A6' }}>单店 180 天数据撑不起模型，用「水平 × 星期因子 × 趋势」三层分解，给区间比给点值更诚实。</Text>
+          <Text style={{ fontSize: 18, color: '#0C1222' }}>预测不是深度学习</Text>
+          <Text style={{ fontSize: 14, color: '#5C6780' }}>单店 180 天数据撑不起模型，用「水平 × 星期因子 × 趋势」三层分解，给区间比给点值更诚实。</Text>
         </Box>
       </Box>
-      <Box style={{ height: 1, background: '#242A3D' }} />
+      <Box style={{ height: 1, background: '#E3E8F5' }} />
       <Box style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
-        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#6C6CF5', width: 30 }}>02</Text>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#4C4DDC', width: 30 }}>02</Text>
         <Box style={{ flexDirection: 'column', gap: 4 }}>
-          <Text style={{ fontSize: 18, color: '#F2F4FF' }}>调价单次不超过 15%</Text>
-          <Text style={{ fontSize: 14, color: '#8A90A6' }}>成本加成算出来的价格往往卖不动；差额建议靠改配方或换供应商补，而不是一次涨到位。</Text>
+          <Text style={{ fontSize: 18, color: '#0C1222' }}>调价单次不超过 15%</Text>
+          <Text style={{ fontSize: 14, color: '#5C6780' }}>成本加成算出来的价格往往卖不动；差额建议靠改配方或换供应商补，而不是一次涨到位。</Text>
         </Box>
       </Box>
-      <Box style={{ height: 1, background: '#242A3D' }} />
+      <Box style={{ height: 1, background: '#E3E8F5' }} />
       <Box style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
-        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#6C6CF5', width: 30 }}>03</Text>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#4C4DDC', width: 30 }}>03</Text>
         <Box style={{ flexDirection: 'column', gap: 4 }}>
-          <Text style={{ fontSize: 18, color: '#F2F4FF' }}>采购建议未考虑起订量与在途</Text>
-          <Text style={{ fontSize: 14, color: '#8A90A6' }}>当前按近 14 天日均消耗外推，接入供应商报价单后再补这一层。</Text>
+          <Text style={{ fontSize: 18, color: '#0C1222' }}>采购建议未考虑起订量与在途</Text>
+          <Text style={{ fontSize: 14, color: '#5C6780' }}>当前按近 14 天日均消耗外推，接入供应商报价单后再补这一层。</Text>
         </Box>
       </Box>
-      <Box style={{ height: 1, background: '#242A3D' }} />
+      <Box style={{ height: 1, background: '#E3E8F5' }} />
       <Box style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
-        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#6C6CF5', width: 30 }}>04</Text>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#4C4DDC', width: 30 }}>04</Text>
         <Box style={{ flexDirection: 'column', gap: 4 }}>
-          <Text style={{ fontSize: 18, color: '#F2F4FF' }}>局域网 HTTP，不直连公网</Text>
-          <Text style={{ fontSize: 14, color: '#8A90A6' }}>面向店内使用；需要外网时前面加一层 HTTPS 反向代理，会员数据默认不出店。</Text>
+          <Text style={{ fontSize: 18, color: '#0C1222' }}>局域网 HTTP，不直连公网</Text>
+          <Text style={{ fontSize: 14, color: '#5C6780' }}>面向店内使用；需要外网时前面加一层 HTTPS 反向代理，会员数据默认不出店。</Text>
         </Box>
       </Box>
     </Box>
-    <Box style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #242A3D' }}>
-      <Text style={{ fontSize: 20, color: '#F2F4FF' }}>知道自己不能做什么，才敢让你把<Text style={{ fontSize: 20, fontWeight: 'bold', color: '#6C6CF5' }}>钱</Text>交给它。</Text>
+    <Box style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #E3E8F5' }}>
+      <Text style={{ fontSize: 20, color: '#0C1222' }}>知道自己不能做什么，才敢让你把<Text style={{ fontSize: 20, fontWeight: 'bold', color: '#4C4DDC' }}>钱</Text>交给它。</Text>
     </Box>
   </Box>
   <Box style={{ height: 36, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-    <Text style={{ fontSize: 12, color: '#4A5064' }}>2026 武汉 1024 · 产业应用赛道</Text>
-    <Text style={{ fontSize: 12, color: '#4A5064' }}>11 / 12</Text>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>2026 武汉 1024 · 产业应用赛道</Text>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>11 / 12</Text>
   </Box>
 </Slide>
