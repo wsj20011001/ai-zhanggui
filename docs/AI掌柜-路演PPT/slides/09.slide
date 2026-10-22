@@ -16,36 +16,36 @@
         <Text style={{ fontSize: 13, color: '#5C6780', letterSpacing: 1 }}>实测 · 系统自己发现的五件事</Text>
         <Box style={{ marginTop: 14, flexDirection: 'column', gap: 0 }}>
           <Box style={{ paddingTop: 12, paddingBottom: 12, borderTop: '1px solid #E3E8F5', flexDirection: 'row', alignItems: 'baseline' }}>
-            <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#4C4DDC', width: 96 }}>11.1%</Text>
-            <Text style={{ fontSize: 14, color: '#0C1222' }}>近 7 天折扣率，比前 30 天的 8.8% 高 2.3 个点</Text>
+            <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#4C4DDC', width: 96 }}>10.6%</Text>
+            <Text style={{ fontSize: 14, color: '#0C1222' }}>近 7 天折扣率，比前 30 天的 8.4% 高 2.2 个点</Text>
           </Box>
           <Box style={{ paddingTop: 12, paddingBottom: 12, borderTop: '1px solid #E3E8F5', flexDirection: 'row', alignItems: 'baseline' }}>
-            <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#4C4DDC', width: 96 }}>1,899</Text>
+            <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#4C4DDC', width: 96 }}>1,476</Text>
             <Text style={{ fontSize: 14, color: '#0C1222' }}>元 · 按原折扣水平本可少让的金额</Text>
           </Box>
           <Box style={{ paddingTop: 12, paddingBottom: 12, borderTop: '1px solid #E3E8F5', flexDirection: 'row', alignItems: 'baseline' }}>
-            <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#4C4DDC', width: 96 }}>19 道</Text>
-            <Text style={{ fontSize: 14, color: '#0C1222' }}>菜连续 3 天 0 销量，占在售 9.2%</Text>
+            <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#4C4DDC', width: 96 }}>20 道</Text>
+            <Text style={{ fontSize: 14, color: '#0C1222' }}>菜连续 3 天 0 销量，占在售 9.7%</Text>
           </Box>
           <Box style={{ paddingTop: 12, paddingBottom: 12, borderTop: '1px solid #E3E8F5', flexDirection: 'row', alignItems: 'baseline' }}>
-            <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#4C4DDC', width: 96 }}>5 种</Text>
+            <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#4C4DDC', width: 96 }}>1 种</Text>
             <Text style={{ fontSize: 14, color: '#0C1222' }}>食材可支撑不足 2 天（基围虾只剩 1.5 天）</Text>
           </Box>
           <Box style={{ paddingTop: 12, paddingBottom: 12, borderTop: '1px solid #E3E8F5', borderBottom: '1px solid #E3E8F5', flexDirection: 'row', alignItems: 'baseline' }}>
-            <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#4C4DDC', width: 96 }}>57.6%</Text>
-            <Text style={{ fontSize: 14, color: '#0C1222' }}>近 30 天毛利率，比目标低 2.4 个点</Text>
+            <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#4C4DDC', width: 96 }}>57.8%</Text>
+            <Text style={{ fontSize: 14, color: '#0C1222' }}>近 30 天毛利率，比目标低 2.2 个点</Text>
           </Box>
         </Box>
       </Box>
       <Box style={{ flex: 1, background: '#EEF1FE', border: '1px solid #C9CDF6', borderRadius: 14, padding: 30, flexDirection: 'column', gap: 18, justifyContent: 'flex-start' }}>
         <Box style={{ flexDirection: 'column', gap: 6 }}>
-          <Text style={{ fontSize: 13, color: '#4C4DDC', letterSpacing: 1 }}>测算 · 补齐这 2.4 个点</Text>
-          <Text style={{ fontSize: 56, fontWeight: 'bold', color: '#0C1222', letterSpacing: -1 }}>+9.4<span style={{ fontSize: 22 }}> 万/年</span></Text>
-          <Text style={{ fontSize: 13, color: '#5C6780' }}>近 30 天营收 32.5 万 × 2.4pt × 12 个月</Text>
+          <Text style={{ fontSize: 13, color: '#4C4DDC', letterSpacing: 1 }}>测算 · 补齐这 2.2 个点</Text>
+          <Text style={{ fontSize: 56, fontWeight: 'bold', color: '#0C1222', letterSpacing: -1 }}>+9.0<span style={{ fontSize: 22 }}> 万/年</span></Text>
+          <Text style={{ fontSize: 13, color: '#5C6780' }}>近 30 天营收 33.1 万 × 2.2pt × 12 个月</Text>
         </Box>
         <Box style={{ flexDirection: 'column', gap: 8, marginTop: 6, paddingTop: 16, borderTop: '1px solid #3A3F63' }}>
           <Text style={{ fontSize: 13, color: '#0C1222' }}>怎么补：</Text>
-          <Text style={{ fontSize: 13, color: '#5C6780', lineHeight: 1.8 }}>① 3 道瘦狗菜调价 5%~15%<br />② 19 道滞销菜组套餐或下架<br />③ 折扣收回 2 个点</Text>
+          <Text style={{ fontSize: 13, color: '#5C6780', lineHeight: 1.8 }}>① 3 道瘦狗菜调价 5%~15%<br />② 20 道滞销菜组套餐或下架<br />③ 折扣收回 2 个点</Text>
         </Box>
         <Text style={{ fontSize: 11, color: '#6B7490', lineHeight: 1.6, marginTop: 4 }}>
           左列全部由 SQL 从 180 天数据算出，脚本可复现；右侧为按当前规模的线性测算，不是承诺值。

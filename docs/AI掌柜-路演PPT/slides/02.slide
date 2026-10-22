@@ -20,7 +20,7 @@
       <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 26, flexDirection: 'column', justifyContent: 'space-between' }}>
         <Text style={{ fontSize: 56, fontWeight: 'bold', color: '#4C4DDC' }}>02</Text>
         <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0C1222' }}>明天该买多少</Text>
-        <Text style={{ fontSize: 15, color: '#5C6780', lineHeight: 1.8 }}>采购靠经验：缺货和压货同时发生，<br />这套数据里 5 种食材只够 2 天。</Text>
+        <Text style={{ fontSize: 15, color: '#5C6780', lineHeight: 1.8 }}>采购靠经验：缺货和压货同时发生，<br />这套数据里最紧的食材只够 1.5 天。</Text>
       </Box>
       <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 26, flexDirection: 'column', justifyContent: 'space-between' }}>
         <Text style={{ fontSize: 56, fontWeight: 'bold', color: '#4C4DDC' }}>03</Text>
