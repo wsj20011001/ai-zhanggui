@@ -193,17 +193,28 @@ def _open_browser(url):
 
 
 def _pick_port(preferred):
-    """返回第一个可用的端口；都不可用返回 None"""
+    """返回第一个可用的端口；都不可用返回 None。
+
+    为什么不用 SO_REUSEADDR + bind 探测：Windows 上开了 SO_REUSEADDR 之后，
+    对一个正在被监听的端口 bind 依然会成功 —— 结果两个进程同时监听 5100，
+    请求落到谁身上看运气。改为先 connect 探测：能连上就说明已被占用。
+    """
     for p in (preferred, config.FALLBACK_PORT):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        probe = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        probe.settimeout(0.5)
         try:
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.bind(("0.0.0.0", p))
+            if probe.connect_ex(("127.0.0.1", p)) == 0:
+                continue                      # 已有服务在监听
+        finally:
+            probe.close()
+        b = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            b.bind(("0.0.0.0", p))
             return p
         except OSError:
             continue
         finally:
-            s.close()
+            b.close()
     return None
 
 

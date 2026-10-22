@@ -30,7 +30,7 @@
 
 | 评审要点 | 我们的证据 |
 |---|---|
-| 可运行性 | `pip install -r requirements.txt` + `python seed_demo.py` + `python app.py` 三条命令跑起来；无 Python 环境双击 `start.bat` |
+| 可运行性 | 源码：三条命令跑起来；**已验证打包成桌面程序**（PyInstaller，32MB，`build.bat` 一键构建），无 Python 环境双击 EXE 即用 |
 | 功能完整性 | 点单 / 收银 / 会员 / BOM / 库存 / 预订 全链路 + 8 个决策页面，**22 个页面全量冒烟通过** |
 | 代码质量 | 分层清晰（`analytics` 指标层 / `ai` 引擎层 / `blueprints` 接口层）；README + [技术说明](docs/技术说明.md) + 8 次语义化提交 + MIT [LICENSE](LICENSE) |
 | 系统健壮性 | 三层降级（本地→云端→规则）、SQL 超时中断、动作幂等、异常兜底；演示断网仍可用 |
