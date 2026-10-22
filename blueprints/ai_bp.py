@@ -138,6 +138,12 @@ def execute_insight(iid):
     row = conn.execute("SELECT * FROM ai_insights WHERE id=?", (iid,)).fetchone()
     if not row:
         return jsonify(ok=False, msg="洞察不存在")
+    # 幂等闸：同一个洞察只允许执行一次。
+    # 两个标签页都停在驾驶舱时，各自都能点「生成采购单」——前端只禁用被点的那颗
+    # 按钮，拦不住另一页，会在几秒内生成两张重复采购单。
+    if row["status"] != "open":
+        return jsonify(ok=False, msg="这条建议已经%s过了，不会重复执行"
+                                     % ("执行" if row["status"] == "done" else "忽略"))
     payload = json.loads(row["action_payload"] or "{}")
     who = current_user()
     try:

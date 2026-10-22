@@ -255,18 +255,40 @@ def run(conn, d=None, persist=True):
         done = {r["type"] for r in conn.execute(
             "SELECT type FROM ai_insights WHERE d=? AND status='done'", (day,))}
         out = [i for i in out if i["type"] not in done]
-        conn.execute("DELETE FROM ai_insights WHERE d=? AND status='open'", (day,))
+
+        # 按 (日期, 类型) 原地更新，而不是"全删再插"。
+        # 原因：驾驶舱的「执行」按钮带的是渲染时的洞察 id，每次刷新都重建记录
+        # 会让 id 全部漂移——停在旧标签页（切 PPT 回来、副屏没刷新）上点执行
+        # 就会得到"洞察不存在"。实测每刷新一次 id 就整体后移。
+        open_rows = {r["type"]: r["id"] for r in conn.execute(
+            "SELECT id, type FROM ai_insights WHERE d=? AND status='open'", (day,))}
+        import json
+        seen = set()
         for it in out:
-            import json
-            cur = conn.execute(
-                "INSERT INTO ai_insights(d, type, severity, title, detail, evidence,"
-                " suggestion, action_type, action_payload, status, created_at)"
-                " VALUES(?,?,?,?,?,?,?,?,?, 'open', datetime('now','localtime'))",
-                (day, it["type"], it["severity"], it["title"], it["detail"],
-                 json.dumps(it["evidence"], ensure_ascii=False),
-                 it["suggestion"], it["action_type"],
-                 json.dumps(it["action_payload"], ensure_ascii=False)))
-            it["id"] = cur.lastrowid
+            evidence = json.dumps(it["evidence"], ensure_ascii=False)
+            payload = json.dumps(it["action_payload"], ensure_ascii=False)
+            if it["type"] in open_rows:
+                iid = open_rows[it["type"]]
+                conn.execute(
+                    "UPDATE ai_insights SET severity=?, title=?, detail=?,"
+                    " evidence=?, suggestion=?, action_type=?, action_payload=?"
+                    " WHERE id=?",
+                    (it["severity"], it["title"], it["detail"], evidence,
+                     it["suggestion"], it["action_type"], payload, iid))
+                it["id"] = iid
+            else:
+                cur = conn.execute(
+                    "INSERT INTO ai_insights(d, type, severity, title, detail, evidence,"
+                    " suggestion, action_type, action_payload, status, created_at)"
+                    " VALUES(?,?,?,?,?,?,?,?,?, 'open', datetime('now','localtime'))",
+                    (day, it["type"], it["severity"], it["title"], it["detail"],
+                     evidence, it["suggestion"], it["action_type"], payload))
+                it["id"] = cur.lastrowid
+            seen.add(it["type"])
+        # 这次没再检出的类型，才删掉，避免留下过期卡片
+        stale = [iid for t, iid in open_rows.items() if t not in seen]
+        for iid in stale:
+            conn.execute("DELETE FROM ai_insights WHERE id=?", (iid,))
         conn.commit()
     return out
 

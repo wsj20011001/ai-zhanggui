@@ -2,16 +2,20 @@
 """AI 层功能测试：问答、SQL 沙箱、洞察执行、撤销。
 
 无模型也能跑：问答会走规则路径，正好验证"降级可用"。
+测试跑在**临时库副本**上：本套件会执行洞察（可能调价、设主推）并生成采购单，
+直接在演示库上跑会让驾驶舱的洞察变成"已执行"、菜品价被改，演示数字当场变形。
 用法：venv\\Scripts\\python tests\\test_ai.py
 """
 import json
 import os
+import re
+import shutil
+import sqlite3
 import sys
+import tempfile
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from ai import sandbox                       # noqa: E402
-from app import create_app                   # noqa: E402
 
 QUESTIONS = [
     "近 30 天营收趋势",
@@ -37,6 +41,23 @@ BLOCKED = [
 
 def main():
     fails = []
+
+    # ---- 0. 准备临时库副本（必须在 import app / sandbox 之前改 DB_PATH）----
+    from config import DB_PATH as SRC_DB
+    tmpdir = Path(tempfile.mkdtemp(prefix="ai_test_"))
+    db_path = tmpdir / "test.db"
+    src = sqlite3.connect(str(SRC_DB))
+    dst = sqlite3.connect(str(db_path))
+    src.backup(dst)
+    src.close()
+    dst.close()
+
+    import config
+    config.DB_PATH = db_path
+
+    from ai import sandbox
+    from app import create_app
+
     # ---- 1. 沙箱拦截 ----
     for sql in BLOCKED:
         try:
@@ -49,15 +70,10 @@ def main():
     assert "LIMIT" in ok_sql.upper(), ok_sql
     print("✓ 沙箱：%d 条越界语句全部拦截，合法查询自动补 LIMIT" % len(BLOCKED))
 
-    import sqlite3 as _sq
-    from config import DB_PATH as _DB
-    _c = _sq.connect(str(_DB)); _c.row_factory = _sq.Row
-    _PIN_OFF = _c.execute("SELECT value FROM settings WHERE key='ai_provider'").fetchone()[0]
-    _c.execute("UPDATE settings SET value='off' WHERE key='ai_provider'"); _c.commit()
-    # 水位：测试会执行洞察（写 ai_insights/ai_actions/purchase_orders），跑完按 id 清理，
-    # 否则演示库里的"已执行"状态会让驾驶舱少显示几条洞察。
-    _WM = {t: (_c.execute("SELECT COALESCE(MAX(id),0) m FROM %s" % t).fetchone()["m"])
-           for t in ("ai_insights", "ai_actions", "purchase_orders")}
+    # 钉成规则模式：不消耗云端额度（临时库，无需还原）
+    _c = sqlite3.connect(str(db_path))
+    _c.execute("UPDATE settings SET value='off' WHERE key='ai_provider'")
+    _c.commit()
     _c.close()
 
     app = create_app()
@@ -80,17 +96,18 @@ def main():
                   % (q[:20], len(data["rows"]), data["provider"], data["chart"]))
 
         # ---- 3. 洞察执行（采购单）----
-        from db import get_db
-        with app.app_context():
-            with c.session_transaction() as s:
-                pass
         r = c.get("/admin/ai", follow_redirects=True)
         if r.status_code != 200:
             fails.append("驾驶舱打不开")
 
         rows = c.get("/admin/ai/insights").data.decode("utf-8")
-        import re
         ids = [int(x) for x in re.findall(r"execInsight\((\d+)", rows)]
+        ids_again = [int(x) for x in re.findall(
+            r"execInsight\((\d+)", c.get("/admin/ai/insights").data.decode("utf-8"))]
+        if ids != ids_again:
+            fails.append("洞察 id 在刷新后漂移：%s → %s" % (ids[:3], ids_again[:3]))
+        else:
+            print("✓ 洞察 id 稳定（刷新两次一致）：%s" % ids[:3])
         if not ids:
             fails.append("没有生成洞察，无法测试执行")
         else:
@@ -100,6 +117,14 @@ def main():
                 print("✓ 执行洞察 #%d → %s" % (iid, ("成功：" + d.get("msg", "")[:40]) if d.get("ok") else d.get("msg")))
                 if not d.get("ok"):
                     fails.append("执行洞察 #%d 失败：%s" % (iid, d.get("msg")))
+
+            # 幂等：同一条洞察再执行一次必须被拒（两个标签页各点一次的场景）
+            r = c.post("/api/ai/insight/%d/execute" % ids[0], json={}, headers=hdr)
+            d = r.get_json()
+            if d.get("ok"):
+                fails.append("同一条洞察被重复执行了（会生成重复采购单）")
+            else:
+                print("✓ 重复执行被拒：#%d → %s" % (ids[0], d.get("msg")))
 
         # ---- 4. 撤销 ----
         r = c.get("/admin/ai", follow_redirects=True)
@@ -118,14 +143,8 @@ def main():
             if rr.status_code != 200:
                 fails.append("%s 返回 %d" % (url, rr.status_code))
 
-    _c = _sq.connect(str(_DB))
-    _c.execute("UPDATE settings SET value=? WHERE key='ai_provider'", (_PIN_OFF,))
-    for t, mark in _WM.items():
-        if t == "purchase_orders":
-            _c.execute("DELETE FROM purchase_items WHERE po_id > ?", (mark,))
-        _c.execute("DELETE FROM %s WHERE id > ?" % t, (mark,))
-    _c.commit(); _c.close()
-    print("已清理测试产生的洞察/动作/采购单，演示库保持干净")
+    shutil.rmtree(tmpdir, ignore_errors=True)
+    print("测试跑在临时库副本上，演示库未被修改")
 
     print()
     if fails:
