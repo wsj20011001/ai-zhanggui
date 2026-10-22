@@ -20,7 +20,7 @@
       <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 24 }}>
         <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#4C4DDC' }}>算得准</Text>
         <Text style={{ fontSize: 15, color: '#0C1222', marginTop: 12, lineHeight: 1.75 }}>指标唯一口径<br />BOM 成本 · 三层预测 · 经营推演</Text>
-        <Text style={{ fontSize: 13, color: '#5C6780', marginTop: 16 }}>回测误差 22%（含异常周）</Text>
+        <Text style={{ fontSize: 13, color: '#5C6780', marginTop: 16 }}>回测误差约 30%（含异常周）</Text>
       </Box>
       <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 24 }}>
         <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#4C4DDC' }}>动得了</Text>

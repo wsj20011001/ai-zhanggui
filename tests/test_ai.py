@@ -53,7 +53,12 @@ def main():
     from config import DB_PATH as _DB
     _c = _sq.connect(str(_DB)); _c.row_factory = _sq.Row
     _PIN_OFF = _c.execute("SELECT value FROM settings WHERE key='ai_provider'").fetchone()[0]
-    _c.execute("UPDATE settings SET value='off' WHERE key='ai_provider'"); _c.commit(); _c.close()
+    _c.execute("UPDATE settings SET value='off' WHERE key='ai_provider'"); _c.commit()
+    # 水位：测试会执行洞察（写 ai_insights/ai_actions/purchase_orders），跑完按 id 清理，
+    # 否则演示库里的"已执行"状态会让驾驶舱少显示几条洞察。
+    _WM = {t: (_c.execute("SELECT COALESCE(MAX(id),0) m FROM %s" % t).fetchone()["m"])
+           for t in ("ai_insights", "ai_actions", "purchase_orders")}
+    _c.close()
 
     app = create_app()
     app.config["TESTING"] = True
@@ -115,7 +120,12 @@ def main():
 
     _c = _sq.connect(str(_DB))
     _c.execute("UPDATE settings SET value=? WHERE key='ai_provider'", (_PIN_OFF,))
+    for t, mark in _WM.items():
+        if t == "purchase_orders":
+            _c.execute("DELETE FROM purchase_items WHERE po_id > ?", (mark,))
+        _c.execute("DELETE FROM %s WHERE id > ?" % t, (mark,))
     _c.commit(); _c.close()
+    print("已清理测试产生的洞察/动作/采购单，演示库保持干净")
 
     print()
     if fails:
