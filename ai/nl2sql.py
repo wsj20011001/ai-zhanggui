@@ -142,8 +142,11 @@ def _check_insight(insight, columns, rows):
     为什么这么严：模型最危险的错误不是 SQL 写错（沙箱会拦），
     而是把结果里的数字"顺手改一下"——老板不会去核对，但评委会。
     """
-    if not insight or not rows:
+    if not insight:
         return insight
+    if not rows:
+        # 查不到数据时，任何"有 N 种/共 X 元"的说法都是编的 —— 直接换成事实摘要
+        return None
 
     for n, _unit in _COUNT_RE.findall(insight):
         try:

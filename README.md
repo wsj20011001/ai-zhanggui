@@ -131,20 +131,32 @@ venv\Scripts\python app.py
 | 通道 | 状态 | 特点 | 实测 |
 |---|---|---|---|
 | **云端 API** | ✅ 已接入 DeepSeek | 质量好、要联网、按量计费 | 1.0–1.4 秒/问 |
-| **本地 Ollama** | 代码已就绪，需本机装模型 | 数据不出店、断网可用、零调用费 | 链路已用 Mock 验证（`tests/test_local_channel.py`） |
+| **本地 Ollama** | ✅ 已装 qwen2.5-3b（Q4_K_M，2.0GB） | 数据不出店、断网可用、零调用费 | 3–12 秒/问（纯 CPU），质量低于云端 |
 | 规则模式 | ✅ 自动兜底 | 无模型也能问答，答案模板化 | < 50 毫秒 |
 
-**启用本地模型（一条命令）**
+**启用本地模型（本机已装好，双击即可）**
 
-```bash
-# 在项目根目录执行（会自动装 Ollama、拉模型、设常驻）
-scripts\setup_local_model.ps1
-
-# 小显存或想快一点，可换 3B：
-# scripts\setup_local_model.ps1 -Model qwen2.5:3b-instruct-q4_K_M
+```text
+启动本地模型.bat        ← 开一个窗口跑 ollama serve
 ```
 
+换一台机器重装，用一键脚本：`scripts\setup_local_model.ps1`
+
 然后到「模型设置」把通道切到本地，点「测试本地模型」，看到延迟就说明通了。
+
+> **国内拉不动模型怎么办**：Ollama 官方 registry 实测只有 4 KB/s。
+> 改从 ModelScope 下 GGUF（实测 9–12 MB/s），再本地导入：
+>
+> ```bash
+> # 1. 下载（约 2GB）
+> curl -L -o model.gguf "https://modelscope.cn/models/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/master/qwen2.5-3b-instruct-q4_k_m.gguf"
+> # 2. 写一个 Modelfile
+> printf 'FROM %s\nPARAMETER num_ctx 4096\nPARAMETER temperature 0.2\n' "$(pwd)/model.gguf" > Modelfile
+> # 3. 导入（无需联网）
+> ollama create qwen2.5-3b-local -f Modelfile
+> ```
+>
+> 这条路径绕开 registry，是我们在比赛现场实际验证过的。
 
 **云端**：管理端 → 「模型设置」→ 选云端通道，填 Base URL / 模型名 / API Key。
 Key 存在 `data/ai_key.txt`，不入库、不进日志、不随备份库外流。
