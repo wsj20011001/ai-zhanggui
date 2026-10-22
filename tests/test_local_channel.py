@@ -77,13 +77,17 @@ def main():
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
     keys = ("ai_provider", "ai_ollama_base", "ai_local_model")
-    old = {k: conn.execute("SELECT value FROM settings WHERE key=?", (k,)).fetchone()[0]
-           for k in keys}
+    # 老库可能缺某个键（比如快照回滚到加键之前），取不到就记为 None，恢复时用 upsert
+    old = {}
+    for k in keys:
+        row = conn.execute("SELECT value FROM settings WHERE key=?", (k,)).fetchone()
+        old[k] = row[0] if row else None
     try:
-        conn.execute("UPDATE settings SET value='local' WHERE key='ai_provider'")
-        conn.execute("UPDATE settings SET value=? WHERE key='ai_ollama_base'",
+        # 用 upsert：老库可能没有 ai_ollama_base 这一行，UPDATE 会静默失效
+        conn.execute("INSERT OR REPLACE INTO settings(key,value) VALUES('ai_provider','local')")
+        conn.execute("INSERT OR REPLACE INTO settings(key,value) VALUES('ai_ollama_base',?)",
                      ("http://127.0.0.1:%d" % PORT,))
-        conn.execute("UPDATE settings SET value='mock-local:3b' WHERE key='ai_local_model'")
+        conn.execute("INSERT OR REPLACE INTO settings(key,value) VALUES('ai_local_model','mock-local:3b')")
         conn.execute("DELETE FROM ai_cache")
         conn.commit()
 
@@ -107,7 +111,10 @@ def main():
         chk("行数非空", True, len(res["rows"]) > 0)
     finally:
         for k, v in old.items():
-            conn.execute("UPDATE settings SET value=? WHERE key=?", (v, k))
+            if v is None:
+                conn.execute("DELETE FROM settings WHERE key=?", (k,))
+            else:
+                conn.execute("INSERT OR REPLACE INTO settings(key, value) VALUES(?,?)", (k, v))
         conn.execute("DELETE FROM ai_cache")
         conn.commit()
         conn.close()
