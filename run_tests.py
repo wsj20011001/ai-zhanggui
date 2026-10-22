@@ -21,6 +21,7 @@ CASES = [
     ("口径一致性", "tests/test_metrics.py", "原始表/视图/事实表/驾驶舱/报表/AI 五处同值"),
     ("CSV 导入", "tests/test_import.py", "表头识别 / 订单号幂等 / 失败行 / 事实表重算"),
     ("模型链路（Mock）", "tests/mock_llm.py", "越界 SQL → 拦截 → 自修复 → 真实结果，无需真 Key"),
+    ("本地通道（Mock）", "tests/test_local_channel.py", "Ollama 协议：识别模型、仅本地调用、绕过代理"),
     ("单元测试", "test_units.py", "金额舍入 / 订单号 / 口令哈希 / BOM 扣料"),
 ]
 

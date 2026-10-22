@@ -47,13 +47,24 @@ def save_api_key(key):
         return False
 
 
-def _post(url, payload, timeout, headers=None):
+def _opener(direct=False):
+    """direct=True 时绕过系统代理。
+
+    必须这么做的原因：国内很多机器装了全局代理，urllib 会把 127.0.0.1 也交给代理，
+    本地 Ollama 就会返回 502 —— 看起来像"模型没装"，其实是网络栈的问题。
+    """
+    if direct:
+        return urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    return urllib.request.build_opener()
+
+
+def _post(url, payload, timeout, headers=None, direct=False):
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(url, data=data, method="POST")
     req.add_header("Content-Type", "application/json")
     for k, v in (headers or {}).items():
         req.add_header(k, v)
-    with urllib.request.urlopen(req, timeout=timeout) as r:
+    with _opener(direct).open(req, timeout=timeout) as r:
         return json.loads(r.read().decode("utf-8"))
 
 
@@ -68,7 +79,7 @@ def _local_chat(conn, messages, json_mode, timeout):
     }
     if json_mode:
         payload["format"] = "json"
-    data = _post(base + "/api/chat", payload, timeout)
+    data = _post(base + "/api/chat", payload, timeout, direct=True)
     text = (data.get("message") or {}).get("content", "")
     return {
         "text": text, "provider": "local", "model": model,
@@ -164,17 +175,25 @@ def chat(conn, messages, json_mode=False, use_cache=True, allow_cloud=True):
     raise ModelUnavailable("；".join(errors) or "无可用模型")
 
 
+def local_only(conn, messages, timeout=None):
+    """只走本地通道（设置页的"测试本地模型"用它，避免误用云端）"""
+    return _local_chat(conn, messages, False, timeout or config.AI_TIMEOUT)
+
+
 def probe(conn):
     """连通性自检：给设置页用，避免现场才发现模型没起来"""
     out = {"provider": _setting(conn, "ai_provider", "local"),
            "local": {"ok": False, "msg": ""}, "cloud": {"ok": False, "msg": ""}}
     base = _setting(conn, "ai_ollama_base", config.OLLAMA_BASE).rstrip("/")
     try:
-        with urllib.request.urlopen(base + "/api/tags", timeout=3) as r:
+        with _opener(True).open(base + "/api/tags", timeout=3) as r:
             data = json.loads(r.read().decode("utf-8"))
         names = [m.get("name", "") for m in data.get("models", [])]
+        detail = [{"name": m.get("name", ""),
+                   "size_gb": round((m.get("size") or 0) / 1024 ** 3, 1)}
+                  for m in data.get("models", [])]
         model = _setting(conn, "ai_local_model", config.DEFAULT_LOCAL_MODEL)
-        out["local"] = {"ok": True, "models": names,
+        out["local"] = {"ok": True, "models": names, "detail": detail,
                         "has_model": any(model.split(":")[0] in n for n in names),
                         "msg": "已连接 Ollama（%d 个模型）" % len(names)}
     except Exception as e:

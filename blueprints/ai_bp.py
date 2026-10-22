@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """AI 掌柜：驾驶舱、经营问答、洞察中心、动作执行与撤销、模型设置"""
 import json
+import time
 from datetime import date, datetime, timedelta
 
 from flask import (Blueprint, flash, jsonify, redirect, render_template, request,
@@ -228,18 +229,17 @@ def undo_action(aid):
 def ai_settings():
     conn = db.get_db()
     if request.method == "POST":
-        conn.execute("UPDATE settings SET value=? WHERE key='ai_provider'",
-                     (request.form.get("ai_provider", "local"),))
-        conn.execute("UPDATE settings SET value=? WHERE key='ai_local_model'",
-                     (request.form.get("ai_local_model", config.DEFAULT_LOCAL_MODEL).strip(),))
-        conn.execute("UPDATE settings SET value=? WHERE key='ai_cloud_base'",
-                     (request.form.get("ai_cloud_base", config.DEFAULT_CLOUD_BASE).strip(),))
-        conn.execute("UPDATE settings SET value=? WHERE key='ai_cloud_model'",
-                     (request.form.get("ai_cloud_model", config.DEFAULT_CLOUD_MODEL).strip(),))
-        conn.execute("UPDATE settings SET value=? WHERE key='ai_ollama_base'",
-                     (request.form.get("ai_ollama_base", config.OLLAMA_BASE).strip(),))
-        conn.execute("UPDATE settings SET value=? WHERE key='ai_privacy_mask'",
-                     ("1" if request.form.get("ai_privacy_mask") else "0",))
+        def save(key, value):
+            # 用 upsert：老库里可能没有这个配置项，单纯 UPDATE 会静默失败
+            conn.execute("INSERT OR REPLACE INTO settings(key, value) VALUES(?,?)",
+                         (key, value))
+
+        save("ai_provider", request.form.get("ai_provider", "local"))
+        save("ai_local_model", request.form.get("ai_local_model", config.DEFAULT_LOCAL_MODEL).strip())
+        save("ai_cloud_base", request.form.get("ai_cloud_base", config.DEFAULT_CLOUD_BASE).strip())
+        save("ai_cloud_model", request.form.get("ai_cloud_model", config.DEFAULT_CLOUD_MODEL).strip())
+        save("ai_ollama_base", request.form.get("ai_ollama_base", config.OLLAMA_BASE).strip())
+        save("ai_privacy_mask", "1" if request.form.get("ai_privacy_mask") else "0")
         conn.commit()
         key = (request.form.get("ai_api_key") or "").strip()
         if key:
@@ -253,6 +253,26 @@ def ai_settings():
     return render_template("ai/settings.html", active_nav="ai_settings", probe=p,
                            ai=_ai_status(conn), has_key=bool(gateway.api_key()),
                            app_name=config.APP_NAME)
+
+
+@api.route("/test-local", methods=["POST"])
+@admin_required
+def test_local():
+    """只测本地通道：给设置页一个"能不能用、多快"的确定性答案"""
+    conn = db.get_db()
+    t0 = time.time()
+    try:
+        out = gateway.local_only(conn, [
+            {"role": "system", "content": "你是一个测试探针，只回一句话。"},
+            {"role": "user", "content": "用不超过 10 个字说明你是本地模型。"},
+        ], timeout=25)
+        return jsonify(ok=True, model=out.get("model", ""),
+                       latency_ms=out.get("latency_ms") or int((time.time() - t0) * 1000),
+                       text=(out.get("text") or "").strip()[:60])
+    except gateway.ModelUnavailable as e:
+        return jsonify(ok=False, msg=str(e))
+    except Exception as e:
+        return jsonify(ok=False, msg="本地模型调用失败：%s" % e)
 
 
 @api.route("/brief", methods=["POST"])

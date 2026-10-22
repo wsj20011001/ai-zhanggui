@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}模型设置 · {{ shop.shop_name }}{% endblock %}
+
 {% block content %}
 <div class="ai-head">
   <div>
@@ -84,6 +85,23 @@
         </tr>
         <tr><td colspan="2" class="text-muted small">{{ probe.local.msg }}
           {% if probe.local.models %}<br/>已装模型：{{ probe.local.models|join('、') }}{% endif %}</td></tr>
+        {% if probe.local.detail %}
+        <tr><td colspan="2" style="padding-top:0">
+          <table class="table table-sm ai-table mb-0 mt-1">
+            <tbody>
+            {% for m in probe.local.detail %}
+            <tr>
+              <td class="small">{{ m.name }}</td>
+              <td class="small text-muted text-end">{{ m.size_gb }} GB</td>
+              <td class="text-end" style="width:52px">
+                {% if m.name == shop.get('ai_local_model','') %}<span class="badge bg-primary">当前</span>{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </td></tr>
+        {% endif %}
         <tr>
           <td>云端 Key</td>
           <td class="text-end">
@@ -93,6 +111,10 @@
         </tr>
         <tr><td colspan="2" class="text-muted small">{{ probe.cloud.msg }}</td></tr>
       </table>
+      <div class="d-flex gap-2 mt-2 align-items-center">
+        <button class="btn-ai-ghost" type="button" onclick="testLocal(this)">测试本地模型</button>
+        <span class="small text-muted" id="localResult">点一下，测一次真实推理（不消耗云端额度）</span>
+      </div>
     </div>
 
     <div class="panel">
@@ -107,4 +129,24 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/ai.js') }}"></script>
+<script>
+async function testLocal(btn) {
+  const tip = document.getElementById('localResult');
+  btn.disabled = true;
+  tip.textContent = '正在调用本地模型…（首次加载可能需要几秒）';
+  const r = await AI.post('/api/ai/test-local', {});
+  btn.disabled = false;
+  if (r.ok) {
+    tip.textContent = '可用：' + r.model + ' · ' + r.latency_ms + ' ms · 回复「' + r.text + '」';
+    tip.style.color = '#13a97b';
+  } else {
+    tip.textContent = '不可用：' + (r.msg || '未知错误');
+    tip.style.color = '#d24545';
+  }
+}
+</script>
 {% endblock %}

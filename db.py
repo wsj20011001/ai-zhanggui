@@ -444,6 +444,7 @@ DEFAULT_SETTINGS = {
     "stock_block_order": "0",      # 1=原料不足时直接拦截下单
     # ---- AI 掌柜 ----
     "ai_provider": "local",        # local=本地Ollama / cloud=云端API / off=仅规则
+    "ai_ollama_base": "http://127.0.0.1:11434",
     "ai_local_model": "qwen2.5:7b-instruct-q4_K_M",
     "ai_cloud_base": "https://api.deepseek.com/v1",
     "ai_cloud_model": "deepseek-chat",
