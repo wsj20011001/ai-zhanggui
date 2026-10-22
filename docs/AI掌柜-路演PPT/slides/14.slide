@@ -1,0 +1,53 @@
+<Slide style={{ width: 1280, height: 720, background: '#F6F8FD', padding: '56px 72px', flexDirection: 'column' }}>
+  <Box style={{ height: 96, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <Box style={{ flexDirection: 'column', gap: 8 }}>
+      <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#0C1222' }}>附录 B · 我们怎么证明它可靠</Text>
+      <Text style={{ fontSize: 15, color: '#5C6780' }}>不是「能跑一遍」，而是固定题库、可重复测量的评测</Text>
+    </Box>
+    <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: '5px 12px', background: '#EEF1FE', border: '1px solid #DDE2F5', borderRadius: 999 }}>
+      <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#4C4DDC' }} />
+      <Text style={{ fontSize: 12, color: '#4C4DDC', fontWeight: 'bold', letterSpacing: 1 }}>AI 掌柜</Text>
+    </Box>
+  </Box>
+  <Box style={{ width: 72, height: 3, background: '#4C4DDC', borderRadius: 2, marginTop: 2, marginBottom: 12 }} />
+
+  <Box style={{ flex: 1, flexDirection: 'column', gap: 14 }}>
+    <Box style={{ flexDirection: 'row', gap: 14, flex: 1 }}>
+      <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 22, flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#4C4DDC', letterSpacing: -1 }}>8 / 8</Text>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0C1222' }}>越界 SQL 全部拦截</Text>
+        <Text style={{ fontSize: 12, color: '#5C6780', lineHeight: 1.7 }}>DROP · 多语句 · UNION 跨表<br />系统表 · ATTACH · PRAGMA</Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 22, flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#4C4DDC', letterSpacing: -1 }}>12 / 12</Text>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0C1222' }}>问答评测集全通过</Text>
+        <Text style={{ fontSize: 12, color: '#5C6780', lineHeight: 1.7 }}>SQL 可执行 12/12 · 结论一致 12/12<br />平均 1.2 秒</Text>
+      </Box>
+    </Box>
+    <Box style={{ flexDirection: 'row', gap: 14, flex: 1 }}>
+      <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 22, flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#4C4DDC', letterSpacing: -1 }}>5 处</Text>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0C1222' }}>同一指标必须同值</Text>
+        <Text style={{ fontSize: 12, color: '#5C6780', lineHeight: 1.7 }}>原始表 · 视图 · 事实表<br />驾驶舱 · 报表 · AI 问答</Text>
+      </Box>
+      <Box style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E3E8F5', borderRadius: 14, padding: 22, flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#4C4DDC', letterSpacing: -1 }}>6 套件</Text>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0C1222' }}>一键回归，12 秒跑完</Text>
+        <Text style={{ fontSize: 12, color: '#5C6780', lineHeight: 1.7 }}>22 个页面 · 50 项单元测试<br />CSV 导入 · Mock 模型链路</Text>
+      </Box>
+    </Box>
+    <Box style={{ background: '#EEF1FE', border: '1px solid #C9CDF6', borderRadius: 12, padding: '16px 22px', flexDirection: 'row', alignItems: 'center', gap: 18 }}>
+      <Text style={{ fontSize: 11, color: '#4C4DDC', fontWeight: 'bold', letterSpacing: 2, width: 96 }}>真实案例</Text>
+      <Text style={{ fontSize: 14, color: '#0C1222', lineHeight: 1.7, flex: 1 }}>
+        模型的结论写「共 <span style={{ fontWeight: 'bold' }}>6</span> 种食材低于预警」，查询结果实际是 <span style={{ fontWeight: 'bold' }}>9</span> 种；
+        「2.8 <span style={{ fontWeight: 'bold' }}>斤</span>」被写成「3.2 kg」。服务端校验发现数字对不上，
+        <span style={{ fontWeight: 'bold', color: '#4C4DDC' }}>判定为编造 → 换成确定性摘要 → 让它看着真实结果重写</span>。
+      </Text>
+    </Box>
+  </Box>
+
+  <Box style={{ height: 36, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>命令：python run_tests.py · python tests/eval_nl2sql.py</Text>
+    <Text style={{ fontSize: 12, color: '#8A93A8' }}>附录 B</Text>
+  </Box>
+</Slide>
