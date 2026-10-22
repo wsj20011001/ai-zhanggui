@@ -46,8 +46,8 @@
     <Box style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #E3E8F5', flexDirection: 'row', gap: 14 }}>
       <Text style={{ fontSize: 13, color: '#4C4DDC', width: 76 }}>选型取舍</Text>
       <Text style={{ fontSize: 14, color: '#5C6780', lineHeight: 1.7, flex: 1 }}>
-        不引入 numpy / pandas / torch：门店电脑不是服务器，打包体积与启动速度比模型炫技重要；
-        SQLite 开启 WAL 后足以支撑店内 20 路并发点餐。
+        不引入 numpy / pandas / torch：门店电脑不是服务器，启动速度比模型炫技重要；SQLite 开 WAL 足够 20 路并发。
+        模型双通道：云端 1.2 秒 / 本地 3B 断网可用，切换不重启服务。
       </Text>
     </Box>
   </Box>

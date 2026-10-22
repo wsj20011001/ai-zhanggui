@@ -14,8 +14,8 @@
     <Box style={{ flexDirection: 'row', gap: 28, alignItems: 'center' }}>
       <Box style={{ flexDirection: 'column', width: 380 }}>
         <Text style={{ fontSize: 13, color: '#5C6780', letterSpacing: 1 }}>昨日营收（元）</Text>
-        <Text style={{ fontSize: 68, fontWeight: 'bold', color: '#0C1222', letterSpacing: -2 }}>6,029.65</Text>
-        <Text style={{ fontSize: 13, color: '#5C6780', marginTop: 6 }}>同星期基线 8,024.45 · 低 24.8%</Text>
+        <Text style={{ fontSize: 68, fontWeight: 'bold', color: '#0C1222', letterSpacing: -2 }}>7,507.80</Text>
+        <Text style={{ fontSize: 13, color: '#5C6780', marginTop: 6 }}>同星期基线 10,898.00 · 低 31.1%</Text>
       </Box>
       <Box style={{ flex: 1, flexDirection: 'column', gap: 10 }}>
         <Text style={{ fontSize: 13, color: '#5C6780' }}>这个数字出现在三个地方，必须完全相等</Text>

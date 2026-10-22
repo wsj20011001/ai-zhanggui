@@ -33,7 +33,18 @@
         </Box>
       </Box>
     </Box>
-    <Box style={{ marginTop: 30, flexDirection: 'row', gap: 14 }}>
+    <Box style={{ marginTop: 28, background: '#EEF1FE', border: '1px solid #C9CDF6', borderRadius: 12, padding: '18px 24px', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+      <Text style={{ fontSize: 11, color: '#4C4DDC', fontWeight: 'bold', letterSpacing: 2, width: 96 }}>同一条链路</Text>
+      <Text style={{ fontSize: 15, color: '#0C1222' }}>发现异常</Text>
+      <Text style={{ fontSize: 15, color: '#9AA3BE' }}>→</Text>
+      <Text style={{ fontSize: 15, color: '#0C1222' }}>算清原因</Text>
+      <Text style={{ fontSize: 15, color: '#9AA3BE' }}>→</Text>
+      <Text style={{ fontSize: 15, color: '#0C1222' }}>动手执行</Text>
+      <Text style={{ fontSize: 15, color: '#9AA3BE' }}>→</Text>
+      <Text style={{ fontSize: 15, color: '#0C1222' }}>7 天后复核</Text>
+      <Text style={{ fontSize: 12, color: '#5C6780', marginLeft: 8 }}>四步不换页面</Text>
+    </Box>
+    <Box style={{ marginTop: 22, flexDirection: 'row', gap: 14 }}>
       <Text style={{ fontSize: 15, color: '#5C6780' }}>三个关键词</Text>
       <Text style={{ fontSize: 15, color: '#4C4DDC', fontWeight: 'bold' }}>可执行 · 可追溯 · 可撤销</Text>
     </Box>
