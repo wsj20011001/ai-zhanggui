@@ -10,7 +10,8 @@ import sys
 import threading
 import webbrowser
 
-from flask import Flask, redirect, request, send_from_directory, session, url_for
+from flask import (Flask, redirect, render_template, request,
+                   send_from_directory, session, url_for)
 
 import config
 import db
@@ -100,6 +101,29 @@ def create_app():
                members_bp, reservations_bp, reports_bp, employees_bp,
                ai_bp, analytics_bp, purchase_bp, tools_bp):
         app.register_blueprint(bp, url_prefix="/admin")
+
+    # ---- 统一错误页：给用户一句人话 + 一个出口 ----
+    @app.errorhandler(400)
+    def _e400(e):
+        return render_template("error.html", code=400, title="请求没有通过校验",
+                               detail=getattr(e, "description", "参数不合法或会话已过期，请刷新页面后重试。")), 400
+
+    @app.errorhandler(404)
+    def _e404(e):
+        return render_template("error.html", code=404, title="这个页面不存在",
+                               detail="地址可能输错了，或者这个功能已经改名。可以从左侧菜单重新进入。"), 404
+
+    @app.errorhandler(413)
+    def _e413(e):
+        return render_template("error.html", code=413, title="文件太大了",
+                               detail="单个上传文件请控制在 20MB 以内。CSV 导入一般几百 KB 就够。"), 413
+
+    @app.errorhandler(500)
+    def _e500(e):
+        # 生产环境不把堆栈抛给用户，只记日志
+        app.logger.exception("未捕获异常")
+        return render_template("error.html", code=500, title="服务出了点问题",
+                               detail="已经记录到日志。你的数据不会丢，可以刷新重试；持续出现请联系我们。"), 500
 
     # ---- 登录后首页：AI 驾驶舱 ----
     @app.route("/admin")

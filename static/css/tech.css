@@ -362,3 +362,33 @@ hr { border-color: var(--line); }
   background: linear-gradient(135deg, #5a5cf0 0%, #00b8cc 100%);
   box-shadow: 0 12px 28px -12px rgba(0, 184, 204, .9), inset 0 1px 0 rgba(255, 255, 255, .35);
 }
+
+/* ---------- 首次引导条 ---------- */
+.guide-strip {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: linear-gradient(90deg, #eef1fe 0%, #f7f9ff 100%);
+  border: 1px solid #dde2f5;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: .84rem;
+  color: #3b4560;
+}
+.guide-strip .g-tag {
+  background: #4c4ddc; color: #fff; font-size: .72rem; font-weight: 600;
+  padding: 2px 9px; border-radius: 999px; letter-spacing: .02em;
+}
+.guide-strip .g-item { display: inline-flex; align-items: center; gap: 6px; }
+.guide-strip .g-item b {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 17px; height: 17px; border-radius: 50%;
+  background: #fff; border: 1px solid #c9cdf6; color: #4c4ddc;
+  font-size: .68rem;
+}
+.guide-strip .g-sep { color: #b9c0d8; }
+.guide-strip .g-close {
+  margin-left: auto; background: #fff; border: 1px solid #dde2f5;
+  color: #4c4ddc; font-size: .78rem; padding: 3px 10px; border-radius: 8px;
+  cursor: pointer;
+}
+.guide-strip .g-close:hover { background: #eef1fe; }

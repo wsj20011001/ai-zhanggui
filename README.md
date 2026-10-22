@@ -35,13 +35,14 @@
 | 代码质量 | 分层清晰（`analytics` 指标层 / `ai` 引擎层 / `blueprints` 接口层）；README + [技术说明](docs/技术说明.md) + 8 次语义化提交 + MIT [LICENSE](LICENSE) |
 | 系统健壮性 | 三层降级（本地→云端→规则）、SQL 超时中断、动作幂等、异常兜底；演示断网仍可用 |
 | 数据安全 | Key 存独立文件不入库、`.gitignore` 排除 `*.db`；模型只能读聚合视图，看不到会员手机号；SQL 只读连接 |
-| 测试覆盖 | 6 个套件一键运行 `python run_tests.py`：页面 22/22、沙箱越界 8/8、口径一致 5 处、CSV 导入、Mock 模型链路、单元测试 50/50 |
+| 测试覆盖 | 6 个套件一键运行 `python run_tests.py`：页面 22/22、沙箱越界 8/8、口径一致 5 处、CSV 导入、Mock 模型链路、单元测试 50/50；另有 NL2SQL 评测集 12 题（`tests/eval_nl2sql.py`） |
+| 错误处理 | 400/404/413/500 统一错误页，给一句人话 + 出口链接；表单校验逐字段提示；模型不可用时明确告知降级原因 |
 
 ### 落地可行性与可推广性（20）
 
 | 评审要点 | 我们的证据 |
 |---|---|
-| 部署与成本 | 单机 Flask + SQLite，**无 GPU、无外网也能跑**；无 Python 环境可打包 EXE |
+| 部署与成本 | 单机 Flask + SQLite，**无 GPU、无外网也能跑**；无 Python 环境可打包 EXE；详见 [docs/部署说明.md](docs/部署说明.md) |
 | 接入路径 | 已有 `CSV 导入`：收银导出订单 → 表头自动识别 → 按订单号幂等去重 → 即时重算 → 看板立即可用 |
 | 需求匹配 | 面向 40 座左右中小门店；指标口径、菜品结构、BOM 成本都是按真实餐饮模型设计 |
 | 可推广性 | 换菜单与配方即可用于茶餐厅/快餐/火锅/烘焙；连锁版只需加 `store_id` 维度（字段已预留设计） |
@@ -55,7 +56,12 @@
 | 响应性能 | 看板首屏 < 1 秒（180 天预聚合）；问答 1.0–1.4 秒（含 SQL 生成与执行） |
 | 错误处理 | 校验失败给出人话提示（"菜名在系统里不存在"）、CSRF 防护、模型不可用时提示降级原因 |
 
-**一句话验证**：`python run_tests.py` —— 6 个套件、约 1 分钟，输出通过/失败与耗时汇总。
+**一句话验证**：`python run_tests.py` —— 6 个套件、约 12 秒，输出通过/失败与耗时汇总。
+
+**AI 层单独评测**：`python tests/eval_nl2sql.py` —— 固定 12 题，量 SQL 可执行率、结果非空率、
+结论一致率与平均延迟，自动生成 [docs/评测报告.md](docs/评测报告.md)（当前 12/12，平均 1.2 秒）。
+
+**部署与成本**：见 [docs/部署说明.md](docs/部署说明.md)（硬件、三种部署方式、上线流程、云端成本）。
 
 ---
 
@@ -193,6 +199,7 @@ venv\Scripts\python tests\test_ai.py      # 沙箱 8 条拦截 + 7 类问答 + �
 venv\Scripts\python tests\test_metrics.py # 口径一致：原始表/视图/驾驶舱/报表/AI 五处同值
 venv\Scripts\python tests\test_import.py  # CSV 导入：表头识别 / 幂等 / 失败行 / 事实表重算
 venv\Scripts\python tests\mock_llm.py     # Mock 云端：越界 SQL → 拦截 → 自修复 → 真实结果
+venv\Scripts\python tests\eval_nl2sql.py  # NL2SQL 评测集（12 题，会调真模型，生成 docs/评测报告.md）
 venv\Scripts\python test_units.py         # 原有单元测试（金额/订单号/口令/BOM）
 ```
 

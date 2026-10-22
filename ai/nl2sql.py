@@ -386,6 +386,7 @@ def ask(conn, question, allow_cloud=True):
             plan2 = _extract_json(out2["text"])
             res = _run_plan(plan2, conn, question, out2["provider"], out2["model"],
                             latency + out2["latency_ms"])
+            res["repaired"] = True
             if res.get("insight_replaced"):
                 better = _narrate(conn, question, res["columns"], res["rows"], allow_cloud)
                 if better:

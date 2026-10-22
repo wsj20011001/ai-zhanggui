@@ -15,6 +15,17 @@
   </div>
 </div>
 
+
+<div class="guide-strip" id="guide" style="display:none">
+  <span class="g-tag">3 步上手</span>
+  <span class="g-item"><b>1</b> 看下面三件事，按影响金额排序</span>
+  <span class="g-sep">→</span>
+  <span class="g-item"><b>2</b> 点「定位原因」拆解，点「生成采购单」直接执行</span>
+  <span class="g-sep">→</span>
+  <span class="g-item"><b>3</b> 去「经营问答」用自己的话问一句</span>
+  <button class="g-close" onclick="dismissGuide()">知道了</button>
+</div>
+
 <div class="row g-3 mb-3">
   <div class="col-6 col-lg-3">
     <div class="kpi">
@@ -139,6 +150,19 @@
 <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/ai.js') }}"></script>
 <script>
+// 首次访问显示引导，关掉后不再打扰（本地记忆，不增加后端负担）
+function dismissGuide() {
+  document.getElementById('guide').style.display = 'none';
+  try { localStorage.setItem('guide_done', '1'); } catch (e) {}
+}
+try {
+  if (!localStorage.getItem('guide_done')) {
+    document.getElementById('guide').style.display = 'flex';
+  }
+} catch (e) {
+  document.getElementById('guide').style.display = 'flex';
+}
+
 const trend = {{ trend|tojson }};
 const fc = {{ fc.forecast|tojson }};
 AI.line(document.getElementById('trend'), trend.map(x => x.d.slice(5)), trend.map(x => x.revenue));
