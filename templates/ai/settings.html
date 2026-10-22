@@ -118,12 +118,13 @@
     </div>
 
     <div class="panel">
-      <h6>本地模型怎么装</h6>
+      <h6>本地模型怎么装 <span>一条命令</span></h6>
+      <div class="small text-muted mb-2">在项目根目录执行（自动装 Ollama、拉模型、设常驻）：</div>
+      <pre style="background:#0f172a;color:#d6d9f0;padding:12px;border-radius:10px;font-size:.76rem;margin:0 0 10px">scripts\setup_local_model.ps1</pre>
       <ol class="small text-muted ps-3 mb-2" style="line-height:1.9">
-        <li>安装 Ollama：<code>ollama.com/download</code></li>
-        <li>拉模型：<code>ollama pull qwen2.5:7b-instruct-q4_K_M</code>（约 4.7GB）</li>
-        <li>设常驻，避免首次调用冷启动：<br/><code>setx OLLAMA_KEEP_ALIVE -1</code></li>
-        <li>回到本页刷新，看到「已连接」即可</li>
+        <li>默认拉 7B（约 4.7GB）；显存小可加参数<br/><code>-Model qwen2.5:3b-instruct-q4_K_M</code></li>
+        <li>装完把「本地模型名」改成脚本输出的名字</li>
+        <li>点上面的「测试本地模型」，看到延迟就通了</li>
       </ol>
       <div class="small text-muted">本机 RTX 5070 / 12GB 显存可稳定跑 7B；无独显时建议改用云端通道。</div>
     </div>

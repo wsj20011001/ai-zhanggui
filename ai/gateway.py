@@ -197,7 +197,16 @@ def probe(conn):
                         "has_model": any(model.split(":")[0] in n for n in names),
                         "msg": "已连接 Ollama（%d 个模型）" % len(names)}
     except Exception as e:
-        out["local"] = {"ok": False, "msg": "未连接：%s" % e}
+        raw = str(e)
+        if "10061" in raw or "refused" in raw.lower() or "积极拒绝" in raw:
+            msg = "本机没有 Ollama 服务（%s 无响应）。装好后在这里点「测试本地模型」。" % base
+        elif "502" in raw or "Bad Gateway" in raw:
+            msg = "请求被系统代理接管了。检查代理设置，或确认程序已更新（本地通道应直连）。"
+        elif "timed out" in raw.lower():
+            msg = "连接超时：Ollama 可能正在加载模型，稍等几秒再试。"
+        else:
+            msg = "未连接：%s" % raw[:120]
+        out["local"] = {"ok": False, "msg": msg}
     key = api_key()
     if key:
         try:
