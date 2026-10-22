@@ -383,13 +383,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     try { await saveCart(); } catch (e) { toast("清空失败：" + e.message, "danger"); }
     renderCart();
   });
+  // 改人数：既重绘也落库（以前只重绘，导致订单 persons 恒为 1，污染人均消费与客流）
+  let personsTimer = null;
+  function savePersonsSoon() {
+    clearTimeout(personsTimer);
+    personsTimer = setTimeout(() => { saveCart(); }, 400);
+  }
   document.getElementById("p-minus").addEventListener("click", () => {
-    if (persons > 1) { persons--; renderCart(); }
+    if (persons > 1) { persons--; renderCart(); savePersonsSoon(); }
   });
   document.getElementById("p-plus").addEventListener("click", () => {
-    if (persons < 50) { persons++; renderCart(); }
+    if (persons < 50) { persons++; renderCart(); savePersonsSoon(); }
   });
-  document.getElementById("cart-remark").addEventListener("change", e => { remark = e.target.value; });
+  // 整单备注：change 在失焦时触发，直接落库（以前只改内存变量）
+  document.getElementById("cart-remark").addEventListener("change", e => {
+    remark = e.target.value;
+    saveCart();
+  });
   document.getElementById("btn-orders").addEventListener("click", () => {
     document.getElementById("orders-drawer").style.display = "flex";
     loadMyOrders();

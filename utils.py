@@ -187,21 +187,33 @@ def calc_order(items, member_discount_rate=1.0, points_to_use=0, use_member=Fals
 def make_order_no(conn=None):
     """生成订单号 D20261008-0001（日期 + 当日序号）。
 
-    必须用独立的计数表 + 独立短事务取号：
-    旧实现用 COUNT(*)+1，并发下多个请求会取到同一个计数，
-    撞 orders.order_no 的 UNIQUE 约束直接 500（实测 6 桌并发挂 4 桌）。
-    计数表在 SQLite 写锁内自增，天然串行；即使订单后续失败，
-    也只是跳号（无副作用），绝不会重号。
+    两个坑都踩过：
+    1. 旧实现用 COUNT(*)+1，并发下多桌取到同一个号，撞 UNIQUE 直接 500；
+       改为独立计数表 + 独立短事务（IMMEDIATE），SQLite 写锁天然串行；
+    2. 计数表可能是空的（演示数据是直接灌进去的，没走取号），
+       这时当天第一单会生成 0001，和历史单号撞车 —— 所以首次取号要
+       从当天已有单号的最大值回填，而不是从 1 开始。
     """
     today = datetime.now().strftime("%Y%m%d")
-    c = sqlite3.connect(str(DB_PATH), isolation_level="IMMEDIATE", timeout=10.0)
+    own = conn is None
+    c = conn if conn is not None else sqlite3.connect(
+        str(DB_PATH), isolation_level="IMMEDIATE", timeout=10.0)
     try:
+        row = c.execute("SELECT value FROM counters WHERE name=?", (today,)).fetchone()
+        if not row:
+            mx = c.execute(
+                "SELECT COALESCE(MAX(CAST(substr(order_no, 11) AS INTEGER)), 0)"
+                " FROM orders WHERE order_no LIKE ?", ("D%s-%%" % today,)).fetchone()[0]
+            c.execute("INSERT OR IGNORE INTO counters(name, value) VALUES(?,?)",
+                      (today, int(mx or 0)))
+            c.commit()
         c.execute("INSERT INTO counters(name, value) VALUES(?, 1)"
                   " ON CONFLICT(name) DO UPDATE SET value = value + 1", (today,))
         n = c.execute("SELECT value FROM counters WHERE name=?", (today,)).fetchone()[0]
         c.commit()
     finally:
-        c.close()
+        if own:
+            c.close()
     return "D%s-%04d" % (today, n)
 
 

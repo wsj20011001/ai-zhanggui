@@ -201,15 +201,22 @@ def undo(conn, action_id, who=("admin", "", "")):
 # ------------------------------------------------------------------ 效果回流
 
 def settle_actions(conn):
-    """回填 7 天前执行的建议效果（演示版：对比执行前后 7 天同名指标）"""
+    """把到期的动作标记为「待人工确认」。
+
+    为什么不再写 verdict='effective'：
+    判断一条建议"有没有用"需要对照组（同期不执行的店/菜），
+    这是因果推断问题，不是"执行后 7 天看个数"能回答的。
+    之前这里无条件写 effective、result_value=0，等于伪造结论 —— 已改掉。
+
+    当前版本只做执行留痕与可撤销（这两件事是真的），效果归因列入路线图。
+    """
     due = conn.execute(
         "SELECT * FROM ai_actions WHERE verdict='pending' AND undone_at IS NULL"
         " AND julianday('now','localtime') - julianday(executed_at) >= check_after_days"
     ).fetchall()
     n = 0
     for a in due:
-        conn.execute("UPDATE ai_actions SET verdict='effective', result_value=0 WHERE id=?",
-                     (a["id"],))
+        conn.execute("UPDATE ai_actions SET verdict='unverified' WHERE id=?", (a["id"],))
         n += 1
     conn.commit()
     return n

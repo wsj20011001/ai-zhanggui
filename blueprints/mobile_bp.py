@@ -273,7 +273,7 @@ def order_submit(table_id):
         return jsonify(ok=False, msg=str(e)), 400
     calc = utils.calc_order(snapshots, use_member=False)
     with conn:
-        order_no = utils.make_order_no()   # 计数表取号，并发安全
+        order_no = utils.make_order_no(conn)   # 同一连接取号，测试与多库场景才不会串
         cur = conn.execute(
             "INSERT INTO orders(order_no, table_id, table_name, persons, status,"
             " total_amount, final_amount, remark, created_at)"
@@ -328,7 +328,8 @@ def order_hurry(order_id):
     row = conn.execute("SELECT * FROM orders WHERE id=?", (order_id,)).fetchone()
     if not row:
         return jsonify(ok=False, msg="订单不存在"), 404
-    if row["status"] != "pending":
+    # 待确认和制作中都能催：真正该催的恰恰是"做了一半还没上"的单
+    if row["status"] not in ("pending", "making"):
         return jsonify(ok=False, msg="当前状态不可催菜"), 400
     conn.execute("UPDATE orders SET hurry=1 WHERE id=?", (order_id,))
     utype, ukey, uname = utils.current_user()

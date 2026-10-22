@@ -32,10 +32,10 @@
 |---|---|
 | 可运行性 | 源码：三条命令跑起来；**已验证打包成桌面程序**（PyInstaller，32MB，`build.bat` 一键构建），无 Python 环境双击 EXE 即用 |
 | 功能完整性 | 点单 / 收银 / 会员 / BOM / 库存 / 预订 全链路 + 8 个决策页面，**22 个页面全量冒烟通过** |
-| 代码质量 | 分层清晰（`analytics` 指标层 / `ai` 引擎层 / `blueprints` 接口层）；README + [技术说明](docs/技术说明.md) + 8 次语义化提交 + MIT [LICENSE](LICENSE) |
+| 代码质量 | 分层清晰（`analytics` 指标层 / `ai` 引擎层 / `blueprints` 接口层）；README + [技术说明](docs/技术说明.md) + 20+ 次语义化提交 + MIT [LICENSE](LICENSE) |
 | 系统健壮性 | 三层降级（本地→云端→规则）、SQL 超时中断、动作幂等、异常兜底；演示断网仍可用 |
 | 数据安全 | Key 存独立文件不入库、`.gitignore` 排除 `*.db`；模型只能读聚合视图，看不到会员手机号；SQL 只读连接 |
-| 测试覆盖 | 6 个套件一键运行 `python run_tests.py`：页面 22/22、沙箱越界 8/8、口径一致 5 处、CSV 导入、Mock 模型链路、单元测试 50/50；另有 NL2SQL 评测集 12 题（`tests/eval_nl2sql.py`） |
+| 测试覆盖 | 7 个套件一键运行 `python run_tests.py`：页面 22/22、沙箱越界 8/8、口径一致 5 处、CSV 导入、**点餐端 12 项**、Mock 模型链路、单元测试 50/50；另有 NL2SQL 评测集 12 题（`tests/eval_nl2sql.py`） |
 | 错误处理 | 400/404/413/500 统一错误页，给一句人话 + 出口链接；表单校验逐字段提示；模型不可用时明确告知降级原因 |
 
 ### 落地可行性与可推广性（20）
@@ -45,7 +45,7 @@
 | 部署与成本 | 单机 Flask + SQLite，**无 GPU、无外网也能跑**；无 Python 环境可打包 EXE；详见 [docs/部署说明.md](docs/部署说明.md) |
 | 接入路径 | 已有 `CSV 导入`：收银导出订单 → 表头自动识别 → 按订单号幂等去重 → 即时重算 → 看板立即可用 |
 | 需求匹配 | 面向 40 座左右中小门店；指标口径、菜品结构、BOM 成本都是按真实餐饮模型设计 |
-| 可推广性 | 换菜单与配方即可用于茶餐厅/快餐/火锅/烘焙；连锁版只需加 `store_id` 维度（字段已预留设计） |
+| 可推广性 | 换菜单与配方即可用于茶餐厅/快餐/火锅/烘焙；连锁需全表加 `store_id` 并回填（**未实现**，预估 15 人日），且必须先解决成本口径 |
 
 ### 用户体验与交互设计（15）
 
@@ -194,7 +194,7 @@ Key 存在 `data/ai_key.txt`，不入库、不进日志、不随备份库外流�
 | `analytics/etl.py` | 预聚合，180 天看板毫秒级 |
 | `analytics/insights.py` | 6 类规则检测器 + 简报，全部确定性 |
 | `ai/gateway.py` | 本地/云端/关闭三级降级、缓存、额度 |
-| `ai/sandbox.py` | SQL 五道闸（只读、白名单、AST 级校验、LIMIT、超时） |
+| `ai/sandbox.py` | SQL 五道闸（只读连接、视图白名单、危险模式校验、强制 LIMIT、超时中断） |
 | `ai/nl2sql.py` | 受控自然语言查询，失败自动修复一轮，再失败走规则 |
 | `ai/tools.py` | 采购、调价、主推、撤销（带 before 快照） |
 | `analytics/simulate.py` | 经营推演：调价 × 弹性 × 折扣的纯算术模型，不调模型 |
@@ -224,6 +224,7 @@ venv\Scripts\python tests\smoke.py        # 20 个页面全量渲染（模板/�
 venv\Scripts\python tests\test_ai.py      # 沙箱 8 条拦截 + 7 类问答 + 执行 + 撤销
 venv\Scripts\python tests\test_metrics.py # 口径一致：原始表/视图/驾驶舱/报表/AI 五处同值
 venv\Scripts\python tests\test_import.py  # CSV 导入：表头识别 / 幂等 / 失败行 / 事实表重算
+venv\Scripts\python tests\test_mobile.py  # 点餐端：人数/备注落库、下单字段、催菜状态、取号
 venv\Scripts\python tests\mock_llm.py     # Mock 云端：越界 SQL → 拦截 → 自修复 → 真实结果
 venv\Scripts\python tests\eval_nl2sql.py  # NL2SQL 评测集（12 题，会调真模型，生成 docs/评测报告.md）
 venv\Scripts\python test_units.py         # 原有单元测试（金额/订单号/口令/BOM）
